@@ -51,9 +51,7 @@ CPSViewToken.cpp \
 CQUtil.cpp \
 CQImage.cpp \
 CQFont.cpp \
-CHistory.cpp \
 CFreeType.cpp \
-CReadLine.cpp \
 
 HEADERS += \
 CQPSView.h \
@@ -103,9 +101,7 @@ CPSViewTypes.h \
 CQUtil.h \
 CQImage.h \
 CQFont.h \
-CHistory.h \
 CFreeType.h \
-CReadLine.h \
 
 DESTDIR     = ../bin
 OBJECTS_DIR = ../obj
@@ -122,6 +118,7 @@ INCLUDEPATH += \
 ../../CRegExp/include \
 ../../CGlob/include \
 ../../CStrUtil/include \
+../../CReadLine/include \
 ../../COS/include \
 ../../CMath/include \
 ../../CUtil/include \
@@ -137,12 +134,14 @@ unix:LIBS += \
 -L../../CGlob/lib \
 -L../../CFile/lib \
 -L../../CMath/lib \
+-L../../CReadLine/lib \
 -L../../CStrUtil/lib \
 -L../../COS/lib \
 -lCImageLib \
 -lCFont \
 -lCArgs \
 -lCConfig \
+-lCReadLine \
 -lCFile \
 -lCOS \
 -lCRegExp \
