@@ -48,9 +48,6 @@ CPSViewStringToken.cpp \
 CPSViewTextFile.cpp \
 CPSViewTextFileToken.cpp \
 CPSViewToken.cpp \
-CQUtil.cpp \
-CQImage.cpp \
-CQFont.cpp \
 CFreeType.cpp \
 
 HEADERS += \
@@ -98,9 +95,6 @@ CPSViewTextFile.h \
 CPSViewTextFileToken.h \
 CPSViewToken.h \
 CPSViewTypes.h \
-CQUtil.h \
-CQImage.h \
-CQFont.h \
 CFreeType.h \
 
 DESTDIR     = ../bin
@@ -110,6 +104,7 @@ LIB_DIR     = ../lib
 INCLUDEPATH += \
 ../include \
 . \
+../../CQUtil/include \
 ../../CImageLib/include \
 ../../CConfig/include \
 ../../CArgs/include \
@@ -126,6 +121,7 @@ INCLUDEPATH += \
 
 unix:LIBS += \
 -L$$LIB_DIR \
+-L../../CQUtil/lib \
 -L../../CImageLib/lib \
 -L../../CArgs/lib \
 -L../../CConfig/lib \
@@ -137,6 +133,7 @@ unix:LIBS += \
 -L../../CReadLine/lib \
 -L../../CStrUtil/lib \
 -L../../COS/lib \
+-lCQUtil \
 -lCImageLib \
 -lCFont \
 -lCArgs \
