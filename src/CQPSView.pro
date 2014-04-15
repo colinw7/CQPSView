@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-TARGET = 
+TARGET = CQPSView
 
 DEPENDPATH += .
 
