@@ -1,5 +1,4 @@
-#include "CPSViewI.h"
-#include <COSEnv.h>
+#include <CPSViewI.h>
 #include <climits>
 
 const int MAX_ARRAY_DIMENSION      = 65535;
@@ -3234,9 +3233,9 @@ filenameForAllOp(PSViewOperatorMgr *mgr)
   string  prefix;
 
   if (templ.find("%font%") == 0) {
-    string font_dir = COSEnv::getenv("PSVIEW_FONT_DIR");
+    string font_dir;
 
-    if (font_dir != "")
+    if (! CEnvInst.get("PSVIEW_FONT_DIR", font_dir))
       font_dir = mgr->getPSView()->getGStateMgr()->getFontDir();
 
     dir = COSFile::openDir(font_dir);

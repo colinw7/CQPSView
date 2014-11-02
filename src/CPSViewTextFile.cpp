@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 #include <COSFile.h>
 
 const int BUFFER_SIZE = 512;

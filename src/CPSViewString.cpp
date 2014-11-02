@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewString::
 PSViewString(PSVinteger max_length) :

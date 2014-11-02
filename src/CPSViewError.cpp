@@ -1,6 +1,4 @@
-#include "CPSViewI.h"
-#include <COSEnv.h>
-#include <signal.h>
+#include <CPSViewI.h>
 
 string
 PSViewErrorMgr::
@@ -52,12 +50,12 @@ void
 PSViewErrorMgr::
 raise(PSViewErrorType type)
 {
-  if (COSEnv::checkenv("PSVIEW_ERROR_EXIT")) {
+  if (CEnvInst.exists("PSVIEW_ERROR_EXIT")) {
     cerr << error_names_[type] << endl;
     exit(1);
   }
 
-  if (COSEnv::checkenv("PSVIEW_ERROR_SEGV")) {
+  if (CEnvInst.exists("PSVIEW_ERROR_SEGV")) {
     cerr << error_names_[type] << endl;
     ::raise(SIGSEGV);
   }

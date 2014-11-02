@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 #include <CFuncs.h>
 #include <CLineList2D.h>
 #include <CTriangle2D.h>

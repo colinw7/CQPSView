@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewStringToken::
 PSViewStringToken(CPSView *psview, PSVinteger max_length) :

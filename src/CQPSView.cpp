@@ -1,6 +1,6 @@
 #include <CQPSView.h>
 #include <CPSView.h>
-#include "CQPSViewRenderer.h"
+#include <CQPSViewRenderer.h>
 
 CQPSView::
 CQPSView(QWidget *parent) :

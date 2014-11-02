@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 static char ps_id_chars[] = "%! \n";
 

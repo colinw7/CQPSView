@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewFilterFileToken::
 PSViewFilterFileToken(PSViewFileToken *token, const PSViewName &name) :

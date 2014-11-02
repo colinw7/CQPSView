@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewRealToken::
 PSViewRealToken(CPSView *psview, PSVreal value) :

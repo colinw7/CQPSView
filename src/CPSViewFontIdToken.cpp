@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewFontIdToken::
 PSViewFontIdToken(CPSView *psview, PSVfont_id value) :
