@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewNameToken::
 PSViewNameToken(CPSView *psview, const PSViewName &value) :

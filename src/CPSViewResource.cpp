@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewResourceMgr::
 PSViewResourceMgr(CPSView *psview) :

@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewOperandStack::
 PSViewOperandStack(CPSView *psview) :

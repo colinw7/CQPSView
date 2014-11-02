@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 #include <CReadLine.h>
 
 CPSView::

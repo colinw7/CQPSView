@@ -1,12 +1,11 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 #include <CRGBA.h>
 #include <CHSV.h>
 #include <CLineList2D.h>
 #include <CBezierToLine.h>
-#include <COSEnv.h>
 
-#include "CPSViewGStateFont.h"
-#include "CPSViewGStatePattern.h"
+#include <CPSViewGStateFont.h>
+#include <CPSViewGStatePattern.h>
 
 class PSViewTokenPathVisitor : public PSViewPathVisitor {
  private:
@@ -2797,9 +2796,9 @@ readFont(PSViewToken *key)
 
   bool file_found = false;
 
-  string font_dir = COSEnv::getenv("PSVIEW_FONT_DIR");
+  string font_dir;
 
-  if (font_dir == "")
+  if (! CEnvInst.get("PSVIEW_FONT_DIR", font_dir))
     font_dir = COSUser::getUserHome() + "/data/PSView/fonts";
 
   char font_filename[256];

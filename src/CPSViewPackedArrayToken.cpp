@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewPackedArrayToken::
 PSViewPackedArrayToken(CPSView *psview, PSVinteger max_length) :

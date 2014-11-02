@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewStringFile::
 PSViewStringFile(CPSView *psview, const string &str) :

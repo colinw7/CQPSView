@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 const char * const ARRAY_TYPE_NAME        = "arraytype";
 const char * const BOOLEAN_TYPE_NAME      = "booleantype";

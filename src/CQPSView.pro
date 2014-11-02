@@ -2,6 +2,8 @@ TEMPLATE = app
 
 TARGET = CQPSView
 
+QT += widgets
+
 DEPENDPATH += .
 
 CONFIG += debug

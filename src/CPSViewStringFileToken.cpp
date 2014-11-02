@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewStringFileToken::
 PSViewStringFileToken(CPSView *psview, const string &str) :

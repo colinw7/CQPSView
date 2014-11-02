@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 const int MAX_DICTIONARY_SIZE        = 65535;
 const int MAX_DICTIONARY_STACK_DEPTH = 20;

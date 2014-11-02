@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewArrayToken::
 PSViewArrayToken(CPSView *psview, uint max_length) :

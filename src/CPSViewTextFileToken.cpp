@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewTextFileToken::
 PSViewTextFileToken(CPSView *psview, const string &filename, const string &mode) :
@@ -85,7 +85,7 @@ PSViewTextFileToken::
 readToken()
 {
   if (! text_file_->isReadable())
-    return false;
+    return 0;
 
   return text_file_->readToken();
 }

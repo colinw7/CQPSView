@@ -1,4 +1,4 @@
-#include "CPSViewI.h"
+#include <CPSViewI.h>
 
 PSViewDictionaryToken::
 PSViewDictionaryToken(PSViewDictionaryMgr *mgr, PSVinteger max_length) :
