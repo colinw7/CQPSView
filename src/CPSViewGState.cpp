@@ -3765,7 +3765,7 @@ PSViewGState::
 getHSBColor(CHSB &hsb)
 {
   if (! hsb_valid_)
-    hsb_ = CHSB::fromRGB(pen_.getColor().getRGB());
+    hsb_ = pen_.getColor().toHSB();
 
   hsb = hsb_;
 }
@@ -3774,7 +3774,7 @@ CCMYK
 PSViewGState::
 rgbToCMYK(const CRGBA &rgba)
 {
-  CCMYK cmyk = CCMYK::fromRGB(rgba.getRGB());
+  CCMYK cmyk = rgba.toCMYK();
 
   //------
 

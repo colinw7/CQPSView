@@ -6,6 +6,8 @@ QT += widgets
 
 DEPENDPATH += .
 
+QMAKE_CXXFLAGS += -std=c++11
+
 CONFIG += debug
 
 # Input
@@ -146,4 +148,4 @@ unix:LIBS += \
 -lCRegExp \
 -lCGlob \
 -lCStrUtil \
--ljpeg -lpng -ltre -lreadline
+-ljpeg -lpng -ltre -lreadline -lfreetype

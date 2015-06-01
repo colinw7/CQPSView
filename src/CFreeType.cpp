@@ -297,10 +297,10 @@ drawBitmap(CFreeTypeImageRenderer *renderer, FT_Bitmap *bitmap, double x, double
 {
   uchar *p = bitmap->buffer;
 
-  for (int r = 0; r < bitmap->rows; ++r) {
+  for (uint r = 0; r < bitmap->rows; ++r) {
     uchar *p1 = p;
 
-    for (int c = 0; c < bitmap->width; ++c, ++p1) {
+    for (uint c = 0; c < bitmap->width; ++c, ++p1) {
       uchar pixel = *p1;
 
       if (pixel == 0) continue;
@@ -432,10 +432,10 @@ imageBitmap(CImagePtr image, FT_Bitmap *bitmap, const CRGBA &color)
   double g = color.getGreen();
   double b = color.getBlue ();
 
-  for (int row = 0; row < bitmap->rows; ++row) {
+  for (uint row = 0; row < bitmap->rows; ++row) {
     uchar *p1 = p;
 
-    for (int col = 0; col < bitmap->width; ++col, ++p1) {
+    for (uint col = 0; col < bitmap->width; ++col, ++p1) {
       uchar pixel = *p1;
 
       if (pixel == 0) continue;
