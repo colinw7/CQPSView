@@ -8,8 +8,6 @@
 #include <CStrUtil.h>
 //#include <CMathMacros.h>
 #include <CMathGen.h>
-#include <CRange2D.h>
-#include <CIRange2D.h>
 #include <CMatrix2D.h>
 #include <CMathGeom2D.h>
 #include <C3Bezier2D.h>

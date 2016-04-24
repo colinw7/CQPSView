@@ -136,6 +136,7 @@ unix:LIBS += \
 -L../../CMath/lib \
 -L../../CReadLine/lib \
 -L../../CStrUtil/lib \
+-L../../CUtil/lib \
 -L../../COS/lib \
 -lCQUtil \
 -lCImageLib \
@@ -148,4 +149,5 @@ unix:LIBS += \
 -lCRegExp \
 -lCGlob \
 -lCStrUtil \
+-lCUtil \
 -ljpeg -lpng -ltre -lreadline -lfreetype
