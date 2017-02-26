@@ -52,7 +52,6 @@ CPSViewStringToken.cpp \
 CPSViewTextFile.cpp \
 CPSViewTextFileToken.cpp \
 CPSViewToken.cpp \
-CFreeType.cpp \
 
 HEADERS += \
 CQPSView.h \
@@ -99,7 +98,6 @@ CPSViewTextFile.h \
 CPSViewTextFileToken.h \
 CPSViewToken.h \
 CPSViewTypes.h \
-CFreeType.h \
 
 DESTDIR     = ../bin
 OBJECTS_DIR = ../obj
@@ -132,6 +130,7 @@ unix:LIBS += \
 -L../../CFont/lib \
 -L../../CRegExp/lib \
 -L../../CGlob/lib \
+-L../../CFileUtil/lib \
 -L../../CFile/lib \
 -L../../CMath/lib \
 -L../../CReadLine/lib \
@@ -144,6 +143,7 @@ unix:LIBS += \
 -lCArgs \
 -lCConfig \
 -lCReadLine \
+-lCFileUtil \
 -lCFile \
 -lCOS \
 -lCRegExp \
