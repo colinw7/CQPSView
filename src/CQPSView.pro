@@ -145,6 +145,7 @@ unix:LIBS += \
 -lCReadLine \
 -lCFileUtil \
 -lCFile \
+-lCMath \
 -lCOS \
 -lCRegExp \
 -lCGlob \

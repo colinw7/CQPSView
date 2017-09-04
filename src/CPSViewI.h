@@ -1,12 +1,10 @@
 #ifndef PSVIEW_I_H
 #define PSVIEW_I_H
 
-#include <list>
-
 #include <CAutoPtr.h>
 #include <CGlob.h>
 #include <CStrUtil.h>
-//#include <CMathMacros.h>
+#include <CMathMacros.h>
 #include <CMathGen.h>
 #include <CMatrix2D.h>
 #include <CMathGeom2D.h>

@@ -1,8 +1,8 @@
 #include <CPSViewI.h>
 #include <CRGBA.h>
 #include <CHSV.h>
+#include <CRGBUtil.h>
 #include <CLineList2D.h>
-#include <CBezierToLine.h>
 
 #include <CPSViewGStateFont.h>
 #include <CPSViewGStatePattern.h>
@@ -207,9 +207,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
 
     vector<CPoint2D> points;
 
-    CBezierToLine b_to_l;
-
-    b_to_l.toLines(bezier, points);
+    CMathGeom2D::BezierToLines(bezier, points);
 
     uint numPoints = points.size();
 
@@ -223,9 +221,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
 
     vector<CPoint2D> points;
 
-    CBezierToLine b_to_l;
-
-    b_to_l.toLines(bezier, points);
+    CMathGeom2D::BezierToLines(bezier, points);
 
     uint numPoints = points.size();
 
@@ -244,7 +240,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
 
     if (x21 == 0.0 && y21 == 0.0) return;
 
-    double g = atan2(y21, x21);
+    double g = CMathGen::atan2(y21, x21);
 
     double dx = w*cos(g);
     double dy = w*sin(g);
@@ -277,7 +273,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
         CPoint2D pi;
         double   mu1, mu2;
 
-        CMathGeom2D::IntersectLine(CLine2D(*p1, *p2), CLine2D(*p3, *p4), &pi, &mu1, &mu2);
+        CMathGeom2D::IntersectLine(*p1, *p2, *p3, *p4, &pi, &mu1, &mu2);
 
         if (mu1 >= 0.0 && mu1 <= 1.0) {
           path_->lineTo(pi);
@@ -299,7 +295,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
         CPoint2D pi;
         double   mu1, mu2;
 
-        CMathGeom2D::IntersectLine(CLine2D(*p1, *p2), CLine2D(*p3, *p4), &pi, &mu1, &mu2);
+        CMathGeom2D::IntersectLine(*p1, *p2, *p3, *p4, &pi, &mu1, &mu2);
 
         if (mu1 > 0.0 && mu1 < 1.0) {
           path_->lineTo(pi);
@@ -330,7 +326,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
       CPoint2D pi;
       double   mu1, mu2;
 
-      CMathGeom2D::IntersectLine(CLine2D(*p1, *p2), CLine2D(*p3, *p4), &pi, &mu1, &mu2);
+      CMathGeom2D::IntersectLine(*p1, *p2, *p3, *p4, &pi, &mu1, &mu2);
 
       path_->moveTo(pi);
 
@@ -344,7 +340,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
         CPoint2D pi;
         double   mu1, mu2;
 
-        CMathGeom2D::IntersectLine(CLine2D(*p1, *p2), CLine2D(*p3, *p4), &pi, &mu1, &mu2);
+        CMathGeom2D::IntersectLine(*p1, *p2, *p3, *p4, &pi, &mu1, &mu2);
 
         path_->lineTo(pi);
 
@@ -366,7 +362,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
       CPoint2D pi;
       double   mu1, mu2;
 
-      CMathGeom2D::IntersectLine(CLine2D(*p1, *p2), CLine2D(*p3, *p4), &pi, &mu1, &mu2);
+      CMathGeom2D::IntersectLine(*p1, *p2, *p3, *p4, &pi, &mu1, &mu2);
 
       path_->moveTo(pi);
 
@@ -380,7 +376,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
         CPoint2D pi;
         double   mu1, mu2;
 
-        CMathGeom2D::IntersectLine(CLine2D(*p1, *p2), CLine2D(*p3, *p4), &pi, &mu1, &mu2);
+        CMathGeom2D::IntersectLine(*p1, *p2, *p3, *p4, &pi, &mu1, &mu2);
 
         path_->lineTo(pi);
 
@@ -803,7 +799,7 @@ arcTo(double x1, double y1, double x2, double y2, double r, double *xt1, double 
   //---
 
   // get included angle
-  double a = CMathGeom2D::IncludedAngle(CPoint2D(x0, y0), CPoint2D(x1, y1), CPoint2D(x2, y2));
+  double a = CMathGeom2D::IncludedAngle(x0, y0, x1, y1, x2, y2);
 
   // get distance along lines to tangents (adjacent edge of triangle with angle of half included
   // angle and opposite of 'r')
@@ -819,16 +815,9 @@ arcTo(double x1, double y1, double x2, double y2, double r, double *xt1, double 
   // intersect lines perpendicular to tangent points to get center
   double xi, yi, mu1, mu2;
 
-  CPoint2D pi;
-
-  CMathGeom2D::IntersectLine(CLine2D(CPoint2D(*xt1, *yt1),
-                                     CPoint2D(*xt1 + cos(pg1), *yt1 + sin(pg1))),
-                             CLine2D(CPoint2D(*xt2, *yt2),
-                                     CPoint2D(*xt2 + cos(pg2), *yt2 + sin(pg2))),
-                             &pi, &mu1, &mu2);
-
-  xi = pi.x;
-  yi = pi.y;
+  CMathGeom2D::IntersectLine(*xt1, *yt1, *xt1 + cos(pg1), *yt1 + sin(pg1),
+                             *xt2, *yt2, *xt2 + cos(pg2), *yt2 + sin(pg2),
+                             &xi, &yi, &mu1, &mu2);
 
   //------
 
@@ -3731,7 +3720,7 @@ setCMYKColor(const CCMYK &cmyk)
   cmyk_valid_ = true;
   hsb_valid_  = false;
 
-  CRGBA rgba = CRGBA(cmyk_.toRGB());
+  CRGBA rgba = CRGBA(CRGBUtil::CMYKtoRGB(cmyk_));
 
   setRGBColor1(rgba);
 }
@@ -3755,7 +3744,7 @@ setHSBColor(const CHSB &hsb)
   hsb_valid_  = true;
   cmyk_valid_ = false;
 
-  CRGBA rgba = CRGBA(hsb_.toRGB());
+  CRGBA rgba = CRGBA(CRGBUtil::HSBtoRGB(hsb_));
 
   setRGBColor1(rgba);
 }
@@ -3765,7 +3754,7 @@ PSViewGState::
 getHSBColor(CHSB &hsb)
 {
   if (! hsb_valid_)
-    hsb_ = pen_.getColor().toHSB();
+    hsb_ = CRGBUtil::RGBtoHSB(pen_.getColor().getRGB());
 
   hsb = hsb_;
 }
@@ -3774,7 +3763,7 @@ CCMYK
 PSViewGState::
 rgbToCMYK(const CRGBA &rgba)
 {
-  CCMYK cmyk = rgba.toCMYK();
+  CCMYK cmyk = CRGBUtil::RGBtoCMYK(rgba.getRGB());
 
   //------
 

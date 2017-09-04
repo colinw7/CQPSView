@@ -1,7 +1,6 @@
 #include <CQPSView.h>
 #include <CPSView.h>
-
-#include <QApplication>
+#include <CQApp.h>
 #include <QVBoxLayout>
 
 class CQPSViewTest : public QWidget {
@@ -18,7 +17,7 @@ class CQPSViewTest : public QWidget {
 int
 main(int argc, char **argv)
 {
-  QApplication app(argc, argv);
+  CQApp app(argc, argv);
 
   CQPSViewTest test;
 

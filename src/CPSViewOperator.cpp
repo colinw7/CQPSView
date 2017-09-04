@@ -1,5 +1,5 @@
 #include <CPSViewI.h>
-#include <climits>
+#include <CMathRound.h>
 
 const int MAX_ARRAY_DIMENSION      = 65535;
 const int MAX_DICTIONARY_DIMENSION = 65535;
@@ -6628,7 +6628,7 @@ roundOp(PSViewOperatorMgr *mgr)
   if (token->isReal()) {
     PSVreal real = token->getRealValue();
 
-    real = CMathGen::Round(real);
+    real = CMathRound::Round(real);
 
     PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), real);
 

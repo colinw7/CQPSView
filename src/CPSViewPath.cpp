@@ -3,9 +3,6 @@
 #include <CLineList2D.h>
 #include <CTriangle2D.h>
 #include <CFreeType.h>
-#include <CArcToBezier.h>
-#include <CBezierToLine.h>
-#include <algorithm>
 
 class PSViewPathCharRenderer : public CFreeTypePathRenderer {
  public:
@@ -104,7 +101,7 @@ class PSViewPathBBoxVisitor : public PSViewPathVisitor {
   void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) {
     vector<C3Bezier2D> beziers;
 
-    CArcToBezier::ArcToBeziers(c.x, c.y, xr, yr, theta, theta + delta, beziers);
+    CMathGeom2D::ArcToBeziers(c.x, c.y, xr, yr, theta, theta + delta, beziers);
 
     uint num_beziers = beziers.size();
 
@@ -178,9 +175,7 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
 
     vector<CPoint2D> points;
 
-    CBezierToLine b_to_l;
-
-    b_to_l.toLines(bezier, points);
+    CMathGeom2D::BezierToLines(bezier, points);
 
     uint num_points = points.size();
 
@@ -197,9 +192,7 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
 
     vector<CPoint2D> points;
 
-    CBezierToLine b_to_l;
-
-    b_to_l.toLines(bezier, points);
+    CMathGeom2D::BezierToLines(bezier, points);
 
     uint num_points = points.size();
 
@@ -210,7 +203,7 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
   void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) {
     vector<C3Bezier2D> beziers;
 
-    CArcToBezier::ArcToBeziers(c.x, c.y, xr, yr, theta, theta + delta, beziers);
+    CMathGeom2D::ArcToBeziers(c.x, c.y, xr, yr, theta, theta + delta, beziers);
 
     uint num_beziers = beziers.size();
 
@@ -495,9 +488,11 @@ arcTo(const CPoint2D &p1, const CPoint2D &p2, double xr, double yr)
     CTriangle2D triangle(p0, p1, p2);
 
     if (triangle.orientation() == 1)
-      arc (CPoint2D(xc, yc), xr, yr, atan2(xt1 - xc, yt1 - yc), atan2(xt2 - xc, yt2 - yc));
+      arc (CPoint2D(xc, yc), xr, yr, CMathGen::atan2(xt1 - xc, yt1 - yc),
+           CMathGen::atan2(xt2 - xc, yt2 - yc));
     else
-      arcN(CPoint2D(xc, yc), xr, yr, atan2(xt1 - xc, yt1 - yc), atan2(xt2 - xc, yt2 - yc));
+      arcN(CPoint2D(xc, yc), xr, yr, CMathGen::atan2(xt1 - xc, yt1 - yc),
+           CMathGen::atan2(xt2 - xc, yt2 - yc));
   }
   else
     lineTo(p1);
