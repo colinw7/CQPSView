@@ -49,7 +49,7 @@ class PSViewGStatePattern {
    y_step_      (pattern.y_step_),
    paint_proc_  (pattern.paint_proc_),
    gstate_      (pattern.gstate_) {
-    memcpy(bbox_, pattern.bbox_, sizeof(bbox_));;
+    memcpy(bbox_, pattern.bbox_, sizeof(bbox_));
   }
 
  ~PSViewGStatePattern() { }
