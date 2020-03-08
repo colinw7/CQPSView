@@ -1,9 +1,7 @@
+#ifndef CPSViewPackedArray_H
+#define CPSViewPackedArray_H
+
 class PSViewPackedArray {
-  typedef CSharedMem<PSViewToken *> PSViewSharedToken;
-
- private:
-  CAutoPtr<PSViewSharedToken> tokens_;
-
  public:
   PSViewPackedArray(PSVinteger max_length);
   PSViewPackedArray(const PSViewPackedArray &array);
@@ -15,4 +13,11 @@ class PSViewPackedArray {
   PSVinteger   getNumValues();
   PSViewToken *getValue(int i);
   void         setValue(int i, PSViewToken *token);
+
+ private:
+  typedef CSharedMem<PSViewToken *> PSViewSharedToken;
+
+  CAutoPtr<PSViewSharedToken> tokens_;
 };
+
+#endif

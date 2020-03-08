@@ -1,13 +1,7 @@
-#ifndef PSVIEW_STACK_H
-#define PSVIEW_STACK_H
+#ifndef CPSViewStack_H
+#define CPSViewStack_H
 
 class PSViewOperandStack {
- private:
-  typedef std::vector<PSViewToken *> TokenStack;
-
-  CPSView    *psview_;
-  TokenStack  operand_stack_;
-
  public:
   PSViewOperandStack(CPSView *psview);
 
@@ -33,15 +27,17 @@ class PSViewOperandStack {
  private:
   PSViewOperandStack(const PSViewOperandStack &rhs);
   PSViewOperandStack &operator=(const PSViewOperandStack &rhs);
-};
 
-class PSViewExecutionStack {
  private:
   typedef std::vector<PSViewToken *> TokenStack;
 
   CPSView    *psview_;
-  TokenStack  execution_stack_;
+  TokenStack  operand_stack_;
+};
 
+//---
+
+class PSViewExecutionStack {
  public:
   PSViewExecutionStack(CPSView *psview);
 
@@ -66,15 +62,17 @@ class PSViewExecutionStack {
  private:
   PSViewExecutionStack(const PSViewExecutionStack &rhs);
   PSViewExecutionStack &operator=(const PSViewExecutionStack &rhs);
-};
 
-class PSViewGraphicsStack {
  private:
-  typedef std::vector<PSViewGStateToken *> TokenStack;
+  typedef std::vector<PSViewToken *> TokenStack;
 
   CPSView    *psview_;
-  TokenStack  graphics_stack_;
+  TokenStack  execution_stack_;
+};
 
+//---
+
+class PSViewGraphicsStack {
  public:
   PSViewGraphicsStack(CPSView *psview);
 
@@ -89,6 +87,12 @@ class PSViewGraphicsStack {
  private:
   PSViewGraphicsStack(const PSViewGraphicsStack &rhs);
   PSViewGraphicsStack &operator=(const PSViewGraphicsStack &rhs);
+
+ private:
+  typedef std::vector<PSViewGStateToken *> TokenStack;
+
+  CPSView    *psview_;
+  TokenStack  graphics_stack_;
 };
 
 #endif

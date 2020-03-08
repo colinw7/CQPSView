@@ -1,16 +1,11 @@
-#ifndef PSVIEW_SHARED_MEM_H
-#define PSVIEW_SHARED_MEM_H
+#ifndef CPSViewSharedMem_H
+#define CPSViewSharedMem_H
 
 template<class T>
 class PSViewSharedMemData;
 
 template<class T>
 class PSViewSharedMem {
- private:
-  int                     start_;
-  int                     len_;
-  PSViewSharedMemData<T> *mem_;
-
  public:
   PSViewSharedMem(int len);
   PSViewSharedMem(PSViewSharedMem *mem, int start, int len);
@@ -28,6 +23,11 @@ class PSViewSharedMem {
 
   int getStart() const { return start_; }
   int getLen() const { return len_; }
+
+ private:
+  int                     start_ { 0 };
+  int                     len_   { 0 };
+  PSViewSharedMemData<T> *mem_;
 };
 
 #endif

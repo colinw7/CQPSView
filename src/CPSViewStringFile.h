@@ -1,9 +1,7 @@
-class PSViewStringFile : public PSViewFile {
- private:
-  std::vector<char> buffer_;
-  uint              buffer_pos_;
-  uint              buffer_size_;
+#ifndef CPSViewStringFile_H
+#define CPSViewStringFile_H
 
+class PSViewStringFile : public PSViewFile {
  public:
   PSViewStringFile(CPSView *psview, const std::string &str);
  ~PSViewStringFile();
@@ -38,4 +36,11 @@ class PSViewStringFile : public PSViewFile {
   void reset();
 
   void close();
+
+ private:
+  std::vector<char> buffer_;
+  uint              buffer_pos_;
+  uint              buffer_size_;
 };
+
+#endif

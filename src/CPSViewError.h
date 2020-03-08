@@ -1,5 +1,5 @@
-#ifndef PSVIEW_ERROR_H
-#define PSVIEW_ERROR_H
+#ifndef CPSViewError_H
+#define CPSViewError_H
 
 enum PSViewErrorType {
   PSVIEW_ERROR_TYPE_CONFIGURATION_ERROR,
@@ -33,14 +33,6 @@ enum PSViewErrorType {
 };
 
 class PSViewErrorMgr {
- private:
-  static std::string error_names_[];
-
-  CPSView         *psview_;
-  PSViewToken     *error_token_;
-  PSViewNameToken *error_name_;
-  bool             error_flag_;
-
  public:
   PSViewErrorMgr(CPSView *psview);
  ~PSViewErrorMgr();
@@ -59,6 +51,14 @@ class PSViewErrorMgr {
  private:
   PSViewErrorMgr(const PSViewErrorMgr &rhs);
   PSViewErrorMgr &operator=(const PSViewErrorMgr &rhs);
+
+ private:
+  static std::string error_names_[];
+
+  CPSView*         psview_      { nullptr };
+  PSViewToken*     error_token_ { nullptr };
+  PSViewNameToken* error_name_  { nullptr };
+  bool             error_flag_  { false };
 };
 
 #endif

@@ -1,7 +1,7 @@
-class PSViewFontIdToken : public PSViewToken {
- private:
-  const PSVfont_id value_;
+#ifndef CPSViewFontIdToken_H
+#define CPSViewFontIdToken_H
 
+class PSViewFontIdToken : public PSViewToken {
  public:
   PSViewFontIdToken(CPSView *psview, PSVfont_id value);
   PSViewFontIdToken(const PSViewFontIdToken &font_id_token);
@@ -23,4 +23,9 @@ class PSViewFontIdToken : public PSViewToken {
   void print();
 
   std::string toString();
+
+ private:
+  const PSVfont_id value_ { 0 };
 };
+
+#endif

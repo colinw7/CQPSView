@@ -1,14 +1,11 @@
-#ifndef PSVIEW_RESOURCE_H
-#define PSVIEW_RESOURCE_H
+#ifndef CPSViewResource_H
+#define CPSViewResource_H
 
 class PSViewResource;
 
 class PSViewResourceMgr {
- private:
+ public:
   typedef std::vector<PSViewResource *> ResourceList;
-
-  CPSView      *psview_;
-  ResourceList  resources_;
 
  public:
   PSViewResourceMgr(CPSView *psview);
@@ -31,15 +28,15 @@ class PSViewResourceMgr {
  private:
   PSViewResourceMgr(const PSViewResourceMgr &rhs);
   PSViewResourceMgr &operator=(const PSViewResourceMgr &rhs);
+
+ private:
+  CPSView      *psview_;
+  ResourceList  resources_;
 };
 
-class PSViewResource {
- private:
-  PSViewResourceMgr *mgr_;
-  PSViewToken       *key_;
-  PSViewToken       *instance_;
-  const PSViewName  &category_;
+//---
 
+class PSViewResource {
  public:
   PSViewResource(PSViewResourceMgr *mgr, PSViewToken *key,
                  PSViewToken *instance, const PSViewName &category);
@@ -47,7 +44,12 @@ class PSViewResource {
   PSViewToken      *getKey     () const { return key_     ; }
   PSViewToken      *getInstance() const { return instance_; }
   const PSViewName &getCategory() const { return category_; }
-};
 
+ private:
+  PSViewResourceMgr *mgr_;
+  PSViewToken       *key_;
+  PSViewToken       *instance_;
+  const PSViewName  &category_;
+};
 
 #endif

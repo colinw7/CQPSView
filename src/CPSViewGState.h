@@ -1,5 +1,5 @@
-#ifndef PSVIEW_GSTATE_I_H
-#define PSVIEW_GSTATE_I_H
+#ifndef CPSViewGState_H
+#define CPSViewGState_H
 
 #include <CPen.h>
 #include <CBrush.h>
@@ -8,17 +8,6 @@ struct PSViewGStateFont;
 struct PSViewGStatePattern;
 
 class PSViewGStateMgr {
- private:
-  CPSView               *psview_;
-  const PSViewName      *CMYKColorSpaceName_;
-  const PSViewName      *RGBColorSpaceName_;
-  const PSViewName      *GrayColorSpaceName_;
-  const PSViewName      *PatternColorSpaceName_;
-  std::string            font_dir_;
-  CMatrix2D              default_ctm_matrix_;
-  int                    current_font_id_;
-  PSViewDictionaryToken *default_font_;
-
  public:
   PSViewGStateMgr(CPSView *psview);
  ~PSViewGStateMgr();
@@ -57,29 +46,22 @@ class PSViewGStateMgr {
  private:
   PSViewGStateMgr(const PSViewGStateMgr &rhs);
   PSViewGStateMgr &operator=(const PSViewGStateMgr &rhs);
+
+ private:
+  CPSView               *psview_                { nullptr };
+  const PSViewName      *CMYKColorSpaceName_    { nullptr };
+  const PSViewName      *RGBColorSpaceName_     { nullptr };
+  const PSViewName      *GrayColorSpaceName_    { nullptr };
+  const PSViewName      *PatternColorSpaceName_ { nullptr };
+  std::string            font_dir_;
+  CMatrix2D              default_ctm_matrix_;
+  int                    current_font_id_       { 0 };
+  PSViewDictionaryToken *default_font_          { nullptr };
 };
 
-class PSViewGState {
- private:
-  PSViewGStateMgr               *mgr_;
-  CMatrix2D                      ctm_matrix_;
-  const PSViewName              *color_space_;
-  bool                           pattern_color_;
-  CPen                           pen_;
-  CBrush                         brush_;
-  CCMYK                          cmyk_;
-  bool                           cmyk_valid_;
-  CHSB                           hsb_;
-  bool                           hsb_valid_;
-  bool                           stroke_adjust_;
-  CAutoPtr<PSViewToken>          black_generation_;
-  CAutoPtr<PSViewToken>          undercolor_removal_;
-  CAutoPtr<PSViewGStateFont>     font_;
-  CPSViewRenderer               *graphics_;
-  CAutoPtr<PSViewGStatePattern>  pattern_;
-  CAutoPtr<PSViewPath>           path_;
-  CAutoPtr<PSViewPath>           clippath_;
+//---
 
+class PSViewGState {
  public:
   PSViewGState(PSViewGStateMgr *mgr);
   PSViewGState(const PSViewGState &gstate);
@@ -290,6 +272,26 @@ class PSViewGState {
 
   void debugPrintImageMask(char *image_data, int width, int height,
                            int polarity, CMatrix2D *matrix);
+
+ private:
+  PSViewGStateMgr               *mgr_;
+  CMatrix2D                      ctm_matrix_;
+  const PSViewName              *color_space_;
+  bool                           pattern_color_;
+  CPen                           pen_;
+  CBrush                         brush_;
+  CCMYK                          cmyk_;
+  bool                           cmyk_valid_;
+  CHSB                           hsb_;
+  bool                           hsb_valid_;
+  bool                           stroke_adjust_;
+  CAutoPtr<PSViewToken>          black_generation_;
+  CAutoPtr<PSViewToken>          undercolor_removal_;
+  CAutoPtr<PSViewGStateFont>     font_;
+  CPSViewRenderer               *graphics_;
+  CAutoPtr<PSViewGStatePattern>  pattern_;
+  CAutoPtr<PSViewPath>           path_;
+  CAutoPtr<PSViewPath>           clippath_;
 };
 
 #endif

@@ -1,8 +1,7 @@
-class PSViewGStateTokenMgr {
- private:
-  CPSView           *psview_;
-  PSViewGStateToken *current_gstate_;
+#ifndef CPSViewGStateToken_H
+#define CPSViewGStateToken_H
 
+class PSViewGStateTokenMgr {
  public:
   PSViewGStateTokenMgr(CPSView *psview);
  ~PSViewGStateTokenMgr();
@@ -23,12 +22,15 @@ class PSViewGStateTokenMgr {
  private:
   PSViewGStateTokenMgr(const PSViewGStateTokenMgr &rhs);
   PSViewGStateTokenMgr &operator=(const PSViewGStateTokenMgr &rhs);
+
+ private:
+  CPSView           *psview_;
+  PSViewGStateToken *current_gstate_;
 };
 
-class PSViewGStateToken : public PSViewToken {
- private:
-  CAutoPtr<PSViewGState> gstate_;
+//---
 
+class PSViewGStateToken : public PSViewToken {
  public:
   PSViewGStateToken(CPSView *psview);
   PSViewGStateToken(const PSViewGStateToken &gstate_token);
@@ -184,4 +186,9 @@ class PSViewGStateToken : public PSViewToken {
 
   void multiplyByCTMMatrix(double x1, double y1, double *x2, double *y2);
   void multiplyByInverseCTMMatrix(double x1, double y1, double *x2, double *y2);
+
+ private:
+  CAutoPtr<PSViewGState> gstate_;
 };
+
+#endif

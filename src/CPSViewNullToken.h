@@ -1,3 +1,6 @@
+#ifndef CPSViewNullToken_H
+#define CPSViewNullToken_H
+
 class PSViewNullToken : public PSViewToken {
  public:
   PSViewNullToken(CPSView *psview);
@@ -22,3 +25,5 @@ class PSViewNullToken : public PSViewToken {
 
   std::string toString();
 };
+
+#endif

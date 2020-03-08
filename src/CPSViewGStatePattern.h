@@ -1,15 +1,7 @@
-class PSViewGStatePattern {
- private:
-  PSViewToken  *dictionary_;
-  int           pattern_type_;
-  int           paint_type_;
-  int           tiling_type_;
-  double        bbox_[4];
-  double        x_step_;
-  double        y_step_;
-  PSViewToken  *paint_proc_;
-  PSViewGState *gstate_;
+#ifndef CPSViewGStatePattern_H
+#define CPSViewGStatePattern_H
 
+class PSViewGStatePattern {
  public:
   PSViewGStatePattern() :
    dictionary_  (NULL),
@@ -71,4 +63,17 @@ class PSViewGStatePattern {
 
  private:
   const PSViewGStatePattern &operator=(const PSViewGStatePattern &pattern);
+
+ private:
+  PSViewToken  *dictionary_ { nullptr };
+  int           pattern_type_;
+  int           paint_type_;
+  int           tiling_type_;
+  double        bbox_[4];
+  double        x_step_;
+  double        y_step_;
+  PSViewToken  *paint_proc_ { nullptr };
+  PSViewGState *gstate_     { nullptr };
 };
+
+#endif

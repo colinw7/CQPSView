@@ -1,7 +1,7 @@
-class PSViewStringToken : public PSViewToken {
- private:
-  CAutoPtr<PSViewString> string_;
+#ifndef CPSViewStringToken_H
+#define CPSViewStringToken_H
 
+class PSViewStringToken : public PSViewToken {
  public:
   PSViewStringToken(CPSView *psview, PSVinteger max_length);
   PSViewStringToken(CPSView *psview, const std::string &str);
@@ -51,4 +51,9 @@ class PSViewStringToken : public PSViewToken {
   int getLength() const;
 
   int getChar(int i) const;
+
+ private:
+  CAutoPtr<PSViewString> string_;
 };
+
+#endif

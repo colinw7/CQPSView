@@ -1,7 +1,7 @@
-class PSViewSaveToken : public PSViewToken {
- private:
-  CAutoPtr<PSViewSave> save_;
+#ifndef CPSViewSaveToken_H
+#define CPSViewSaveToken_H
 
+class PSViewSaveToken : public PSViewToken {
  public:
   PSViewSaveToken(CPSView *psview, void *data);
   PSViewSaveToken(const PSViewSaveToken &save_token);
@@ -27,4 +27,9 @@ class PSViewSaveToken : public PSViewToken {
   //----
 
   void *getValue();
+
+ private:
+  CAutoPtr<PSViewSave> save_;
 };
+
+#endif

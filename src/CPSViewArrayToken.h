@@ -1,10 +1,7 @@
-#ifndef PSVIEW_ARRAY_TOKEN_H
-#define PSVIEW_ARRAY_TOKEN_H
+#ifndef CPSViewArrayToken_H
+#define CPSViewArrayToken_H
 
 class PSViewArrayToken : public PSViewToken {
- private:
-  CAutoPtr<PSViewArray> array_;
-
  public:
   PSViewArrayToken(CPSView *psview, uint max_length);
   PSViewArrayToken(CPSView *psview, CMatrix2D *matrix);
@@ -44,6 +41,9 @@ class PSViewArrayToken : public PSViewToken {
 
  private:
   PSViewArrayToken &operator=(const PSViewArrayToken &array_token);
+
+ private:
+  CAutoPtr<PSViewArray> array_;
 };
 
 #endif

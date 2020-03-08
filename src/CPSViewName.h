@@ -1,15 +1,9 @@
-#ifndef PSViewName_H
-#define PSViewName_H
+#ifndef CPSViewName_H
+#define CPSViewName_H
 
 #include <map>
 
 class PSViewNameMgr {
- private:
-  typedef std::map<std::string,PSViewName *> NameMap;
-
-  CPSView *psview_;
-  NameMap  names_;
-
  public:
   PSViewNameMgr(CPSView *psview);
 
@@ -18,12 +12,17 @@ class PSViewNameMgr {
  private:
   PSViewNameMgr(const PSViewNameMgr &rhs);
   PSViewNameMgr &operator=(const PSViewNameMgr &rhs);
+
+ private:
+  typedef std::map<std::string,PSViewName *> NameMap;
+
+  CPSView *psview_;
+  NameMap  names_;
 };
 
-class PSViewName {
- private:
-  std::string str_;
+//---
 
+class PSViewName {
  public:
   PSViewName(const std::string &str);
  ~PSViewName();
@@ -32,6 +31,9 @@ class PSViewName {
 
   const std::string &getString() const { return str_; }
   int                getLength() const { return str_.size(); }
+
+ private:
+  std::string str_;
 };
 
 #endif

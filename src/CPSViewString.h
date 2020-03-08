@@ -1,12 +1,7 @@
-#ifndef PSVIEW_STRING_H
-#define PSVIEW_STRING_H
+#ifndef CPSViewString_H
+#define CPSViewString_H
 
 class PSViewString {
-  typedef CSharedMem<char> PSViewSharedChar;
-
- private:
-  CAutoPtr<PSViewSharedChar> mem_;
-
  public:
   PSViewString(PSVinteger max_length);
   PSViewString(const std::string &str);
@@ -36,6 +31,11 @@ class PSViewString {
   int compareN(const PSViewString &str, PSVinteger n) const;
 
   friend int operator==(const PSViewString &string1, const PSViewString &string2);
+
+ private:
+  typedef CSharedMem<char> PSViewSharedChar;
+
+  CAutoPtr<PSViewSharedChar> mem_;
 };
 
 #endif

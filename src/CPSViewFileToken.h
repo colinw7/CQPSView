@@ -1,7 +1,7 @@
-class PSViewFileToken : public PSViewToken {
- protected:
-  PSViewFile *file_;
+#ifndef CPSViewFileToken_H
+#define CPSViewFileToken_H
 
+class PSViewFileToken : public PSViewToken {
  protected:
   PSViewFileToken(CPSView *psview);
 
@@ -47,4 +47,9 @@ class PSViewFileToken : public PSViewToken {
   PSViewToken *readString();
 
   PSViewFile *getFile() { return file_; }
+
+ protected:
+  PSViewFile *file_ { nullptr };
 };
+
+#endif

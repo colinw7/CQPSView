@@ -1,5 +1,5 @@
-#ifndef PSVIEW_MEMORY_I_H
-#define PSVIEW_MEMORY_I_H
+#ifndef CPSViewMemory_H
+#define CPSViewMemory_H
 
 enum PSViewMemoryType {
   PSVIEW_MEMORY_TYPE_NONE,
@@ -20,16 +20,6 @@ struct PSViewMemory {
 };
 
 class PSViewMemoryMgr {
- private:
-  CPSView          *psview_;
-  PSViewMemoryType  memory_type_;
-  int               memory_depth_;
-  uint              memory_used_;
-  PSViewSaveData   *save_data_;
-
-  std::list<PSViewMemory *> global_memory_list_;
-  std::list<PSViewMemory *> local_memory_list_;
-
  public:
   PSViewMemoryMgr(CPSView *psview);
  ~PSViewMemoryMgr();
@@ -69,6 +59,16 @@ class PSViewMemoryMgr {
  private:
   PSViewMemoryMgr(const PSViewMemoryMgr &rhs);
   PSViewMemoryMgr &operator=(const PSViewMemoryMgr &rhs);
+
+ private:
+  CPSView          *psview_;
+  PSViewMemoryType  memory_type_;
+  int               memory_depth_;
+  uint              memory_used_;
+  PSViewSaveData   *save_data_;
+
+  std::list<PSViewMemory *> global_memory_list_;
+  std::list<PSViewMemory *> local_memory_list_;
 };
 
 #endif

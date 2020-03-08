@@ -1,7 +1,7 @@
-class PSViewTextFileToken : public PSViewFileToken {
- private:
-  CAutoPtr<PSViewTextFile> text_file_;
+#ifndef CPSViewTextFileToken_H
+#define CPSViewTextFileToken_H
 
+class PSViewTextFileToken : public PSViewFileToken {
  public:
   PSViewTextFileToken(CPSView *psview, const std::string &filename, const std::string &mode);
   PSViewTextFileToken(const PSViewTextFileToken &text_file_token);
@@ -39,4 +39,9 @@ class PSViewTextFileToken : public PSViewFileToken {
   void         close();
 
   PSViewTextFile *getTextFile() { return text_file_; }
+
+ private:
+  CAutoPtr<PSViewTextFile> text_file_;
 };
+
+#endif

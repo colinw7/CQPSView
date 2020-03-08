@@ -1,11 +1,7 @@
-#ifndef PSVIEW_DICTIONARY_TOKEN_H
-#define PSVIEW_DICTIONARY_TOKEN_H
+#ifndef CPSViewDictionaryToken_H
+#define CPSViewDictionaryToken_H
 
 class PSViewDictionaryToken : public PSViewToken {
- private:
-  PSViewDictionaryMgr        *mgr_;
-  CAutoPtr<PSViewDictionary>  dictionary_;
-
  public:
   PSViewDictionaryToken(PSViewDictionaryMgr *mgr, PSVinteger max_length);
   PSViewDictionaryToken(const PSViewDictionaryToken &dictionary_token);
@@ -57,6 +53,10 @@ class PSViewDictionaryToken : public PSViewToken {
 
  private:
   PSViewDictionaryToken &operator=(const PSViewDictionaryToken &dictionary_token);
+
+ private:
+  PSViewDictionaryMgr        *mgr_ { nullptr };
+  CAutoPtr<PSViewDictionary>  dictionary_;
 };
 
 #endif

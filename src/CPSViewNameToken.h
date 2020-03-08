@@ -1,10 +1,7 @@
-#ifndef PSVIEW_NAME_TOKEN_H
-#define PSVIEW_NAME_TOKEN_H
+#ifndef CPSViewNameToken_H
+#define CPSViewNameToken_H
 
 class PSViewNameToken : public PSViewToken {
- private:
-  const PSViewName &value_;
-
  public:
   PSViewNameToken(CPSView *psview, const PSViewName &value);
   PSViewNameToken(CPSView *psview, const std::string &str);
@@ -35,6 +32,9 @@ class PSViewNameToken : public PSViewToken {
 
   const std::string &getString();
   int                getLength();
+
+ private:
+  const PSViewName &value_;
 };
 
 #endif

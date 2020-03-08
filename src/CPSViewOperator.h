@@ -1,14 +1,9 @@
-#ifndef PSVIEW_OPERATOR_I_H
-#define PSVIEW_OPERATOR_I_H
+#ifndef CPSViewOperator_H
+#define CPSViewOperator_H
 
 class PSViewOperatorMgr;
 
 class PSViewOperator {
- private:
-  PSViewOperatorMgr  *mgr_;
-  const PSViewName   &name_;
-  PSViewOperatorProc  proc_;
-
  public:
   PSViewOperator(PSViewOperatorMgr *mgr, const std::string &name, PSViewOperatorProc proc);
 
@@ -19,16 +14,16 @@ class PSViewOperator {
   const PSViewName   &getName  () const { return name_; }
   PSViewOperatorProc  getProc  () const { return proc_; }
   const std::string  &getString() const { return name_.getString(); }
+
+ private:
+  PSViewOperatorMgr  *mgr_;
+  const PSViewName   &name_;
+  PSViewOperatorProc  proc_;
 };
 
-class PSViewOperatorMgr {
- private:
-  CPSView                       *psview_;
-  PSVinteger                     random_seed_;
-  std::vector<PSViewOperator *>  system_operators_;
-  std::vector<PSViewOperator *>  private_operators_;
-  uint                           num_private_operators_;
+//---
 
+class PSViewOperatorMgr {
  public:
   PSViewOperatorMgr(CPSView *psview);
  ~PSViewOperatorMgr();
@@ -337,6 +332,13 @@ class PSViewOperatorMgr {
  private:
   PSViewOperatorMgr(const PSViewOperatorMgr &rhs);
   PSViewOperatorMgr &operator=(const PSViewOperatorMgr &rhs);
+
+ private:
+  CPSView                       *psview_;
+  PSVinteger                     random_seed_;
+  std::vector<PSViewOperator *>  system_operators_;
+  std::vector<PSViewOperator *>  private_operators_;
+  uint                           num_private_operators_;
 };
 
 #endif

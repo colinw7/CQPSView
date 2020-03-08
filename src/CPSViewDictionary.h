@@ -1,21 +1,9 @@
-#ifndef PSVIEW_DICTIONARY_H
-#define PSVIEW_DICTIONARY_H
+#ifndef CPSViewDictionary_H
+#define CPSViewDictionary_H
 
 class PSViewDictionaryToken;
 
 class PSViewDictionaryMgr {
- private:
-  typedef std::vector<PSViewDictionaryToken *> DictionaryStack;
-
-  static const char *standard_encoding_[256];
-  static const char *error_names_[];
-
-  CPSView                         *psview_;
-  CAutoPtr<PSViewDictionaryToken>  error_dictionary_;
-  CAutoPtr<PSViewDictionaryToken>  sub_error_dictionary_;
-  CAutoPtr<PSViewDictionaryToken>  internal_dictionary_;
-  DictionaryStack                  dictionary_stack_;
-
  public:
   PSViewDictionaryMgr(CPSView *psview);
  ~PSViewDictionaryMgr();
@@ -56,13 +44,23 @@ class PSViewDictionaryMgr {
   PSViewDictionaryToken *createSystem();
   PSViewDictionaryToken *createGlobal();
   PSViewDictionaryToken *createUser();
+
+ private:
+  typedef std::vector<PSViewDictionaryToken *> DictionaryStack;
+
+  static const char *standard_encoding_[256];
+  static const char *error_names_[];
+
+  CPSView                         *psview_ { nullptr };
+  CAutoPtr<PSViewDictionaryToken>  error_dictionary_;
+  CAutoPtr<PSViewDictionaryToken>  sub_error_dictionary_;
+  CAutoPtr<PSViewDictionaryToken>  internal_dictionary_;
+  DictionaryStack                  dictionary_stack_;
 };
 
-class PSViewKeyValue {
- private:
-  PSViewToken *key_;
-  PSViewToken *value_;
+//---
 
+class PSViewKeyValue {
  public:
   explicit
   PSViewKeyValue(PSViewToken *key = NULL, PSViewToken *value = NULL);
@@ -77,16 +75,15 @@ class PSViewKeyValue {
 
   void setKeyValue(PSViewToken *key, PSViewToken *value);
   void setKeyValue(const PSViewKeyValue &key_value);
+
+ private:
+  PSViewToken *key_;
+  PSViewToken *value_;
 };
 
-class PSViewDictionary {
- private:
-  PSViewDictionaryMgr         *mgr_;
-  std::vector<PSViewKeyValue>  keyvals_;
-  PSVinteger                   start_;
-  PSVinteger                   end_;
-  PSVinteger                   used_;
+//---
 
+class PSViewDictionary {
  public:
   PSViewDictionary(PSViewDictionaryMgr *mgr, PSVinteger max_length);
   PSViewDictionary(const PSViewDictionary &dictionary);
@@ -125,6 +122,13 @@ class PSViewDictionary {
 
  private:
   PSViewDictionary &operator=(const PSViewDictionary &dictionary);
+
+ private:
+  PSViewDictionaryMgr         *mgr_ { nullptr };
+  std::vector<PSViewKeyValue>  keyvals_;
+  PSVinteger                   start_ { 0 };
+  PSVinteger                   end_ { 0 };
+  PSVinteger                   used_ { 0 };
 };
 
 #endif

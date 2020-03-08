@@ -1,7 +1,7 @@
-class PSViewPackedArrayToken : public PSViewToken {
- private:
-  CAutoPtr<PSViewPackedArray> packed_array_;
+#ifndef CPSViewPackedArrayToken_H
+#define CPSViewPackedArrayToken_H
 
+class PSViewPackedArrayToken : public PSViewToken {
  public:
   PSViewPackedArrayToken(CPSView *psview, PSVinteger max_length);
   PSViewPackedArrayToken(const PSViewPackedArrayToken &packed_array_token);
@@ -29,4 +29,9 @@ class PSViewPackedArrayToken : public PSViewToken {
   PSVinteger   getNumValues();
   PSViewToken *getValue(int i);
   void         setValue(int i, PSViewToken *token);
+
+ private:
+  CAutoPtr<PSViewPackedArray> packed_array_;
 };
+
+#endif

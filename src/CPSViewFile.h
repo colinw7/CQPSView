@@ -1,18 +1,14 @@
+#ifndef CPSViewFile_H
+#define CPSViewFile_H
+
 enum PSViewFileModeType {
   PSVIEW_FILE_MODE_TYPE_NONE       = 0,
   PSVIEW_FILE_MODE_TYPE_READ       = (1<<1),
   PSVIEW_FILE_MODE_TYPE_WRITE      = (1<<2),
-  PSVIEW_FILE_MODE_TYPE_READ_WRITE = PSVIEW_FILE_MODE_TYPE_READ |
-                                     PSVIEW_FILE_MODE_TYPE_WRITE
+  PSVIEW_FILE_MODE_TYPE_READ_WRITE = PSVIEW_FILE_MODE_TYPE_READ | PSVIEW_FILE_MODE_TYPE_WRITE
 };
 
 class PSViewFile {
- private:
-  static std::string ascii85_chars_;
-  static std::string delim_chars_;
-
-  CPSView *psview_;
-
  public:
   PSViewFile(CPSView *psview);
   PSViewFile(const PSViewFile &rhs);
@@ -73,4 +69,12 @@ class PSViewFile {
 
  private:
   PSViewFile &operator=(const PSViewFile &rhs);
+
+ private:
+  static std::string ascii85_chars_;
+  static std::string delim_chars_;
+
+  CPSView *psview_ { nullptr };
 };
+
+#endif

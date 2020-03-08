@@ -1,7 +1,7 @@
-class PSViewStringFileToken : public PSViewFileToken {
- private:
-  CAutoPtr<PSViewStringFile> string_file_;
+#ifndef CPSViewStringFileToken_H
+#define CPSViewStringFileToken_H
 
+class PSViewStringFileToken : public PSViewFileToken {
  public:
   PSViewStringFileToken(CPSView *psview, const std::string &str);
   PSViewStringFileToken(const PSViewStringFileToken &string_file_token);
@@ -45,4 +45,9 @@ class PSViewStringFileToken : public PSViewFileToken {
   void         close();
 
   PSViewStringFile *getStringFile() { return string_file_; }
+
+ private:
+  CAutoPtr<PSViewStringFile> string_file_;
 };
+
+#endif

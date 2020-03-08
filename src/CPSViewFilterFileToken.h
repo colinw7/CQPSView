@@ -1,10 +1,7 @@
-#ifndef PSVIEW_FILTER_FILE_TOKEN_H
-#define PSVIEW_FILTER_FILE_TOKEN_H
+#ifndef CPSViewFilterFileToken_H
+#define CPSViewFilterFileToken_H
 
 class PSViewFilterFileToken : public PSViewFileToken {
- private:
-  CAutoPtr<PSViewFilterFile> filter_file_;
-
  public:
   PSViewFilterFileToken(PSViewFileToken *token, const PSViewName &name);
   PSViewFilterFileToken(PSViewFileToken *token, const std::string &name);
@@ -49,6 +46,9 @@ class PSViewFilterFileToken : public PSViewFileToken {
   void          close();
 
   PSViewFilterFile *getFilterFile() { return filter_file_; }
+
+ private:
+  CAutoPtr<PSViewFilterFile> filter_file_;
 };
 
 #endif

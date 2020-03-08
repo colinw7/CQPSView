@@ -1,5 +1,5 @@
-#ifndef PSVIEW_TOKEN_H
-#define PSVIEW_TOKEN_H
+#ifndef CPSViewToken_H
+#define CPSViewToken_H
 
 enum PSViewTokenType {
   PSVIEW_TOKEN_TYPE_NONE,
@@ -38,11 +38,6 @@ enum PSViewTokenExecutableType {
 };
 
 class PSViewTokenMgr {
- private:
-  CPSView     *psview_;
-  bool         packing_;
-  PSViewToken *last_execute_token_;
-
  public:
   PSViewTokenMgr(CPSView *psview);
 
@@ -58,17 +53,16 @@ class PSViewTokenMgr {
 
   const PSViewName &getLBraceName();
   const PSViewName &getRBraceName();
+
+ private:
+  CPSView     *psview_;
+  bool         packing_;
+  PSViewToken *last_execute_token_;
 };
 
-class PSViewToken {
- protected:
-  CPSView                   *psview_;
-  PSViewTokenType            type_;
-  PSViewTokenCompositeType   composite_;
-  PSViewMemory              *memory_;
-  PSViewTokenExecutableType  executable_;
-  PSViewTokenAccessType      access_;
+//---
 
+class PSViewToken {
  protected:
   PSViewToken(CPSView *psview, PSViewTokenType type, PSViewTokenCompositeType composite,
               PSViewTokenExecutableType executable, PSViewTokenAccessType access);
@@ -150,6 +144,14 @@ class PSViewToken {
   PSVboolean  isMatrix();
   CMatrix2D  *getMatrix();
   void        setMatrix(CMatrix2D *matrix);
+
+ protected:
+  CPSView                   *psview_;
+  PSViewTokenType            type_;
+  PSViewTokenCompositeType   composite_;
+  PSViewMemory              *memory_;
+  PSViewTokenExecutableType  executable_;
+  PSViewTokenAccessType      access_;
 };
 
 #endif

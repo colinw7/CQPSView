@@ -1,18 +1,9 @@
-#ifndef PSVIEW_FILTER_FILE_H
-#define PSVIEW_FILTER_FILE_H
+#ifndef CPSViewFilterFile_H
+#define CPSViewFilterFile_H
 
 typedef int (*PSViewFilterFileProc)(...);
 
 class PSViewFilterFile : public PSViewFile {
- private:
-  PSViewFile           *file_;
-  std::string           name_;
-  PSViewFilterFileProc  proc_;
-  char                 *data_;
-  PSViewFileModeType    mode_;
-  std::vector<char>     buffer_;
-  uint                  buffer_pos_;
-
  public:
   PSViewFilterFile(PSViewFile *file, const PSViewName &name);
   PSViewFilterFile(PSViewFile *file, const std::string &name);
@@ -56,13 +47,22 @@ class PSViewFilterFile : public PSViewFile {
  private:
   void init();
 
-  static void asciiHexEncode(PSViewFilterFile *file, int c, char *data);
-  static int  asciiHexDecode(PSViewFilterFile *file, char *data, bool consume);
-  static void ascii85Encode(PSViewFilterFile *file, int c, char *data);
-  static int  eexecDecode(PSViewFilterFile *file, char *data, bool consume);
+  static int asciiHexEncode(PSViewFilterFile *file, int c, char *data);
+  static int asciiHexDecode(PSViewFilterFile *file, char *data, bool consume);
+  static int ascii85Encode(PSViewFilterFile *file, int c, char *data);
+  static int eexecDecode(PSViewFilterFile *file, char *data, bool consume);
 
  private:
   PSViewFilterFile &operator=(const PSViewFilterFile &rhs);
+
+ private:
+  PSViewFile           *file_ { nullptr };
+  std::string           name_;
+  PSViewFilterFileProc  proc_;
+  char                 *data_ { nullptr };
+  PSViewFileModeType    mode_;
+  std::vector<char>     buffer_;
+  uint                  buffer_pos_ { 0 };
 };
 
 #endif

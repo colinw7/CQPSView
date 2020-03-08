@@ -1,3 +1,6 @@
+#ifndef CPSViewBooleanToken_H
+#define CPSViewBooleanToken_H
+
 class PSViewBooleanToken : public PSViewToken {
  private:
   PSVboolean value_;
@@ -28,3 +31,5 @@ class PSViewBooleanToken : public PSViewToken {
 
   PSVboolean getValue() const { return value_; }
 };
+
+#endif

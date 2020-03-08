@@ -1,3 +1,6 @@
+#ifndef CPSViewPath_H
+#define CPSViewPath_H
+
 enum PSViewPathPartId {
   PSVIEW_PATH_NONE,
   PSVIEW_PATH_MOVE_TO,
@@ -33,13 +36,15 @@ class PSViewPathVisitor {
 
   virtual void close() = 0;
 
- protected:
-  PSViewPath *path_;
-
  private:
   PSViewPathVisitor(const PSViewPathVisitor &rhs);
   PSViewPathVisitor &operator=(const PSViewPathVisitor &rhs);
+
+ protected:
+  PSViewPath *path_;
 };
+
+//---
 
 class PSViewPathPart {
  public:
@@ -60,6 +65,8 @@ class PSViewPathPart {
  private:
   PSViewPathPartId id_;
 };
+
+//---
 
 class PSViewPathMoveTo : public PSViewPathPart {
  public:
@@ -83,6 +90,8 @@ class PSViewPathMoveTo : public PSViewPathPart {
   CPoint2D p_;
 };
 
+//---
+
 class PSViewPathLineTo : public PSViewPathPart {
  public:
   PSViewPathLineTo(const CPoint2D &p) :
@@ -104,6 +113,8 @@ class PSViewPathLineTo : public PSViewPathPart {
  private:
   CPoint2D p_;
 };
+
+//---
 
 class PSViewPathBezier2To : public PSViewPathPart {
  public:
@@ -128,6 +139,8 @@ class PSViewPathBezier2To : public PSViewPathPart {
   CPoint2D p2_;
 };
 
+//---
+
 class PSViewPathBezier3To : public PSViewPathPart {
  public:
   PSViewPathBezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) :
@@ -151,6 +164,8 @@ class PSViewPathBezier3To : public PSViewPathPart {
   CPoint2D p2_;
   CPoint2D p3_;
 };
+
+//---
 
 class PSViewPathArcTo : public PSViewPathPart {
  public:
@@ -177,6 +192,8 @@ class PSViewPathArcTo : public PSViewPathPart {
   double   theta_, delta_;
 };
 
+//---
+
 class PSViewPathClose : public PSViewPathPart {
  public:
   PSViewPathClose() :
@@ -195,6 +212,8 @@ class PSViewPathClose : public PSViewPathPart {
     visitor.close();
   }
 };
+
+//---
 
 class PSViewPath {
  public:
@@ -251,3 +270,5 @@ class PSViewPath {
   CPoint2D current_;
   bool     current_set_;
 };
+
+#endif

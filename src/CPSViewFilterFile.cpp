@@ -295,17 +295,19 @@ close()
   buffer_pos_ = 0;
 }
 
-void
+int
 PSViewFilterFile::
 asciiHexEncode(PSViewFilterFile *file, int c, char *)
 {
   if (c == EOF)
-    return;
+    return 0;
 
   string str = CStrUtil::toHexString(c, 2);
 
   file->file_->writeChar(str[0]);
   file->file_->writeChar(str[1]);
+
+  return 0;
 }
 
 int
@@ -369,13 +371,13 @@ asciiHexDecode(PSViewFilterFile *file, char *, bool consume)
   return cc;
 }
 
-void
+int
 PSViewFilterFile::
 ascii85Encode(PSViewFilterFile *file, int c, char *)
 {
   if (c == EOF) {
     if (file->buffer_pos_ == 0)
-      return;
+      return 0;
 
     int pos = file->buffer_pos_;
 
@@ -398,7 +400,7 @@ ascii85Encode(PSViewFilterFile *file, int c, char *)
 
     file->buffer_pos_ = 0;
 
-    return;
+    return 0;
   }
 
   if (file->buffer_pos_ <= 3)
@@ -417,6 +419,8 @@ ascii85Encode(PSViewFilterFile *file, int c, char *)
 
     file->buffer_pos_ = 0;
   }
+
+  return 0;
 }
 
 int

@@ -1,5 +1,5 @@
-#ifndef CPSVIEW_H
-#define CPSVIEW_H
+#ifndef CPSView_H
+#define CPSView_H
 
 #include <CAutoPtr.h>
 #include <CPen.h>
@@ -33,6 +33,8 @@ class CPSViewRenderer {
   virtual void pathClip() = 0;
 };
 
+//---
+
 class PSViewMemoryMgr;
 class PSViewResourceMgr;
 class PSViewNameMgr;
@@ -53,31 +55,6 @@ class CPSView {
   // 8.5 by 11 inches at 72 pixels per inch
   enum { PAGE_WIDTH  = 612 };
   enum { PAGE_HEIGHT = 792 };
-
- private:
-  typedef std::vector<PSViewFileToken *> FileTokenStack;
-
-  time_t                         start_time_;
-  bool                           debug_;
-  bool                           exit_flag_;
-
-  CAutoPtr<PSViewMemoryMgr>      memory_mgr_;
-  CAutoPtr<PSViewNameMgr>        name_mgr_;
-  CAutoPtr<PSViewResourceMgr>    resource_mgr_;
-  CAutoPtr<PSViewDictionaryMgr>  dictionary_mgr_;
-  CAutoPtr<PSViewOperatorMgr>    operator_mgr_;
-  CAutoPtr<PSViewOperandStack>   operand_stack_;
-  CAutoPtr<PSViewExecutionStack> execution_stack_;
-  CAutoPtr<PSViewGraphicsStack>  graphics_stack_;
-  CPSViewRenderer*               graphics_;
-  CAutoPtr<PSViewGStateMgr>      gstate_mgr_;
-  CAutoPtr<PSViewGStateTokenMgr> gstate_token_mgr_;
-  CAutoPtr<PSViewTokenMgr>       token_mgr_;
-  CAutoPtr<PSViewErrorMgr>       error_mgr_;
-  CAutoPtr<PSViewMarkToken>      mark_token_;
-
-  PSViewFileToken*               current_file_;
-  FileTokenStack                 current_file_stack_;
 
  public:
   CPSView();
@@ -133,6 +110,31 @@ class CPSView {
  private:
   CPSView(const CPSView &rhs);
   CPSView &operator=(const CPSView &rhs);
+
+ private:
+  typedef std::vector<PSViewFileToken *> FileTokenStack;
+
+  time_t                         start_time_;
+  bool                           debug_;
+  bool                           exit_flag_;
+
+  CAutoPtr<PSViewMemoryMgr>      memory_mgr_;
+  CAutoPtr<PSViewNameMgr>        name_mgr_;
+  CAutoPtr<PSViewResourceMgr>    resource_mgr_;
+  CAutoPtr<PSViewDictionaryMgr>  dictionary_mgr_;
+  CAutoPtr<PSViewOperatorMgr>    operator_mgr_;
+  CAutoPtr<PSViewOperandStack>   operand_stack_;
+  CAutoPtr<PSViewExecutionStack> execution_stack_;
+  CAutoPtr<PSViewGraphicsStack>  graphics_stack_;
+  CPSViewRenderer*               graphics_;
+  CAutoPtr<PSViewGStateMgr>      gstate_mgr_;
+  CAutoPtr<PSViewGStateTokenMgr> gstate_token_mgr_;
+  CAutoPtr<PSViewTokenMgr>       token_mgr_;
+  CAutoPtr<PSViewErrorMgr>       error_mgr_;
+  CAutoPtr<PSViewMarkToken>      mark_token_;
+
+  PSViewFileToken*               current_file_;
+  FileTokenStack                 current_file_stack_;
 };
 
 #endif

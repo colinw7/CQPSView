@@ -1,11 +1,8 @@
-#ifndef PSVIEW_ARRAY_H
-#define PSVIEW_ARRAY_H
+#ifndef CPSViewArray_H
+#define CPSViewArray_H
 
 class PSViewArray {
   typedef CSharedMem<PSViewToken *> PSViewSharedToken;
-
- private:
-  CAutoPtr<PSViewSharedToken> tokens_;
 
  public:
   PSViewArray(PSVinteger max_length);
@@ -32,6 +29,9 @@ class PSViewArray {
   PSViewArray();
 
   PSViewArray &operator=(const PSViewArray &array);
+
+ private:
+  CAutoPtr<PSViewSharedToken> tokens_;
 };
 
 #endif

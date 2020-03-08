@@ -1,9 +1,9 @@
+#ifndef CPSViewIntegerToken_H
+#define CPSViewIntegerToken_H
+
 class PSViewRealToken;
 
 class PSViewIntegerToken : public PSViewToken {
- private:
-  PSVinteger value_;
-
  public:
   PSViewIntegerToken(CPSView *psview, PSVinteger value);
   PSViewIntegerToken(const PSViewIntegerToken &integer_token);
@@ -29,4 +29,9 @@ class PSViewIntegerToken : public PSViewToken {
   //----
 
   PSVinteger getValue() const { return value_; }
+
+ private:
+  PSVinteger value_ { 0 };
 };
+
+#endif

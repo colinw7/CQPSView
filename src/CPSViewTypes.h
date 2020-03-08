@@ -1,3 +1,6 @@
+#ifndef CPSViewTypes_H
+#define CPSViewTypes_H
+
 typedef int          PSVboolean;
 typedef long         PSVfont_id;
 typedef long         PSVinteger;
@@ -16,3 +19,5 @@ class PSViewPath;
 class PSViewOperatorMgr;
 
 typedef void  (*PSViewOperatorProc)(PSViewOperatorMgr *);
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef CPSViewMarkToken_H
+#define CPSViewMarkToken_H
+
 class PSViewMarkToken : public PSViewToken {
  public:
   PSViewMarkToken(CPSView *psview);
@@ -18,3 +21,5 @@ class PSViewMarkToken : public PSViewToken {
 
   std::string toString();
 };
+
+#endif
