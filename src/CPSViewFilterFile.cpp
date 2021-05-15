@@ -15,7 +15,7 @@ class PSViewExecData {
   PSViewExecData();
  ~PSViewExecData();
 
-  static uchar decrypt(uint cipher, ushort *r);
+  static unsigned char decrypt(uint cipher, ushort *r);
 };
 
 PSViewFilterFile::
@@ -535,14 +535,14 @@ PSViewExecData() :
 {
 }
 
-uchar
+unsigned char
 PSViewExecData::
 decrypt(uint cipher, ushort *r)
 {
   static ushort c1 = 52845;
   static ushort c2 = 22719;
 
-  uchar plain = (cipher ^ (*r >> 8));
+  unsigned char plain = (cipher ^ (*r >> 8));
 
   *r = (cipher + *r)*c1 + c2;
 

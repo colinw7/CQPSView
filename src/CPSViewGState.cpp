@@ -334,18 +334,18 @@ class PSViewPathStroker : public PSViewPathVisitor {
       p2 = p4;
 
       for (uint i = 1; i < num_inner; ++i) {
-        const CPoint2D *p3 = &inner_[i].start();
-        const CPoint2D *p4 = &inner_[i].end  ();
+        const CPoint2D *pp3 = &inner_[i].start();
+        const CPoint2D *pp4 = &inner_[i].end  ();
 
-        CPoint2D pi;
-        double   mu1, mu2;
+        CPoint2D ppi;
+        double   tmu1, tmu2;
 
-        CMathGeom2D::IntersectLine(*p1, *p2, *p3, *p4, &pi, &mu1, &mu2);
+        CMathGeom2D::IntersectLine(*p1, *p2, *pp3, *pp4, &ppi, &tmu1, &tmu2);
 
-        path_->lineTo(pi);
+        path_->lineTo(ppi);
 
-        p1 = p3;
-        p2 = p4;
+        p1 = pp3;
+        p2 = pp4;
       }
 
       path_->close();
@@ -370,18 +370,18 @@ class PSViewPathStroker : public PSViewPathVisitor {
       p2 = p4;
 
       for (uint i = 1; i < num_outer; ++i) {
-        const CPoint2D *p3 = &outer_[num_outer - i - 1].start();
-        const CPoint2D *p4 = &outer_[num_outer - i - 1].end  ();
+        const CPoint2D *pp3 = &outer_[num_outer - i - 1].start();
+        const CPoint2D *pp4 = &outer_[num_outer - i - 1].end  ();
 
-        CPoint2D pi;
-        double   mu1, mu2;
+        CPoint2D ppi;
+        double   tmu1, tmu2;
 
-        CMathGeom2D::IntersectLine(*p1, *p2, *p3, *p4, &pi, &mu1, &mu2);
+        CMathGeom2D::IntersectLine(*p1, *p2, *pp3, *pp4, &ppi, &tmu1, &tmu2);
 
-        path_->lineTo(pi);
+        path_->lineTo(ppi);
 
-        p1 = p3;
-        p2 = p4;
+        p1 = pp3;
+        p2 = pp4;
       }
 
       path_->close();
@@ -2808,18 +2808,18 @@ readFont(PSViewToken *key)
     else
       sprintf(font_filename, "%s/%s.font", font_dir.c_str(), name1.c_str());
 
-    struct stat file_stat;
+    struct stat file_stat1;
 
-    if (stat(font_filename, &file_stat) != -1)
+    if (stat(font_filename, &file_stat1) != -1)
       file_found = true;
   }
 
   if (! file_found) {
     sprintf(font_filename, "%s.font", name1.c_str());
 
-    struct stat file_stat;
+    struct stat file_stat1;
 
-    if (stat(font_filename, &file_stat) != -1)
+    if (stat(font_filename, &file_stat1) != -1)
       file_found = true;
   }
 
@@ -2847,9 +2847,9 @@ readFont(PSViewToken *key)
     else
       sprintf(font_filename, "%s/%s.font", font_dir.c_str(), name1.c_str());
 
-    struct stat file_stat;
+    struct stat file_stat1;
 
-    if (stat(font_filename, &file_stat) != -1)
+    if (stat(font_filename, &file_stat1) != -1)
       file_found = true;
 
     if (! file_found) {
@@ -2858,18 +2858,18 @@ readFont(PSViewToken *key)
       else
         sprintf(font_filename, "%s/%s.font", font_dir.c_str(), name1.c_str());
 
-      struct stat file_stat;
+      struct stat file_stat2;
 
-      if (stat(font_filename, &file_stat) != -1)
+      if (stat(font_filename, &file_stat2) != -1)
         file_found = true;
     }
 
     if (! file_found) {
       sprintf(font_filename, "%s.font", name1.c_str());
 
-      struct stat file_stat;
+      struct stat file_stat2;
 
-      if (stat(font_filename, &file_stat) != -1)
+      if (stat(font_filename, &file_stat2) != -1)
         file_found = true;
     }
   }
@@ -3167,9 +3167,9 @@ scaleFont(PSViewDictionaryToken *font_dictionary, PSVreal scale)
   }
 
   if (type == PSVIEW_FONT_TYPE_0) {
-    PSViewToken *token = font_dictionary->getValue("FDepVector");
+    PSViewToken *vtoken = font_dictionary->getValue("FDepVector");
 
-    if (token == NULL || ! token->isArray()) {
+    if (vtoken == NULL || ! vtoken->isArray()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
       return NULL;
     }

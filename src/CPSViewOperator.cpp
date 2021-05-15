@@ -493,14 +493,14 @@ PSViewOperatorMgr(CPSView *psview) :
 PSViewOperatorMgr::
 ~PSViewOperatorMgr()
 {
-  uint num_system_operators = system_operators_.size();
+  uint num_system_operators1 = system_operators_.size();
 
-  for (uint i = 0; i < num_system_operators; ++i)
+  for (uint i = 0; i < num_system_operators1; ++i)
     delete system_operators_[i];
 
-  uint num_private_operators = private_operators_.size();
+  uint num_private_operators1 = private_operators_.size();
 
-  for (uint i = 0; i < num_private_operators; ++i)
+  for (uint i = 0; i < num_private_operators1; ++i)
     delete private_operators_[i];
 }
 
@@ -527,15 +527,15 @@ PSViewOperator *
 PSViewOperatorMgr::
 lookup(const string &name)
 {
-  uint num_system_operators = system_operators_.size();
+  uint num_system_operators1 = system_operators_.size();
 
-  for (uint i = 0; i < num_system_operators; ++i)
+  for (uint i = 0; i < num_system_operators1; ++i)
     if (system_operators_[i]->getName().getString() == name)
       return system_operators_[i];
 
-  uint num_private_operators = private_operators_.size();
+  uint num_private_operators1 = private_operators_.size();
 
-  for (uint i = 0; i < num_private_operators; ++i)
+  for (uint i = 0; i < num_private_operators1; ++i)
     if (private_operators_[i]->getName().getString() == name)
       return private_operators_[i];
 
@@ -548,9 +548,9 @@ void
 PSViewOperatorMgr::
 addSystemOperators(PSViewDictionaryToken *dictionary)
 {
-  uint num_system_operators = system_operators_.size();
+  uint num_system_operators1 = system_operators_.size();
 
-  for (uint i = 0; i < num_system_operators; ++i) {
+  for (uint i = 0; i < num_system_operators1; ++i) {
     PSViewOperatorToken *value = new PSViewOperatorToken(psview_, system_operators_[i]);
 
     dictionary->addValue(system_operators_[i]->getName(), value);
@@ -6423,9 +6423,9 @@ resourceForAllOp(PSViewOperatorMgr *mgr)
     string str;
 
     if (resource->isName()) {
-      PSViewNameToken *name_token = (PSViewNameToken *) resource;
+      PSViewNameToken *name_token1 = (PSViewNameToken *) resource;
 
-      string str = name_token->getString();
+      str = name_token1->getString();
     }
 
     if (! pattern.compare(str))
@@ -7003,9 +7003,9 @@ setColorOp(PSViewOperatorMgr *mgr)
     setGrayOp(mgr);
 
   if (pattern) {
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    PSViewGStateToken *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-    gstate_token->setPatternColor(true);
+    gstate_token1->setPatternColor(true);
 
     mgr->getPSView()->getOperandStack()->push(token);
 
@@ -7067,9 +7067,9 @@ setColorSpaceOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      PSViewNameToken *name_token = (PSViewNameToken *) sub_token;
+      PSViewNameToken *name_token1 = (PSViewNameToken *) sub_token;
 
-      const PSViewName &color_space1 = name_token->getValue();
+      const PSViewName &color_space1 = name_token1->getValue();
 
       if (color_space1.compare(
             mgr->getPSView()->getGStateMgr()->getCMYKColorSpace()) != 0 &&
@@ -8603,11 +8603,11 @@ xshowOp(PSViewOperatorMgr *mgr)
 
       str[0] = string_token1->getChar(i);
 
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      PSViewGStateToken *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-      gstate_token->moveTo(current_x, current_y);
+      gstate_token1->moveTo(current_x, current_y);
 
-      gstate_token->show(str);
+      gstate_token1->show(str);
 
       current_x += x[i - 1];
     }
@@ -8684,11 +8684,11 @@ xyshowOp(PSViewOperatorMgr *mgr)
 
       str[0] = string_token1->getChar(i);
 
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      PSViewGStateToken *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-      gstate_token->moveTo(current_x, current_y);
+      gstate_token1->moveTo(current_x, current_y);
 
-      gstate_token->show(str);
+      gstate_token1->show(str);
 
       current_x += x[i - 1];
       current_y += y[i - 1];
@@ -8758,11 +8758,11 @@ yshowOp(PSViewOperatorMgr *mgr)
 
       str[0] = string_token1->getChar(i);
 
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      PSViewGStateToken *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-      gstate_token->moveTo(current_x, current_y);
+      gstate_token1->moveTo(current_x, current_y);
 
-      gstate_token->show(str);
+      gstate_token1->show(str);
 
       current_y += y[i - 1];
     }

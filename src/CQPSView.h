@@ -5,6 +5,7 @@
 
 class CQPSViewRenderer;
 class CPSView;
+class QPaintEvent;
 
 class CQPSView : public QWidget {
   Q_OBJECT
@@ -15,7 +16,7 @@ class CQPSView : public QWidget {
 
   void loadFile(const QString &fileName);
 
-  void paintEvent(QPaintEvent *);
+  void paintEvent(QPaintEvent *) override;
 
  private:
   CQPSViewRenderer *renderer_;

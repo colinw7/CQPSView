@@ -41,6 +41,8 @@ class PSViewResource {
   PSViewResource(PSViewResourceMgr *mgr, PSViewToken *key,
                  PSViewToken *instance, const PSViewName &category);
 
+  PSViewResourceMgr *mgr() const { return mgr_; }
+
   PSViewToken      *getKey     () const { return key_     ; }
   PSViewToken      *getInstance() const { return instance_; }
   const PSViewName &getCategory() const { return category_; }

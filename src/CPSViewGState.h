@@ -4,8 +4,8 @@
 #include <CPen.h>
 #include <CBrush.h>
 
-struct PSViewGStateFont;
-struct PSViewGStatePattern;
+class PSViewGStateFont;
+class PSViewGStatePattern;
 
 class PSViewGStateMgr {
  public:
