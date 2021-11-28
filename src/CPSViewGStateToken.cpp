@@ -106,7 +106,7 @@ PSViewGStateToken::
 {
 }
 
-const PSViewGStateToken &
+PSViewGStateToken &
 PSViewGStateToken::
 operator=(const PSViewGStateToken &gstate_token)
 {

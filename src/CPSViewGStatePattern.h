@@ -62,7 +62,7 @@ class PSViewGStatePattern {
   }
 
  private:
-  const PSViewGStatePattern &operator=(const PSViewGStatePattern &pattern);
+  PSViewGStatePattern &operator=(const PSViewGStatePattern &pattern);
 
  private:
   PSViewToken  *dictionary_ { nullptr };

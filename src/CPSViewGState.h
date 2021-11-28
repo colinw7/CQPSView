@@ -67,7 +67,7 @@ class PSViewGState {
   PSViewGState(const PSViewGState &gstate);
  ~PSViewGState();
 
-  const PSViewGState &operator=(const PSViewGState &gstate);
+  PSViewGState &operator=(const PSViewGState &gstate);
 
   PSViewGStateMgr *getGStateMgr() const { return mgr_; }
 

@@ -565,7 +565,7 @@ PSViewGState::
 {
 }
 
-const PSViewGState &
+PSViewGState &
 PSViewGState::
 operator=(const PSViewGState &gstate)
 {

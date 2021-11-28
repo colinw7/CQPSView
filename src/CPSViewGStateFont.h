@@ -26,7 +26,7 @@ class PSViewGStateFont0Data {
   }
 
  private:
-  const PSViewGStateFont0Data &operator=(const PSViewGStateFont0Data &font_data);
+  PSViewGStateFont0Data &operator=(const PSViewGStateFont0Data &font_data);
 
  public:
   using Encoding  = vector<int>;
@@ -75,7 +75,7 @@ class PSViewGStateFont3Data {
   }
 
  private:
-  const PSViewGStateFont3Data &operator=(const PSViewGStateFont3Data &font_data);
+  PSViewGStateFont3Data &operator=(const PSViewGStateFont3Data &font_data);
 
  public:
   CMatrix2D           matrix;
@@ -107,7 +107,7 @@ class PSViewGStateFontData {
       font3 = new PSViewGStateFont3Data(*font_data.font3);
   }
 
-  const PSViewGStateFontData &operator=(const PSViewGStateFontData &font_data) {
+  PSViewGStateFontData &operator=(const PSViewGStateFontData &font_data) {
     if (this == &font_data)
       return *this;
 
@@ -211,7 +211,7 @@ class PSViewGStateFont {
   }
 
  private:
-  const PSViewGStateFont &operator=(const PSViewGStateFont &font);
+  PSViewGStateFont &operator=(const PSViewGStateFont &font);
 
  private:
   PSViewDictionaryToken *dictionary_;

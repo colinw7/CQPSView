@@ -35,7 +35,7 @@ class PSViewGStateToken : public PSViewToken {
   PSViewGStateToken(CPSView *psview);
   PSViewGStateToken(const PSViewGStateToken &gstate_token);
 
-  const PSViewGStateToken &operator=(const PSViewGStateToken &gstate_token);
+  PSViewGStateToken &operator=(const PSViewGStateToken &gstate_token);
 
   //----
 
