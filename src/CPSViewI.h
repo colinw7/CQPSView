@@ -28,8 +28,6 @@
 #include <COSFile.h>
 #include <COSRand.h>
 
-#include <CPixelClip.h>
-
 #include <CPSViewTypes.h>
 
 #include <CPSView.h>
