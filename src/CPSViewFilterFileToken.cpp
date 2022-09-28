@@ -13,7 +13,7 @@ PSViewFilterFileToken(PSViewFileToken *token, const PSViewName &name) :
 }
 
 PSViewFilterFileToken::
-PSViewFilterFileToken(PSViewFileToken *token, const string &name) :
+PSViewFilterFileToken(PSViewFileToken *token, const std::string &name) :
  PSViewFileToken(token->getPSView()),
  filter_file_    ()
 {
@@ -51,7 +51,7 @@ PSViewFilterFileToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewFilterFileToken *filter_file_token = dynamic_cast<PSViewFilterFileToken *>(token);
+    auto *filter_file_token = dynamic_cast<PSViewFilterFileToken *>(token);
 
     return filter_file_->compare(filter_file_token->filter_file_);
   }
@@ -73,7 +73,7 @@ print()
   CStrUtil::printf("-file-");
 }
 
-string
+std::string
 PSViewFilterFileToken::
 toString()
 {
@@ -133,7 +133,7 @@ uint
 PSViewFilterFileToken::
 bytesAvailable()
 {
-  return filter_file_->bytesAvailable();
+  return uint(filter_file_->bytesAvailable());
 }
 
 PSVboolean
@@ -150,7 +150,7 @@ getPosition(uint *pos)
   return filter_file_->getPosition(pos);
 }
 
-string
+std::string
 PSViewFilterFileToken::
 getFileName()
 {
@@ -182,7 +182,7 @@ PSVboolean
 PSViewFilterFileToken::
 writeChar(PSVchar c)
 {
-  return filter_file_->writeChar(c);
+  return filter_file_->writeChar(int(c));
 }
 
 void

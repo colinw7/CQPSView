@@ -79,7 +79,7 @@ class PSViewPathMoveTo : public PSViewPathPart {
   }
 
   void print(std::ostream &os) const {
-    os << "MoveTo: " << p_ << std::endl;
+    os << "MoveTo: " << p_ << "\n";
   }
 
   void visit(PSViewPathVisitor &visitor) {
@@ -103,7 +103,7 @@ class PSViewPathLineTo : public PSViewPathPart {
   }
 
   void print(std::ostream &os) const {
-    os << "LineTo: " << p_ << std::endl;
+    os << "LineTo: " << p_ << "\n";
   }
 
   void visit(PSViewPathVisitor &visitor) {
@@ -127,7 +127,7 @@ class PSViewPathBezier2To : public PSViewPathPart {
   }
 
   void print(std::ostream &os) const {
-    os << "Bezier2To: " << p1_ << ", " << p2_ << std::endl;
+    os << "Bezier2To: " << p1_ << ", " << p2_ << "\n";
   }
 
   void visit(PSViewPathVisitor &visitor) {
@@ -152,7 +152,7 @@ class PSViewPathBezier3To : public PSViewPathPart {
   }
 
   void print(std::ostream &os) const {
-    os << "Bezier3To: " << p1_ << ", " << p2_ << ", " << p3_ << std::endl;
+    os << "Bezier3To: " << p1_ << ", " << p2_ << ", " << p3_ << "\n";
   }
 
   void visit(PSViewPathVisitor &visitor) {
@@ -179,7 +179,7 @@ class PSViewPathArcTo : public PSViewPathPart {
 
   void print(std::ostream &os) const {
     os << "ArcTo: " << c_ << ", " << xr_ << ", " << yr_ << ", " <<
-          theta_ << ", " << delta_ << std::endl;
+          theta_ << ", " << delta_ << "\n";
   }
 
   void visit(PSViewPathVisitor &visitor) {
@@ -205,7 +205,7 @@ class PSViewPathClose : public PSViewPathPart {
   }
 
   void print(std::ostream &os) const {
-    os << "Close: " << std::endl;
+    os << "Close: \n";
   }
 
   void visit(PSViewPathVisitor &visitor) {

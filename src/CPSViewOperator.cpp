@@ -493,12 +493,12 @@ PSViewOperatorMgr(CPSView *psview) :
 PSViewOperatorMgr::
 ~PSViewOperatorMgr()
 {
-  uint num_system_operators1 = system_operators_.size();
+  auto num_system_operators1 = system_operators_.size();
 
   for (uint i = 0; i < num_system_operators1; ++i)
     delete system_operators_[i];
 
-  uint num_private_operators1 = private_operators_.size();
+  auto num_private_operators1 = private_operators_.size();
 
   for (uint i = 0; i < num_private_operators1; ++i)
     delete private_operators_[i];
@@ -525,15 +525,15 @@ init()
 
 PSViewOperator *
 PSViewOperatorMgr::
-lookup(const string &name)
+lookup(const std::string &name)
 {
-  uint num_system_operators1 = system_operators_.size();
+  auto num_system_operators1 = system_operators_.size();
 
   for (uint i = 0; i < num_system_operators1; ++i)
     if (system_operators_[i]->getName().getString() == name)
       return system_operators_[i];
 
-  uint num_private_operators1 = private_operators_.size();
+  auto num_private_operators1 = private_operators_.size();
 
   for (uint i = 0; i < num_private_operators1; ++i)
     if (private_operators_[i]->getName().getString() == name)
@@ -541,17 +541,17 @@ lookup(const string &name)
 
   CTHROW("Unknown Operator Name");
 
-  return NULL;
+  return nullptr;
 }
 
 void
 PSViewOperatorMgr::
 addSystemOperators(PSViewDictionaryToken *dictionary)
 {
-  uint num_system_operators1 = system_operators_.size();
+  auto num_system_operators1 = system_operators_.size();
 
   for (uint i = 0; i < num_system_operators1; ++i) {
-    PSViewOperatorToken *value = new PSViewOperatorToken(psview_, system_operators_[i]);
+    auto *value = new PSViewOperatorToken(psview_, system_operators_[i]);
 
     dictionary->addValue(system_operators_[i]->getName(), value);
   }
@@ -582,12 +582,12 @@ endArrayOp()
     return;
   }
 
-  PSViewArrayToken *array_token = new PSViewArrayToken(psview_, num_tokens);
+  auto *array_token = new PSViewArrayToken(psview_, uint(num_tokens));
 
   for (int i = num_tokens; i > 0; i--) {
     PSViewToken *sub_token = psview_->getOperandStack()->pop();
 
-    array_token->setValue(i, sub_token);
+    array_token->setValue(uint(i), sub_token);
   }
 
   psview_->getOperandStack()->pop();
@@ -613,7 +613,7 @@ void
 PSViewOperatorMgr::
 endDictionaryOp()
 {
-  PSVinteger num_tokens = psview_->getOperandStack()->countToMark();
+  auto num_tokens = psview_->getOperandStack()->countToMark();
 
   if (num_tokens < 0) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNMATCHED_MARK);
@@ -628,22 +628,21 @@ endDictionaryOp()
 
     num_tokens /= 2;
 
-    PSViewDictionaryToken *token =
-      new PSViewDictionaryToken(psview_->getDictionaryMgr(), num_tokens);
+    auto *token = new PSViewDictionaryToken(psview_->getDictionaryMgr(), num_tokens);
 
-    vector<PSViewToken *> keys;
-    vector<PSViewToken *> values;
+    std::vector<PSViewToken *> keys;
+    std::vector<PSViewToken *> values;
 
-    keys  .resize(num_tokens);
-    values.resize(num_tokens);
+    keys  .resize(uint(num_tokens));
+    values.resize(uint(num_tokens));
 
-    for (int i = num_tokens - 1; i >= 0; i--) {
-      values[i] = psview_->getOperandStack()->pop();
-      keys  [i] = psview_->getOperandStack()->pop();
+    for (int i = int(num_tokens - 1); i >= 0; i--) {
+      values[uint(i)] = psview_->getOperandStack()->pop();
+      keys  [uint(i)] = psview_->getOperandStack()->pop();
     }
 
     for (int i = 0; i < num_tokens; i++)
-      token->addValue(keys[i], values[i]);
+      token->addValue(keys[uint(i)], values[uint(i)]);
 
     psview_->getOperandStack()->pop();
 
@@ -657,9 +656,9 @@ void
 PSViewOperatorMgr::
 print1Op(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   CStrUtil::printf("%s\n", token->toString().c_str());
@@ -669,9 +668,9 @@ void
 PSViewOperatorMgr::
 print2Op(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   token->print();
@@ -685,9 +684,9 @@ absOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken  *token1;
 
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -701,7 +700,7 @@ absOp(PSViewOperatorMgr *mgr)
     if (integer != LONG_MIN)
       token1 = new PSViewIntegerToken(mgr->getPSView(), labs(integer));
     else
-      token1 = new PSViewRealToken(mgr->getPSView(), fabs((double) integer));
+      token1 = new PSViewRealToken(mgr->getPSView(), fabs(double(integer)));
   }
   else {
     PSVreal real = token->getRealValue();
@@ -716,10 +715,10 @@ void
 PSViewOperatorMgr::
 addOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -747,9 +746,9 @@ void
 PSViewOperatorMgr::
 aloadOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if ((! token->isArray() && ! token->isPackedArray()) || ! token->isLiteral()) {
@@ -758,23 +757,23 @@ aloadOp(PSViewOperatorMgr *mgr)
   }
 
   if (token->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+    auto *array_token = static_cast<PSViewArrayToken *>(token);
 
-    PSVinteger num_tokens = array_token->getNumValues();
+    auto num_tokens = array_token->getNumValues();
 
-    for (int i = 1; i <= num_tokens; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+    for (uint i = 1; i <= num_tokens; i++) {
+      auto *sub_token = array_token->getValue(i);
 
       mgr->getPSView()->getOperandStack()->push(sub_token);
     }
   }
   else {
-    PSViewPackedArrayToken *array_token = (PSViewPackedArrayToken *) token;
+    auto *array_token = static_cast<PSViewPackedArrayToken *>(token);
 
-    PSVinteger num_tokens = array_token->getNumValues();
+    auto num_tokens = array_token->getNumValues();
 
-    for (int i = 1; i <= num_tokens; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+    for (uint i = 1; i <= num_tokens; i++) {
+      auto *sub_token = array_token->getValue(int(i));
 
       mgr->getPSView()->getOperandStack()->push(sub_token);
     }
@@ -787,10 +786,10 @@ void
 PSViewOperatorMgr::
 anchorSearchOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isString() || ! token2->isString()) {
@@ -798,15 +797,15 @@ anchorSearchOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
-  PSVinteger len1 = string_token1->getLength();
-  PSVinteger len2 = string_token2->getLength();
+  auto len1 = string_token1->getLength();
+  auto len2 = string_token2->getLength();
 
   if (len1 >= len2 && string_token1->compareN(string_token2, len2) == 0) {
-    PSViewToken *token3 = new PSViewStringToken(*string_token1, 1, len2);
-    PSViewToken *token4 = new PSViewStringToken(*string_token1, len2 + 1);
+    auto *token3 = new PSViewStringToken(*string_token1, 1, int(len2));
+    auto *token4 = new PSViewStringToken(*string_token1, int(len2 + 1));
 
     mgr->getPSView()->getOperandStack()->push(token4);
     mgr->getPSView()->getOperandStack()->push(token3);
@@ -824,10 +823,10 @@ void
 PSViewOperatorMgr::
 andOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if ((! token1->isBoolean() && ! token1->isInteger()) ||
@@ -850,7 +849,7 @@ andOp(PSViewOperatorMgr *mgr)
     PSVinteger integer1 = token1->getIntegerValue();
     PSVinteger integer2 = token2->getIntegerValue();
 
-    PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), integer1 & integer2);
+    auto *token = new PSViewIntegerToken(mgr->getPSView(), integer1 & integer2);
 
     mgr->getPSView()->getOperandStack()->push(token);
   }
@@ -860,13 +859,14 @@ void
 PSViewOperatorMgr::
 arcOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token5 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token5 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token4 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL || token5 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr ||
+      token4 == nullptr || token5 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -876,13 +876,13 @@ arcOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSVreal x      = token1->getRealValue();
-  PSVreal y      = token2->getRealValue();
-  PSVreal r      = token3->getRealValue();
-  PSVreal angle1 = token4->getRealValue();
-  PSVreal angle2 = token5->getRealValue();
+  auto x      = token1->getRealValue();
+  auto y      = token2->getRealValue();
+  auto r      = token3->getRealValue();
+  auto angle1 = token4->getRealValue();
+  auto angle2 = token5->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->arc(x, y, r,
                     CMathGen::DegToRad(angle1),
@@ -893,13 +893,14 @@ void
 PSViewOperatorMgr::
 arcNOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token5 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token5 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token4 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL || token5 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr ||
+      token4 == nullptr || token5 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -909,13 +910,13 @@ arcNOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-  PSVreal x      = token1->getRealValue();
-  PSVreal y      = token2->getRealValue();
-  PSVreal r      = token3->getRealValue();
-  PSVreal angle1 = token4->getRealValue();
-  PSVreal angle2 = token5->getRealValue();
+  auto x      = token1->getRealValue();
+  auto y      = token2->getRealValue();
+  auto r      = token3->getRealValue();
+  auto angle1 = token4->getRealValue();
+  auto angle2 = token5->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->arcN(x, y, r,
                      CMathGen::DegToRad(angle1),
@@ -926,13 +927,14 @@ void
 PSViewOperatorMgr::
 arcTOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token5 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token5 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token4 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL || token5 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr ||
+      token4 == nullptr || token5 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -942,15 +944,15 @@ arcTOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSVreal x1 = token1->getRealValue();
-  PSVreal y1 = token2->getRealValue();
-  PSVreal x2 = token3->getRealValue();
-  PSVreal y2 = token4->getRealValue();
-  PSVreal r  = token5->getRealValue();
+  auto x1 = token1->getRealValue();
+  auto y1 = token2->getRealValue();
+  auto x2 = token3->getRealValue();
+  auto y2 = token4->getRealValue();
+  auto r  = token5->getRealValue();
 
   PSVreal xt1, yt1, xt2, yt2;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->arcTo(x1, y1, x2, y2, r, &xt1, &yt1, &xt2, &yt2);
 }
@@ -959,13 +961,14 @@ void
 PSViewOperatorMgr::
 arcToOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token5 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token5 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token4 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL || token5 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr ||
+      token4 == nullptr || token5 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -975,15 +978,15 @@ arcToOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSVreal x1 = token1->getRealValue();
-  PSVreal y1 = token2->getRealValue();
-  PSVreal x2 = token3->getRealValue();
-  PSVreal y2 = token4->getRealValue();
-  PSVreal r  = token5->getRealValue();
+  auto x1 = token1->getRealValue();
+  auto y1 = token2->getRealValue();
+  auto x2 = token3->getRealValue();
+  auto y2 = token4->getRealValue();
+  auto r  = token5->getRealValue();
 
   PSVreal xt1, yt1, xt2, yt2;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->arcTo(x1, y1, x2, y2, r, &xt1, &yt1, &xt2, &yt2);
 
@@ -1002,9 +1005,9 @@ void
 PSViewOperatorMgr::
 arrayOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL)
+  if (token1 == nullptr)
     return;
 
   if (! token1->isInteger()) {
@@ -1021,12 +1024,12 @@ arrayOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewArrayToken *array_token = new PSViewArrayToken(mgr->getPSView(), dimension);
+  auto *array_token = new PSViewArrayToken(mgr->getPSView(), uint(dimension));
 
   for (int i = 1; i <= dimension; i++) {
-    PSViewNullToken *sub_token = new PSViewNullToken(mgr->getPSView());
+    auto *sub_token = new PSViewNullToken(mgr->getPSView());
 
-    array_token->setValue(i, sub_token);
+    array_token->setValue(uint(i), sub_token);
   }
 
   mgr->getPSView()->getOperandStack()->push(array_token);
@@ -1036,11 +1039,11 @@ void
 PSViewOperatorMgr::
 ashowOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() || ! token3->isString()) {
@@ -1052,11 +1055,11 @@ ashowOp(PSViewOperatorMgr *mgr)
   double ax = token1->getRealValue();
   double ay = token2->getRealValue();
 
-  PSViewStringToken *string_token3 = (PSViewStringToken *) token3;
+  auto *string_token3 = static_cast<PSViewStringToken *>(token3);
 
-  string str = string_token3->toString();
+  std::string str = string_token3->toString();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->ashow(ax, ay, str);
 }
@@ -1065,28 +1068,28 @@ void
 PSViewOperatorMgr::
 astoreOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
-  if (token == NULL || ! token->isArray() || ! token->isLiteral()) {
+  if (token == nullptr || ! token->isArray() || ! token->isLiteral()) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
 
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+  auto *array_token = static_cast<PSViewArrayToken *>(token);
 
   PSVinteger num_tokens = array_token->getNumValues();
 
-  for (int i = num_tokens; i >= 1; i--) {
+  for (int i = int(num_tokens); i >= 1; i--) {
     PSViewToken *sub_token = mgr->getPSView()->getOperandStack()->pop();
 
-    if (sub_token == NULL)
+    if (sub_token == nullptr)
       return;
 
-    array_token->setValue(i, sub_token);
+    array_token->setValue(uint(i), sub_token);
   }
 
   mgr->getPSView()->getOperandStack()->push(token);
@@ -1096,10 +1099,10 @@ void
 PSViewOperatorMgr::
 atanOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -1132,7 +1135,7 @@ atanOp(PSViewOperatorMgr *mgr)
   else
     result = CMathGen::RadToDeg(atan(real1/real2));
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), result);
+  auto *token = new PSViewRealToken(mgr->getPSView(), result);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1141,15 +1144,15 @@ void
 PSViewOperatorMgr::
 awidthShowOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token6 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token5 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token6 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token5 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token4 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL ||
-      token5 == NULL || token6 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr || token4 == nullptr ||
+      token5 == nullptr || token6 == nullptr)
     return;
 
   if (! token1->isNumber () || ! token2->isNumber() ||
@@ -1163,16 +1166,16 @@ awidthShowOp(PSViewOperatorMgr *mgr)
   double cx = token1->getRealValue();
   double cy = token2->getRealValue();
 
-  int c = token3->getIntegerValue();
+  int c = int(token3->getIntegerValue());
 
   double ax = token4->getRealValue();
   double ay = token5->getRealValue();
 
-  PSViewStringToken *string_token6 = (PSViewStringToken *) token6;
+  auto *string_token6 = static_cast<PSViewStringToken *>(token6);
 
-  string str = string_token6->toString();
+  std::string str = string_token6->toString();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->awidthShow(cx, cy, c, ax, ay, str);
 }
@@ -1181,9 +1184,9 @@ void
 PSViewOperatorMgr::
 beginOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isDictionary()) {
@@ -1192,7 +1195,7 @@ beginOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dict = (PSViewDictionaryToken *) token;
+  auto *dict = static_cast<PSViewDictionaryToken *>(token);
 
   mgr->getPSView()->getDictionaryMgr()->beginDictionary(dict);
 }
@@ -1201,9 +1204,9 @@ void
 PSViewOperatorMgr::
 bindOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isProcedure()) {
@@ -1224,18 +1227,18 @@ bind1(PSViewToken *token)
   if (token->isArray() && ! token->getWritable())
     return;
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+  auto *array_token = static_cast<PSViewArrayToken *>(token);
 
   PSVinteger num_tokens = array_token->getNumValues();
 
   for (int i = 1; i <= num_tokens; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (sub_token->isName() && sub_token->isExecutable()) {
       PSViewToken *token1 = getPSView()->getDictionaryMgr()->lookup(sub_token);
 
-      if (token1 != NULL && token1->isOperator())
-        array_token->setValue(i, token1);
+      if (token1 != nullptr && token1->isOperator())
+        array_token->setValue(uint(i), token1);
     }
     else if (sub_token->isArray() && sub_token->isExecutable()) {
       bind1(sub_token);
@@ -1251,10 +1254,10 @@ void
 PSViewOperatorMgr::
 bitShiftOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isInteger() || ! token2->isInteger()) {
@@ -1273,7 +1276,7 @@ bitShiftOp(PSViewOperatorMgr *mgr)
   else
     result = integer1 >> -integer2;
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), result);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), result);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1282,9 +1285,9 @@ void
 PSViewOperatorMgr::
 bytesAvailableOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isFile()) {
@@ -1293,11 +1296,11 @@ bytesAvailableOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken *file_token = (PSViewFileToken *) token;
+  auto *file_token = static_cast<PSViewFileToken *>(token);
 
   PSVinteger size = file_token->bytesAvailable();
 
-  PSViewIntegerToken *token1 = new PSViewIntegerToken(mgr->getPSView(), size);
+  auto *token1 = new PSViewIntegerToken(mgr->getPSView(), size);
 
   mgr->getPSView()->getOperandStack()->push(token1);
 }
@@ -1306,9 +1309,9 @@ void
 PSViewOperatorMgr::
 ceilingOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -1320,7 +1323,7 @@ ceilingOp(PSViewOperatorMgr *mgr)
   if (token->isReal()) {
     PSVreal real = token->getRealValue();
 
-    PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), ceil(real));
+    auto *token1 = new PSViewRealToken(mgr->getPSView(), ceil(real));
 
     mgr->getPSView()->getOperandStack()->push(token1);
   }
@@ -1335,10 +1338,10 @@ void
 PSViewOperatorMgr::
 charPathOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isString() || ! token2->isBoolean()) {
@@ -1346,11 +1349,11 @@ charPathOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
-  string str = string_token1->toString();
+  std::string str = string_token1->toString();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->charPath(str, token2->getBooleanValue());
 }
@@ -1373,12 +1376,12 @@ void
 PSViewOperatorMgr::
 clearToMarkOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  while (token != NULL && token != mgr->getPSView()->getMarkToken())
+  while (token != nullptr && token != mgr->getPSView()->getMarkToken())
     token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL) {
+  if (token == nullptr) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNMATCHED_MARK);
 
     return;
@@ -1389,7 +1392,7 @@ void
 PSViewOperatorMgr::
 clipOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->clip();
 }
@@ -1398,7 +1401,7 @@ void
 PSViewOperatorMgr::
 clipPathOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->clipPath();
 }
@@ -1407,9 +1410,9 @@ void
 PSViewOperatorMgr::
 closeFileOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isFile()) {
@@ -1418,7 +1421,7 @@ closeFileOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken *file_token = (PSViewFileToken *) token;
+  auto *file_token = static_cast<PSViewFileToken *>(token);
 
   file_token->close();
 }
@@ -1427,7 +1430,7 @@ void
 PSViewOperatorMgr::
 closePathOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->closePath();
 }
@@ -1436,19 +1439,19 @@ void
 PSViewOperatorMgr::
 concatOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   CAutoPtr<CMatrix2D> matrix;
 
   matrix = token->getMatrix();
 
-  if (matrix == NULL)
+  if (matrix == nullptr)
     return;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->postMultiplyCTMMatrix(matrix);
 }
@@ -1457,9 +1460,9 @@ void
 PSViewOperatorMgr::
 concatMatrixOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token3 == NULL)
+  if (token3 == nullptr)
     return;
 
   if (! token3->isMatrix()) {
@@ -1468,28 +1471,28 @@ concatMatrixOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token2 == NULL)
+  if (token2 == nullptr)
     return;
 
   CAutoPtr<CMatrix2D> matrix2;
 
   matrix2 = token2->getMatrix();
 
-  if (matrix2 == NULL)
+  if (matrix2 == nullptr)
     return;
 
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL)
+  if (token1 == nullptr)
     return;
 
   CAutoPtr<CMatrix2D> matrix1;
 
   matrix1 = token1->getMatrix();
 
-  if (matrix1 == NULL)
+  if (matrix1 == nullptr)
     return;
 
   CMatrix2D matrix = (*matrix2) * (*matrix1);
@@ -1503,13 +1506,13 @@ void
 PSViewOperatorMgr::
 copyOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token2 == NULL)
+  if (token2 == nullptr)
     return;
 
   if (token2->isInteger()) {
-    PSVinteger num_copies = token2->getIntegerValue();
+    auto num_copies = token2->getIntegerValue();
 
     if (num_copies < 0) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -1520,17 +1523,17 @@ copyOp(PSViewOperatorMgr *mgr)
     if (num_copies == 0)
       return;
 
-    PSViewToken **tokens = new PSViewToken * [num_copies*2];
+    auto **tokens = new PSViewToken * [uint(num_copies*2)];
 
-    for (int i = num_copies - 1; i >= 0; i--) {
-      tokens[i] = mgr->getPSView()->getOperandStack()->pop();
+    for (int i = int(num_copies - 1); i >= 0; i--) {
+      tokens[uint(i)] = mgr->getPSView()->getOperandStack()->pop();
 
-      if (tokens[i] == NULL) {
+      if (tokens[uint(i)] == nullptr) {
         delete [] tokens;
         return;
       }
 
-      tokens[i + num_copies] = tokens[i]->dup();
+      tokens[uint(i + num_copies)] = tokens[i]->dup();
     }
 
     for (int i = 0; i < num_copies*2; i++)
@@ -1550,11 +1553,11 @@ copyOp(PSViewOperatorMgr *mgr)
     }
 
     if (token1->isArray()) {
-      PSViewArrayToken *array_token1 = (PSViewArrayToken *) token1;
-      PSViewArrayToken *array_token2 = (PSViewArrayToken *) token2;
+      auto *array_token1 = static_cast<PSViewArrayToken *>(token1);
+      auto *array_token2 = static_cast<PSViewArrayToken *>(token2);
 
-      PSVinteger num_tokens1 = array_token1->getNumValues();
-      PSVinteger num_tokens2 = array_token2->getNumValues();
+      auto num_tokens1 = array_token1->getNumValues();
+      auto num_tokens2 = array_token2->getNumValues();
 
       if (num_tokens1 > num_tokens2) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -1563,11 +1566,11 @@ copyOp(PSViewOperatorMgr *mgr)
       }
 
       for (int i = 1; i <= num_tokens1; i++) {
-        PSViewToken *sub_value1 = array_token1->getValue(i);
+        auto *sub_value1 = array_token1->getValue(uint(i));
 
         PSViewToken *sub_value2 = sub_value1->dup();
 
-        array_token2->setValue(i, sub_value2);
+        array_token2->setValue(uint(i), sub_value2);
       }
 
       array_token2->setBounds(1, num_tokens1);
@@ -1575,11 +1578,11 @@ copyOp(PSViewOperatorMgr *mgr)
       mgr->getPSView()->getOperandStack()->push(token2);
     }
     else if (token1->isDictionary()) {
-      PSViewDictionaryToken *dictionary_token1 = (PSViewDictionaryToken *) token1;
-      PSViewDictionaryToken *dictionary_token2 = (PSViewDictionaryToken *) token2;
+      auto *dictionary_token1 = static_cast<PSViewDictionaryToken *>(token1);
+      auto *dictionary_token2 = static_cast<PSViewDictionaryToken *>(token2);
 
-      PSVinteger num_tokens1 = dictionary_token1->getNumValues();
-      PSVinteger num_tokens2 = dictionary_token2->getMaxValues();
+      auto num_tokens1 = dictionary_token1->getNumValues();
+      auto num_tokens2 = dictionary_token2->getMaxValues();
 
       if (num_tokens1 > num_tokens2) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -1601,8 +1604,8 @@ copyOp(PSViewOperatorMgr *mgr)
       mgr->getPSView()->getOperandStack()->push(token2);
     }
     else if (token1->isString()) {
-      PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
-      PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+      auto *string_token1 = static_cast<PSViewStringToken *>(token1);
+      auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
       PSVinteger length1 = string_token1->getLength();
       PSVinteger length2 = string_token1->getLength();
@@ -1616,7 +1619,7 @@ copyOp(PSViewOperatorMgr *mgr)
       for (int i = 1; i <= length1; i++) {
         int c = string_token1->getChar(i);
 
-        string_token2->setChar(i, c);
+        string_token2->setChar(i, char(c));
       }
 
       string_token2->setBounds(1, length1);
@@ -1624,8 +1627,8 @@ copyOp(PSViewOperatorMgr *mgr)
       mgr->getPSView()->getOperandStack()->push(token2);
     }
     else if (token1->isPackedArray()) {
-      PSViewPackedArrayToken *array_token1 = (PSViewPackedArrayToken *) token1;
-      PSViewArrayToken       *array_token2 = (PSViewArrayToken *) token2;
+      auto *array_token1 = static_cast<PSViewPackedArrayToken *>(token1);
+      auto *array_token2 = static_cast<PSViewArrayToken       *>(token2);
 
       PSVinteger num_tokens1 = array_token1->getNumValues();
       PSVinteger num_tokens2 = array_token2->getNumValues();
@@ -1640,7 +1643,7 @@ copyOp(PSViewOperatorMgr *mgr)
         PSViewToken *sub_value1 = array_token1->getValue(i);
         PSViewToken *sub_value2 = sub_value1->dup();
 
-        array_token2->setValue(i, sub_value2);
+        array_token2->setValue(uint(i), sub_value2);
       }
 
       array_token2->setBounds(1, num_tokens1);
@@ -1661,9 +1664,9 @@ void
 PSViewOperatorMgr::
 cosOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -1674,7 +1677,7 @@ cosOp(PSViewOperatorMgr *mgr)
 
   PSVreal real = token->getRealValue();
 
-  PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), cos(CMathGen::DegToRad(real)));
+  auto *token1 = new PSViewRealToken(mgr->getPSView(), cos(CMathGen::DegToRad(real)));
 
   mgr->getPSView()->getOperandStack()->push(token1);
 }
@@ -1685,7 +1688,7 @@ countOp(PSViewOperatorMgr *mgr)
 {
   int num_stack = mgr->getPSView()->getOperandStack()->size();
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), num_stack);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), num_stack);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1696,7 +1699,7 @@ countDictStackOp(PSViewOperatorMgr *mgr)
 {
   int num_dictionaries = mgr->getPSView()->getDictionaryMgr()->getNumDictionaries();
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), num_dictionaries);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), num_dictionaries);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1707,7 +1710,7 @@ countExecStackOp(PSViewOperatorMgr *mgr)
 {
   int num_stack = mgr->getPSView()->getExecutionStack()->size();
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), num_stack);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), num_stack);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1724,7 +1727,7 @@ countToMarkOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), count);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), count);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1733,9 +1736,9 @@ void
 PSViewOperatorMgr::
 currentBlackGenerationOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  PSViewToken *token = gstate_token->getBlackGeneration();
+  auto *token = gstate_token->getBlackGeneration();
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1748,7 +1751,7 @@ currentCMYKColorOp(PSViewOperatorMgr *mgr)
 
   CCMYK cmyk;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->getCMYKColor(cmyk);
 
@@ -1773,7 +1776,7 @@ void
 PSViewOperatorMgr::
 currentColorOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   const PSViewName &color_space = gstate_token->getColorSpace();
 
@@ -1789,25 +1792,25 @@ void
 PSViewOperatorMgr::
 currentColorSpaceOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   bool pattern = gstate_token->getPatternColor();
 
-  PSViewNameToken *color_space_token = gstate_token->getColorSpaceToken();
+  auto *color_space_token = gstate_token->getColorSpaceToken();
 
   if (pattern) {
-    PSViewArrayToken *array_token = new PSViewArrayToken(mgr->getPSView(), 2);
+    auto *array_token = new PSViewArrayToken(mgr->getPSView(), 2);
 
     array_token->setValue(2, color_space_token);
 
-    PSViewNameToken *sub_token = new PSViewNameToken(mgr->getPSView(), "Pattern");
+    auto *sub_token = new PSViewNameToken(mgr->getPSView(), "Pattern");
 
     array_token->setValue(1, sub_token);
 
     mgr->getPSView()->getOperandStack()->push(array_token);
   }
   else {
-    PSViewArrayToken *array_token = new PSViewArrayToken(mgr->getPSView(), 1);
+    auto *array_token = new PSViewArrayToken(mgr->getPSView(), 1);
 
     array_token->setValue(1, color_space_token);
 
@@ -1823,22 +1826,21 @@ currentDashOp(PSViewOperatorMgr *mgr)
   const double *dash_array;
   double        dash_offset;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->getDashPattern(&dash_array, &num_dashes, &dash_offset);
 
-  PSViewArrayToken *array_token =
-    new PSViewArrayToken(mgr->getPSView(), num_dashes);
+  auto *array_token = new PSViewArrayToken(mgr->getPSView(), uint(num_dashes));
 
   for (int i = 1; i <= num_dashes; i++) {
-    PSViewRealToken *sub_token = new PSViewRealToken(mgr->getPSView(), dash_array[i - 1]);
+    auto *sub_token = new PSViewRealToken(mgr->getPSView(), dash_array[i - 1]);
 
-    array_token->setValue(i, sub_token);
+    array_token->setValue(uint(i), sub_token);
   }
 
   mgr->getPSView()->getOperandStack()->push(array_token);
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), dash_offset);
+  auto *token = new PSViewRealToken(mgr->getPSView(), dash_offset);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1847,7 +1849,7 @@ void
 PSViewOperatorMgr::
 currentDictOp(PSViewOperatorMgr *mgr)
 {
-  PSViewDictionaryToken *token = mgr->getPSView()->getDictionaryMgr()->getCurrentDictionary();
+  auto *token = mgr->getPSView()->getDictionaryMgr()->getCurrentDictionary();
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1856,7 +1858,7 @@ void
 PSViewOperatorMgr::
 currentFileOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getCurrentFile();
+  auto *token = mgr->getPSView()->getCurrentFile();
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1865,11 +1867,11 @@ void
 PSViewOperatorMgr::
 currentFlatOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   double flat = gstate_token->getFlat();
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), flat);
+  auto *token = new PSViewRealToken(mgr->getPSView(), flat);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1878,9 +1880,9 @@ void
 PSViewOperatorMgr::
 currentFontOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  PSViewToken *token = gstate_token->getCurrentFont();
+  auto *token = gstate_token->getCurrentFont();
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1901,11 +1903,11 @@ currentGrayOp(PSViewOperatorMgr *mgr)
 {
   double gray;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->getGray(&gray);
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), gray);
+  auto *token = new PSViewRealToken(mgr->getPSView(), gray);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1914,9 +1916,9 @@ void
 PSViewOperatorMgr::
 currentGStateOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isGState()) {
@@ -1927,9 +1929,9 @@ currentGStateOp(PSViewOperatorMgr *mgr)
 
   delete token;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  PSViewGStateToken *gstate_token1 = new PSViewGStateToken(*gstate_token);
+  auto *gstate_token1 = new PSViewGStateToken(*gstate_token);
 
   mgr->getPSView()->getOperandStack()->push(gstate_token1);
 }
@@ -1940,11 +1942,11 @@ currentHSBColorOp(PSViewOperatorMgr *mgr)
 {
   CHSB hsb;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->getHSBColor(hsb);
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), hsb.getHue());
+  auto *token = new PSViewRealToken(mgr->getPSView(), hsb.getHue());
 
   mgr->getPSView()->getOperandStack()->push(token);
 
@@ -1961,11 +1963,11 @@ void
 PSViewOperatorMgr::
 currentLineCapOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   CLineCapType line_cap = gstate_token->getLineCap();
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), line_cap - 1);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), line_cap - 1);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1974,11 +1976,11 @@ void
 PSViewOperatorMgr::
 currentLineJoinOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   CLineJoinType line_join = gstate_token->getLineJoin();
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), line_join);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), line_join);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -1987,11 +1989,11 @@ void
 PSViewOperatorMgr::
 currentLineWidthOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   double line_width = gstate_token->getLineWidth();
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), line_width);
+  auto *token = new PSViewRealToken(mgr->getPSView(), line_width);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -2000,9 +2002,9 @@ void
 PSViewOperatorMgr::
 currentMatrixOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isMatrix()) {
@@ -2011,7 +2013,7 @@ currentMatrixOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   CMatrix2D *matrix = gstate_token->getCTMMatrix();
 
@@ -2024,11 +2026,11 @@ void
 PSViewOperatorMgr::
 currentMitreLimitOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   double mitre_limit = gstate_token->getMitreLimit();
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), mitre_limit);
+  auto *token = new PSViewRealToken(mgr->getPSView(), mitre_limit);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -2051,7 +2053,7 @@ currentPointOp(PSViewOperatorMgr *mgr)
 {
   double x, y;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   bool flag = gstate_token->getCurrentPoint(&x, &y);
 
@@ -2061,8 +2063,8 @@ currentPointOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), x);
-  PSViewRealToken *token2 = new PSViewRealToken(mgr->getPSView(), y);
+  auto *token1 = new PSViewRealToken(mgr->getPSView(), x);
+  auto *token2 = new PSViewRealToken(mgr->getPSView(), y);
 
   mgr->getPSView()->getOperandStack()->push(token1);
   mgr->getPSView()->getOperandStack()->push(token2);
@@ -2074,11 +2076,11 @@ currentRGBColorOp(PSViewOperatorMgr *mgr)
 {
   CRGBA rgba;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->getRGBColor(rgba);
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), rgba.getRed());
+  auto *token = new PSViewRealToken(mgr->getPSView(), rgba.getRed());
 
   mgr->getPSView()->getOperandStack()->push(token);
 
@@ -2095,7 +2097,7 @@ void
 PSViewOperatorMgr::
 currentStrokeAdjustOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   bool flag = gstate_token->getStrokeAdjust();
 
@@ -2109,9 +2111,9 @@ void
 PSViewOperatorMgr::
 currentUnderColorRemovalOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  PSViewToken *token = gstate_token->getUnderColorRemoval();
+  auto *token = gstate_token->getUnderColorRemoval();
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -2120,15 +2122,15 @@ void
 PSViewOperatorMgr::
 curveToOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token6 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token5 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token6 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token5 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token4 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL ||
-      token4 == NULL || token5 == NULL || token6 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr ||
+      token4 == nullptr || token5 == nullptr || token6 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -2146,7 +2148,7 @@ curveToOp(PSViewOperatorMgr *mgr)
   double x3 = token5->getRealValue();
   double y3 = token6->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->curveTo(x1, y1, x2, y2, x3, y3);
 }
@@ -2155,9 +2157,9 @@ void
 PSViewOperatorMgr::
 cviOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (token->isInteger())
@@ -2165,20 +2167,20 @@ cviOp(PSViewOperatorMgr *mgr)
   else if (token->isReal()) {
     PSVreal real = token->getRealValue();
 
-    PSViewIntegerToken *token1 = new PSViewIntegerToken(mgr->getPSView(), (long) real);
+    auto *token1 = new PSViewIntegerToken(mgr->getPSView(), long(real));
 
     mgr->getPSView()->getOperandStack()->push(token1);
   }
   else if (token->isString()) {
-    PSViewStringToken *string_token = (PSViewStringToken *) token;
+    auto *string_token = static_cast<PSViewStringToken *>(token);
 
-    string str = string_token->toString();
+    std::string str = string_token->toString();
 
     PSVinteger pos = 0;
 
     PSViewToken *token1 = mgr->readStringFileToken(str, &pos);
 
-    if (token1 == NULL || ! token1->isNumber()) {
+    if (token1 == nullptr || ! token1->isNumber()) {
       mgr->getPSView()->getErrorMgr()->
         raise(PSVIEW_ERROR_TYPE_UNDEFINED_RESULT);
 
@@ -2187,7 +2189,7 @@ cviOp(PSViewOperatorMgr *mgr)
 
     PSVreal real = token1->getRealValue();
 
-    PSViewIntegerToken *token2 = new PSViewIntegerToken(mgr->getPSView(), (long) real);
+    auto *token2 = new PSViewIntegerToken(mgr->getPSView(), long(real));
 
     mgr->getPSView()->getOperandStack()->push(token2);
   }
@@ -2199,9 +2201,9 @@ void
 PSViewOperatorMgr::
 cvlitOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   token->setLiteral();
@@ -2213,9 +2215,9 @@ void
 PSViewOperatorMgr::
 cvnOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isString()) {
@@ -2224,11 +2226,11 @@ cvnOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token = (PSViewStringToken *) token;
+  auto *string_token = static_cast<PSViewStringToken *>(token);
 
-  string str = string_token->toString();
+  std::string str = string_token->toString();
 
-  PSViewNameToken *token1 = new PSViewNameToken(mgr->getPSView(), str);
+  auto *token1 = new PSViewNameToken(mgr->getPSView(), str);
 
   if (token->isLiteral())
     token1->setLiteral();
@@ -2242,9 +2244,9 @@ void
 PSViewOperatorMgr::
 cvrOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (token->isReal())
@@ -2252,20 +2254,20 @@ cvrOp(PSViewOperatorMgr *mgr)
   else if (token->isInteger()) {
     PSVinteger integer = token->getIntegerValue();
 
-    PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), (double) integer);
+    auto *token1 = new PSViewRealToken(mgr->getPSView(), double(integer));
 
     mgr->getPSView()->getOperandStack()->push(token1);
   }
   else if (token->isString()) {
-    PSViewStringToken *string_token = (PSViewStringToken *) token;
+    auto *string_token = static_cast<PSViewStringToken *>(token);
 
-    string str = string_token->toString();
+    std::string str = string_token->toString();
 
     PSVinteger pos = 0;
 
     PSViewToken *token1 = mgr->readStringFileToken(str, &pos);
 
-    if (token1 == NULL || ! token1->isNumber()) {
+    if (token1 == nullptr || ! token1->isNumber()) {
       mgr->getPSView()->getErrorMgr()->
         raise(PSVIEW_ERROR_TYPE_UNDEFINED_RESULT);
 
@@ -2274,7 +2276,7 @@ cvrOp(PSViewOperatorMgr *mgr)
 
     PSVreal real = token1->getRealValue();
 
-    PSViewRealToken *token2 = new PSViewRealToken(mgr->getPSView(), real);
+    auto *token2 = new PSViewRealToken(mgr->getPSView(), real);
 
     mgr->getPSView()->getOperandStack()->push(token2);
   }
@@ -2286,9 +2288,9 @@ void
 PSViewOperatorMgr::
 cvrsOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
   if (! token1->isNumber() || ! token2->isInteger() || ! token3->isString()) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -2296,7 +2298,7 @@ cvrsOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  int base = token2->getIntegerValue();
+  int base = int(token2->getIntegerValue());
 
   if (base < 1 || base > 36) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -2313,19 +2315,19 @@ cvrsOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token3 = (PSViewStringToken *) token3;
+  auto *string_token3 = static_cast<PSViewStringToken *>(token3);
 
-  size_t length = string_token3->getLength();
+  auto length = string_token3->getLength();
 
-  string str;
+  std::string str;
 
-  uint num = (uint) token1->getRealValue();
+  uint num = uint(token1->getRealValue());
 
-  while (num > (uint) base) {
-    uint num1 = num/base;
-    uint num2 = num - num1*base;
+  while (num > uint(base)) {
+    uint num1 = num/uint(base);
+    uint num2 = num - num1*uint(base);
 
-    if (str.size() > length) {
+    if (int(str.size()) > length) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
 
       return;
@@ -2336,7 +2338,7 @@ cvrsOp(PSViewOperatorMgr *mgr)
     num = num1;
   }
 
-  if (str.size() > length) {
+  if (int(str.size()) > length) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
 
     return;
@@ -2346,7 +2348,7 @@ cvrsOp(PSViewOperatorMgr *mgr)
 
   string_token3->setChars(str, 1);
 
-  PSViewToken *token = string_token3->subString(1, str.size());
+  auto *token = string_token3->subString(1, int(str.size()));
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -2355,10 +2357,10 @@ void
 PSViewOperatorMgr::
 cvsOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token2->isString()) {
@@ -2367,13 +2369,13 @@ cvsOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
-  PSVinteger length = string_token2->getLength();
+  auto length = string_token2->getLength();
 
-  string str = token1->toString();
+  std::string str = token1->toString();
 
-  if (str.size() > (uint) length) {
+  if (str.size() > uint(length)) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
 
     return;
@@ -2381,7 +2383,7 @@ cvsOp(PSViewOperatorMgr *mgr)
 
   string_token2->setChars(str, 1);
 
-  PSViewToken *token = string_token2->subString(1, str.size());
+  auto *token = string_token2->subString(1, int(str.size()));
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -2390,9 +2392,9 @@ void
 PSViewOperatorMgr::
 cvxOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   token->setExecutable();
@@ -2404,10 +2406,10 @@ void
 PSViewOperatorMgr::
 defOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   mgr->getPSView()->getDictionaryMgr()->addToCurrent(token1, token2);
@@ -2417,9 +2419,9 @@ void
 PSViewOperatorMgr::
 defaultMatrixOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isMatrix()) {
@@ -2428,7 +2430,7 @@ defaultMatrixOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   CMatrix2D *matrix = gstate_token->getDefaultMatrix();
 
@@ -2441,10 +2443,10 @@ void
 PSViewOperatorMgr::
 defineFontOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token2->isDictionary()) {
@@ -2453,9 +2455,9 @@ defineFontOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dictionary = (PSViewDictionaryToken *) token2;
+  auto *dictionary = static_cast<PSViewDictionaryToken *>(token2);
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->defineFont(token1, dictionary);
 }
@@ -2464,11 +2466,11 @@ void
 PSViewOperatorMgr::
 defineResourceOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
     return;
 
   if (! token3->isName()) {
@@ -2477,9 +2479,9 @@ defineResourceOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewNameToken *name_token = (PSViewNameToken *) token3;
+  auto *name_token = static_cast<PSViewNameToken *>(token3);
 
-  const PSViewName &name = name_token->getValue();
+  const auto &name = name_token->getValue();
 
   if (! mgr->getPSView()->getResourceMgr()->checkInstance(token2, name))
     return;
@@ -2491,10 +2493,10 @@ void
 PSViewOperatorMgr::
 defineUserObjectOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isInteger()) {
@@ -2511,61 +2513,61 @@ defineUserObjectOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dict = mgr->getPSView()->getDictionaryMgr()->getUserDictionary();
+  auto *dict = mgr->getPSView()->getDictionaryMgr()->getUserDictionary();
 
-  PSViewNameToken *key = new PSViewNameToken(mgr->getPSView(), "UserObjects");
+  auto *key = new PSViewNameToken(mgr->getPSView(), "UserObjects");
 
-  PSViewToken *user_objects = dict->getValue(key);
+  auto *user_objects = dict->getValue(key);
 
-  if (user_objects != NULL && ! user_objects->isArray()) {
+  if (user_objects != nullptr && ! user_objects->isArray()) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
 
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) user_objects;
+  auto *array_token = static_cast<PSViewArrayToken *>(user_objects);
 
   PSVinteger len = 0;
 
-  if (user_objects != NULL)
+  if (user_objects != nullptr)
     len = array_token->getNumValues();
 
   if (ind >= len) {
-    PSViewArrayToken *user_objects1 = new PSViewArrayToken(mgr->getPSView(), ind + 10);
+    auto *user_objects1 = new PSViewArrayToken(mgr->getPSView(), uint(ind + 10));
 
-    if (user_objects1 == NULL) {
+    if (user_objects1 == nullptr) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_VM_ERROR);
 
       return;
     }
 
     for (int i = 1; i <= len; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
-      user_objects1->setValue(i, sub_token);
+      user_objects1->setValue(uint(i), sub_token);
     }
 
     delete user_objects;
 
     user_objects = user_objects1;
 
-    array_token = (PSViewArrayToken *) user_objects;
+    array_token = static_cast<PSViewArrayToken *>(user_objects);
 
     dict->addValue(key, user_objects);
   }
   else
     delete key;
 
-  array_token->setValue(ind + 1, token2);
+  array_token->setValue(uint(ind + 1), token2);
 }
 
 void
 PSViewOperatorMgr::
 deleteFileOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isString()) {
@@ -2574,9 +2576,9 @@ deleteFileOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token = (PSViewStringToken *) token;
+  auto *string_token = static_cast<PSViewStringToken *>(token);
 
-  string filename = string_token->toString();
+  std::string filename = string_token->toString();
 
   remove(filename.c_str());
 }
@@ -2585,9 +2587,9 @@ void
 PSViewOperatorMgr::
 dictOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL)
+  if (token1 == nullptr)
     return;
 
   if (! token1->isInteger()) {
@@ -2604,8 +2606,7 @@ dictOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *token =
-    new PSViewDictionaryToken(mgr->getPSView()->getDictionaryMgr(), max_entries);
+  auto *token = new PSViewDictionaryToken(mgr->getPSView()->getDictionaryMgr(), max_entries);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -2614,9 +2615,9 @@ void
 PSViewOperatorMgr::
 dictStackOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL)
+  if (token1 == nullptr)
     return;
 
   if (! token1->isArray()) {
@@ -2625,7 +2626,7 @@ dictStackOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewArrayToken *array_token1 = (PSViewArrayToken *) token1;
+  auto *array_token1 = static_cast<PSViewArrayToken *>(token1);
 
   PSVinteger array_size = array_token1->getNumValues();
 
@@ -2637,12 +2638,12 @@ dictStackOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewArrayToken *array_token = new PSViewArrayToken(mgr->getPSView(), num_dictionaries);
+  auto *array_token = new PSViewArrayToken(mgr->getPSView(), uint(num_dictionaries));
 
   for (int i = 1; i <= num_dictionaries; i++) {
     PSViewToken *sub_token = mgr->getPSView()->getDictionaryMgr()->getDictionary(i);
 
-    array_token->setValue(i, sub_token);
+    array_token->setValue(uint(i), sub_token);
   }
 
   mgr->getPSView()->getOperandStack()->push(array_token);
@@ -2652,10 +2653,10 @@ void
 PSViewOperatorMgr::
 divOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -2673,7 +2674,7 @@ divOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), real1/real2);
+  auto *token = new PSViewRealToken(mgr->getPSView(), real1/real2);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -2682,10 +2683,10 @@ void
 PSViewOperatorMgr::
 dtransformOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber()) {
@@ -2698,7 +2699,7 @@ dtransformOp(PSViewOperatorMgr *mgr)
     PSVreal x = token1->getRealValue();
     PSVreal y = token2->getRealValue();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     CMatrix2D *matrix = gstate_token->getCTMMatrix();
 
@@ -2718,7 +2719,7 @@ dtransformOp(PSViewOperatorMgr *mgr)
 
     matrix = token2->getMatrix();
 
-    if (matrix == NULL)
+    if (matrix == nullptr)
       return;
 
     PSViewToken *token0 = mgr->getPSView()->getOperandStack()->pop();
@@ -2749,12 +2750,12 @@ void
 PSViewOperatorMgr::
 dupOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
-  PSViewToken *token1 = token->dup();
+  auto *token1 = token->dup();
 
   mgr->getPSView()->getOperandStack()->push(token);
   mgr->getPSView()->getOperandStack()->push(token1);
@@ -2764,9 +2765,9 @@ void
 PSViewOperatorMgr::
 echoOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isBoolean()) {
@@ -2793,9 +2794,9 @@ void
 PSViewOperatorMgr::
 eexecOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isString() && ! token->isFile()) {
@@ -2807,20 +2808,20 @@ eexecOp(PSViewOperatorMgr *mgr)
   PSViewFileToken *file_token;
 
   if (token->isString()) {
-    PSViewStringToken *string_token = (PSViewStringToken *) token;
+    auto *string_token = static_cast<PSViewStringToken *>(token);
 
-    string str = string_token->toString();
+    std::string str = string_token->toString();
 
     file_token = new PSViewStringFileToken(mgr->getPSView(), str);
   }
   else
-    file_token = (PSViewFileToken *) token;
+    file_token = static_cast<PSViewFileToken *>(token);
 
-  PSViewFilterFileToken *filter_token = new PSViewFilterFileToken(file_token, "EExecDecode");
+  auto *filter_token = new PSViewFilterFileToken(file_token, "EExecDecode");
 
   mgr->getPSView()->setCurrentFile(filter_token);
 
-  PSViewDictionaryToken *dict = mgr->getPSView()->getDictionaryMgr()->getSystemDictionary();
+  auto *dict = mgr->getPSView()->getDictionaryMgr()->getSystemDictionary();
 
   mgr->getPSView()->getDictionaryMgr()->beginDictionary(dict);
 
@@ -2835,7 +2836,7 @@ void
 PSViewOperatorMgr::
 eoclipOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->eoclip();
 }
@@ -2844,7 +2845,7 @@ void
 PSViewOperatorMgr::
 eofillOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->eofill();
 }
@@ -2853,10 +2854,10 @@ void
 PSViewOperatorMgr::
 eqOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (token1->compare(token2) == 0)
@@ -2869,7 +2870,7 @@ void
 PSViewOperatorMgr::
 erasePageOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->erasePage();
 }
@@ -2885,9 +2886,9 @@ void
 PSViewOperatorMgr::
 execOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   token->execute();
@@ -2897,9 +2898,9 @@ void
 PSViewOperatorMgr::
 execFormOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isDictionary()) {
@@ -2908,9 +2909,9 @@ execFormOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dict = (PSViewDictionaryToken *) token;
+  auto *dict = static_cast<PSViewDictionaryToken *>(token);
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->execForm(dict);
 }
@@ -2919,9 +2920,9 @@ void
 PSViewOperatorMgr::
 execStackOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL)
+  if (token1 == nullptr)
     return;
 
   if (! token1->isArray()) {
@@ -2930,7 +2931,7 @@ execStackOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewArrayToken *array_token1 = (PSViewArrayToken *) token1;
+  auto *array_token1 = static_cast<PSViewArrayToken *>(token1);
 
   PSVinteger array_size = array_token1->getNumValues();
 
@@ -2942,12 +2943,12 @@ execStackOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewArrayToken *array_token = new PSViewArrayToken(mgr->getPSView(), num_stack);
+  auto *array_token = new PSViewArrayToken(mgr->getPSView(), uint(num_stack));
 
   for (int i = 1; i <= num_stack; i++) {
     PSViewToken *sub_token = mgr->getPSView()->getExecutionStack()->peek(i);
 
-    array_token->setValue(i, sub_token);
+    array_token->setValue(uint(i), sub_token);
   }
 
   mgr->getPSView()->getOperandStack()->push(array_token);
@@ -2957,9 +2958,9 @@ void
 PSViewOperatorMgr::
 execUserObjectOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isInteger()) {
@@ -2976,19 +2977,19 @@ execUserObjectOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dict = mgr->getPSView()->getDictionaryMgr()->getUserDictionary();
+  auto *dict = mgr->getPSView()->getDictionaryMgr()->getUserDictionary();
 
-  PSViewNameToken *key = new PSViewNameToken(mgr->getPSView(), "UserObjects");
+  auto *key = new PSViewNameToken(mgr->getPSView(), "UserObjects");
 
-  PSViewToken *user_objects = dict->getValue(key);
+  auto *user_objects = dict->getValue(key);
 
-  if (user_objects == NULL || ! user_objects->isArray()) {
+  if (user_objects == nullptr || ! user_objects->isArray()) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED);
 
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) user_objects;
+  auto *array_token = static_cast<PSViewArrayToken *>(user_objects);
 
   PSVinteger len = array_token->getNumValues();
 
@@ -2998,7 +2999,7 @@ execUserObjectOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewToken *sub_token = array_token->getValue(ind + 1);
+  auto *sub_token = array_token->getValue(uint(ind + 1));
 
   sub_token->execute();
 
@@ -3009,9 +3010,9 @@ void
 PSViewOperatorMgr::
 executeOnlyOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isArray() && ! token->isPackedArray() &&
@@ -3034,7 +3035,7 @@ executiveOp(PSViewOperatorMgr *mgr)
   CStrUtil::printf("\n");
 
   while (true) {
-    PSViewNameToken *key = new PSViewNameToken(mgr->getPSView(), "prompt");
+    auto *key = new PSViewNameToken(mgr->getPSView(), "prompt");
 
     PSViewToken *token = mgr->getPSView()->getDictionaryMgr()->lookup(key);
 
@@ -3045,16 +3046,16 @@ executiveOp(PSViewOperatorMgr *mgr)
       break;
     }
 
-    string line;
+    std::string line;
 
     if (! mgr->getPSView()->getLine(line))
       break;
 
-    PSViewStringFileToken *file_token = new PSViewStringFileToken(mgr->getPSView(), line);
+    auto *file_token = new PSViewStringFileToken(mgr->getPSView(), line);
 
     PSViewToken *token1 = file_token->readToken();
 
-    while (token1 != NULL) {
+    while (token1 != nullptr) {
       if (token1->isProcedure())
         mgr->getPSView()->getOperandStack()->push(token1);
       else
@@ -3076,7 +3077,7 @@ void
 PSViewOperatorMgr::
 exitOp(PSViewOperatorMgr *mgr)
 {
-  PSViewOperatorToken *token = new PSViewOperatorToken(mgr->getPSView(), "exit");
+  auto *token = new PSViewOperatorToken(mgr->getPSView(), "exit");
 
   mgr->getPSView()->getExecutionStack()->push(token);
 
@@ -3087,12 +3088,12 @@ void
 PSViewOperatorMgr::
 expOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken  *token;
+  PSViewToken *token;
 
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -3109,7 +3110,7 @@ expOp(PSViewOperatorMgr *mgr)
   if (token2->isInteger())
     integer_exponent = true;
   else {
-    if (exponent == (double)((long) exponent))
+    if (exponent == double(long(exponent)))
       integer_exponent = true;
   }
 
@@ -3134,7 +3135,7 @@ void
 PSViewOperatorMgr::
 falseOp(PSViewOperatorMgr *mgr)
 {
-  PSViewBooleanToken *token = new PSViewBooleanToken(mgr->getPSView(), false);
+  auto *token = new PSViewBooleanToken(mgr->getPSView(), false);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -3143,10 +3144,10 @@ void
 PSViewOperatorMgr::
 fileOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL && token2 == NULL)
+  if (token1 == nullptr && token2 == nullptr)
     return;
 
   if (! token1->isString() || ! token2->isString()) {
@@ -3155,15 +3156,15 @@ fileOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
-  string filename = string_token1->toString();
-  string access   = string_token2->toString();
+  std::string filename = string_token1->toString();
+  std::string access   = string_token2->toString();
 
-  PSViewTextFileToken *token = new PSViewTextFileToken(mgr->getPSView(), filename, access);
+  auto *token = new PSViewTextFileToken(mgr->getPSView(), filename, access);
 
-  if (token == NULL) {
+  if (token == nullptr) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED_FILENAME);
 
     return;
@@ -3176,7 +3177,7 @@ void
 PSViewOperatorMgr::
 fillOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->fill();
 }
@@ -3185,22 +3186,22 @@ void
 PSViewOperatorMgr::
 filterOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
   if (! token1->isFile() || ! token2->isName()) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
 
-  PSViewFileToken *file_token = (PSViewFileToken *) token1;
-  PSViewNameToken *name_token = (PSViewNameToken *) token2;
+  auto *file_token = static_cast<PSViewFileToken *>(token1);
+  auto *name_token = static_cast<PSViewNameToken *>(token2);
 
   const PSViewName &name = name_token->getValue();
 
-  PSViewFilterFileToken *token = new PSViewFilterFileToken(file_token, name);
+  auto *token = new PSViewFilterFileToken(file_token, name);
 
-  if (token == NULL) {
+  if (token == nullptr) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED);
     return;
   }
@@ -3212,28 +3213,28 @@ void
 PSViewOperatorMgr::
 filenameForAllOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
   if (! token1->isString() || ! token2->isProcedure() || ! token3->isString()) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
-  PSViewStringToken *string_token3 = (PSViewStringToken *) token3;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
+  auto *string_token3 = static_cast<PSViewStringToken *>(token3);
 
-  string templ   = string_token1->toString();
-  string scratch = string_token3->toString();
+  std::string templ   = string_token1->toString();
+  std::string scratch = string_token3->toString();
 
-  size_t scratch_len = scratch.size();
+  auto scratch_len = scratch.size();
 
-  void   *dir;
-  string  prefix;
+  void        *dir;
+  std::string  prefix;
 
   if (templ.find("%font%") == 0) {
-    string font_dir;
+    std::string font_dir;
 
     if (! CEnvInst.get("PSVIEW_FONT_DIR", font_dir))
       font_dir = mgr->getPSView()->getGStateMgr()->getFontDir();
@@ -3249,7 +3250,7 @@ filenameForAllOp(PSViewOperatorMgr *mgr)
 
   CGlob pattern(templ);
 
-  string filename;
+  std::string filename;
 
   while (COSFile::readDir(dir, filename)) {
     if (filename == "." || filename == "..")
@@ -3258,8 +3259,8 @@ filenameForAllOp(PSViewOperatorMgr *mgr)
     if (! pattern.compare(filename))
       continue;
 
-    size_t len1 = prefix.size();
-    size_t len2 = filename.size();
+    auto len1 = prefix.size();
+    auto len2 = filename.size();
 
     if (len1 + len2 > scratch_len) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -3277,7 +3278,7 @@ filenameForAllOp(PSViewOperatorMgr *mgr)
 
     string_token3->setChars(scratch, 1);
 
-    PSViewStringToken *string_token = new PSViewStringToken(*string_token3, 1, len1 + len2);
+    auto *string_token = new PSViewStringToken(*string_token3, 1, int(len1 + len2));
 
     mgr->getPSView()->getOperandStack()->push(string_token);
 
@@ -3291,9 +3292,9 @@ void
 PSViewOperatorMgr::
 filePositionOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isFile()) {
@@ -3302,12 +3303,12 @@ filePositionOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken *file_token = (PSViewFileToken *) token;
+  auto *file_token = static_cast<PSViewFileToken *>(token);
 
   uint pos;
 
   if (file_token->getPosition(&pos)) {
-    PSViewIntegerToken *token1 = new PSViewIntegerToken(mgr->getPSView(), pos);
+    auto *token1 = new PSViewIntegerToken(mgr->getPSView(), pos);
 
     mgr->getPSView()->getOperandStack()->push(token1);
   }
@@ -3317,9 +3318,9 @@ void
 PSViewOperatorMgr::
 findFontOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isName()) {
@@ -3327,9 +3328,9 @@ findFontOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  PSViewToken *font = gstate_token->findFont(token);
+  auto *font = gstate_token->findFont(token);
 
   mgr->getPSView()->getOperandStack()->push(font);
 }
@@ -3338,10 +3339,10 @@ void
 PSViewOperatorMgr::
 findResourceOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token2->isName()) {
@@ -3350,13 +3351,13 @@ findResourceOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewNameToken *name_token = (PSViewNameToken *) token2;
+  auto *name_token = static_cast<PSViewNameToken *>(token2);
 
-  const PSViewName &name = name_token->getValue();
+  const auto &name = name_token->getValue();
 
-  PSViewToken *token = mgr->getPSView()->getResourceMgr()->findInstance(token1, name);
+  auto *token = mgr->getPSView()->getResourceMgr()->findInstance(token1, name);
 
-  if (token != NULL)
+  if (token != nullptr)
     mgr->getPSView()->getOperandStack()->push(token);
 }
 
@@ -3364,7 +3365,7 @@ void
 PSViewOperatorMgr::
 flattenPathOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->flattenPath();
 }
@@ -3373,9 +3374,9 @@ void
 PSViewOperatorMgr::
 floorOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -3387,7 +3388,7 @@ floorOp(PSViewOperatorMgr *mgr)
   if (token->isReal()) {
     PSVreal real = token->getRealValue();
 
-    PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), floor(real));
+    auto *token1 = new PSViewRealToken(mgr->getPSView(), floor(real));
 
     mgr->getPSView()->getOperandStack()->push(token1);
   }
@@ -3409,9 +3410,9 @@ void
 PSViewOperatorMgr::
 flushFileOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isFile()) {
@@ -3420,7 +3421,7 @@ flushFileOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken *file_token = (PSViewFileToken *) token;
+  auto *file_token = static_cast<PSViewFileToken *>(token);
 
   file_token->flush();
 }
@@ -3429,12 +3430,12 @@ void
 PSViewOperatorMgr::
 forOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token4 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr || token4 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -3450,7 +3451,7 @@ forOp(PSViewOperatorMgr *mgr)
 
     if (increment >= 0) {
       for (PSVreal i = initial; i <= limit; i += increment) {
-        PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), i);
+        auto *token = new PSViewRealToken(mgr->getPSView(), i);
 
         mgr->getPSView()->getOperandStack()->push(token);
 
@@ -3464,7 +3465,7 @@ forOp(PSViewOperatorMgr *mgr)
     }
     else {
       for (PSVreal i = initial; i >= limit; i += increment) {
-        PSViewRealToken *token = new PSViewRealToken(mgr->getPSView(), i);
+        auto *token = new PSViewRealToken(mgr->getPSView(), i);
 
         mgr->getPSView()->getOperandStack()->push(token);
 
@@ -3484,7 +3485,7 @@ forOp(PSViewOperatorMgr *mgr)
 
     if (increment >= 0) {
       for (PSVinteger i = initial; i <= limit; i += increment) {
-        PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), i);
+        auto *token = new PSViewIntegerToken(mgr->getPSView(), i);
 
         mgr->getPSView()->getOperandStack()->push(token);
 
@@ -3498,7 +3499,7 @@ forOp(PSViewOperatorMgr *mgr)
     }
     else {
       for (PSVinteger i = initial; i >= limit; i += increment) {
-        PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), i);
+        auto *token = new PSViewIntegerToken(mgr->getPSView(), i);
 
         mgr->getPSView()->getOperandStack()->push(token);
 
@@ -3517,10 +3518,10 @@ void
 PSViewOperatorMgr::
 forAllOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token2->isProcedure()) {
@@ -3530,12 +3531,12 @@ forAllOp(PSViewOperatorMgr *mgr)
   }
 
   if (token1->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token1;
+    auto *array_token = static_cast<PSViewArrayToken *>(token1);
 
     PSVinteger num_tokens = array_token->getNumValues();
 
-    for (int i = 1; i <= num_tokens; i++) {
-      PSViewToken *sub_value = array_token->getValue(i);
+    for (int i = 1; i <= int(num_tokens); i++) {
+      auto *sub_value = array_token->getValue(uint(i));
 
       mgr->getPSView()->getOperandStack()->push(sub_value);
 
@@ -3548,7 +3549,7 @@ forAllOp(PSViewOperatorMgr *mgr)
     }
   }
   else if (token1->isPackedArray()) {
-    PSViewPackedArrayToken *array_token = (PSViewPackedArrayToken *) token1;
+    auto *array_token = static_cast<PSViewPackedArrayToken *>(token1);
 
     PSVinteger num_tokens = array_token->getNumValues();
 
@@ -3566,14 +3567,14 @@ forAllOp(PSViewOperatorMgr *mgr)
     }
   }
   else if (token1->isString()) {
-    PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+    auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
     PSVinteger num_tokens = string_token1->getLength();
 
     for (int i = 1; i <= num_tokens; i++) {
-      PSVchar c = string_token1->getChar(i);
+      auto c = string_token1->getChar(i);
 
-      PSViewIntegerToken *sub_value = new PSViewIntegerToken(mgr->getPSView(), c & 0xFF);
+      auto *sub_value = new PSViewIntegerToken(mgr->getPSView(), c & 0xFF);
 
       mgr->getPSView()->getOperandStack()->push(sub_value);
 
@@ -3586,12 +3587,12 @@ forAllOp(PSViewOperatorMgr *mgr)
     }
   }
   else if (token1->isDictionary()) {
-    PSViewDictionaryToken *dictionary_token1 = (PSViewDictionaryToken *) token1;
+    auto *dictionary_token1 = static_cast<PSViewDictionaryToken *>(token1);
 
-    PSVinteger num_tokens = dictionary_token1->getNumValues();
+    auto num_tokens = dictionary_token1->getNumValues();
 
     for (int i = 1; i <= num_tokens; i++) {
-      PSViewKeyValue *keyval = dictionary_token1->getKeyValue(i);
+      auto *keyval = dictionary_token1->getKeyValue(i);
 
       mgr->getPSView()->getOperandStack()->push(keyval->getKey()  );
       mgr->getPSView()->getOperandStack()->push(keyval->getValue());
@@ -3615,9 +3616,9 @@ void
 PSViewOperatorMgr::
 gcheckOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isComposite() || token->getGlobal())
@@ -3630,10 +3631,10 @@ void
 PSViewOperatorMgr::
 geOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   PSVinteger flag = token1->compare(token2);
@@ -3648,10 +3649,10 @@ void
 PSViewOperatorMgr::
 getOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (token1->isArray() || token1->isPackedArray() || token1->isString()) {
@@ -3672,7 +3673,7 @@ getOp(PSViewOperatorMgr *mgr)
     PSViewToken *sub_token;
 
     if (token1->isArray()) {
-      PSViewArrayToken *array_token = (PSViewArrayToken *) token1;
+      auto *array_token = static_cast<PSViewArrayToken *>(token1);
 
       PSVinteger num_tokens = array_token->getNumValues();
 
@@ -3682,12 +3683,12 @@ getOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      sub_token = array_token->getValue(ind + 1);
+      sub_token = array_token->getValue(uint(ind + 1));
     }
     else if (token1->isPackedArray()) {
-      PSViewPackedArrayToken *array_token = (PSViewPackedArrayToken *) token1;
+      auto *array_token = static_cast<PSViewPackedArrayToken *>(token1);
 
-      PSVinteger num_tokens = array_token->getNumValues();
+      auto num_tokens = array_token->getNumValues();
 
       if (ind < 0 || ind >= num_tokens) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -3695,10 +3696,10 @@ getOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      sub_token = array_token->getValue(ind + 1);
+      sub_token = array_token->getValue(int(ind + 1));
     }
     else {
-      PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+      auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
       PSVinteger num_tokens = string_token1->getLength();
 
@@ -3708,7 +3709,7 @@ getOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      int c = string_token1->getChar(ind + 1);
+      int c = string_token1->getChar(int(ind + 1));
 
       sub_token = new PSViewIntegerToken(mgr->getPSView(), c);
     }
@@ -3716,11 +3717,11 @@ getOp(PSViewOperatorMgr *mgr)
     mgr->getPSView()->getOperandStack()->push(sub_token);
   }
   else if (token1->isDictionary()) {
-    PSViewDictionaryToken *dictionary_token1 = (PSViewDictionaryToken *) token1;
+    auto *dictionary_token1 = static_cast<PSViewDictionaryToken *>(token1);
 
-    PSViewToken *sub_token = dictionary_token1->getValue(token2);
+    auto *sub_token = dictionary_token1->getValue(token2);
 
-    if (sub_token == NULL) {
+    if (sub_token == nullptr) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED);
 
       return;
@@ -3739,11 +3740,11 @@ void
 PSViewOperatorMgr::
 getIntervalOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token3 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token3 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
     return;
 
   if (! token1->isArray() && ! token1->isPackedArray() &&
@@ -3763,7 +3764,7 @@ getIntervalOp(PSViewOperatorMgr *mgr)
   PSVinteger count = token3->getIntegerValue();
 
   if (token1->isArray()) {
-    PSViewArrayToken *array_token1 = (PSViewArrayToken *) token1;
+    auto *array_token1 = static_cast<PSViewArrayToken *>(token1);
 
     PSVinteger num_tokens = array_token1->getNumValues();
 
@@ -3773,20 +3774,20 @@ getIntervalOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    PSViewArrayToken *array_token = new PSViewArrayToken(mgr->getPSView(), count);
+    auto *array_token = new PSViewArrayToken(mgr->getPSView(), uint(count));
 
     for (int i = 1; i <= count; i++) {
-      PSViewToken *sub_token = array_token1->getValue(ind + i);
+      auto *sub_token = array_token1->getValue(uint(ind + i));
 
-      array_token->setValue(i, sub_token);
+      array_token->setValue(uint(i), sub_token);
     }
 
     mgr->getPSView()->getOperandStack()->push(array_token);
   }
   else if (token1->isPackedArray()) {
-    PSViewPackedArrayToken *array_token1 = (PSViewPackedArrayToken *) token1;
+    auto *array_token1 = static_cast<PSViewPackedArrayToken *>(token1);
 
-    PSVinteger num_tokens = array_token1->getNumValues();
+    auto num_tokens = array_token1->getNumValues();
 
     if (ind < 0 || count < 0 || ind + count > num_tokens) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -3794,10 +3795,10 @@ getIntervalOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    PSViewPackedArrayToken *array_token = new PSViewPackedArrayToken(mgr->getPSView(), count);
+    auto *array_token = new PSViewPackedArrayToken(mgr->getPSView(), count);
 
     for (int i = 1; i <= count; i++) {
-      PSViewToken *sub_token = array_token1->getValue(ind + i);
+      auto *sub_token = array_token1->getValue(int(ind + i));
 
       array_token->setValue(i, sub_token);
     }
@@ -3805,9 +3806,9 @@ getIntervalOp(PSViewOperatorMgr *mgr)
     mgr->getPSView()->getOperandStack()->push(array_token);
   }
   else {
-    PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+    auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
-    PSVinteger num_tokens = string_token1->getLength();
+    auto num_tokens = string_token1->getLength();
 
     if (ind < 0 || count < 0 || ind + count > num_tokens) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -3815,12 +3816,12 @@ getIntervalOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    PSViewStringToken *token = new PSViewStringToken(mgr->getPSView(), count);
+    auto *token = new PSViewStringToken(mgr->getPSView(), count);
 
     for (int i = 1; i <= count; i++) {
-      int c = string_token1->getChar(ind + i);
+      int c = int(string_token1->getChar(int(ind + i)));
 
-      token->setChar(i, c);
+      token->setChar(i, char(c));
     }
 
     mgr->getPSView()->getOperandStack()->push(token);
@@ -3831,7 +3832,7 @@ void
 PSViewOperatorMgr::
 globalDictOp(PSViewOperatorMgr *mgr)
 {
-  PSViewDictionaryToken *token = mgr->getPSView()->getDictionaryMgr()->getGlobalDictionary();
+  auto *token = mgr->getPSView()->getDictionaryMgr()->getGlobalDictionary();
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -3842,7 +3843,7 @@ glyphShowOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isName()) {
@@ -3851,11 +3852,11 @@ glyphShowOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewNameToken *name_token = (PSViewNameToken *) token;
+  auto *name_token = static_cast<PSViewNameToken *>(token);
 
-  const PSViewName &name = name_token->getValue();
+  const auto &name = name_token->getValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->glyphShow(name);
 }
@@ -3885,7 +3886,7 @@ void
 PSViewOperatorMgr::
 gstateOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *token = new PSViewGStateToken(mgr->getPSView());
+  auto *token = new PSViewGStateToken(mgr->getPSView());
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -3894,10 +3895,10 @@ void
 PSViewOperatorMgr::
 gtOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   PSVinteger flag = token1->compare(token2);
@@ -3912,16 +3913,16 @@ void
 PSViewOperatorMgr::
 handleErrorOp(PSViewOperatorMgr *mgr)
 {
-  PSViewNameToken *key = new PSViewNameToken(mgr->getPSView(), "errordict");
+  auto *key = new PSViewNameToken(mgr->getPSView(), "errordict");
 
-  PSViewDictionaryToken *dict =
-    (PSViewDictionaryToken *) mgr->getPSView()->getDictionaryMgr()->lookup(key);
+  auto *dict =
+    static_cast<PSViewDictionaryToken *>(mgr->getPSView()->getDictionaryMgr()->lookup(key));
 
-  PSViewNameToken *key1 = new PSViewNameToken(mgr->getPSView(), "handleerror");
+  auto *key1 = new PSViewNameToken(mgr->getPSView(), "handleerror");
 
   PSViewToken *value1 = dict->getValue(key1);
 
-  if (value1 != NULL && value1->isNull())
+  if (value1 != nullptr && value1->isNull())
     mgr->getPSView()->getErrorMgr()->defaultErrorHandler();
   else
     value1->execute();
@@ -3931,9 +3932,9 @@ void
 PSViewOperatorMgr::
 identMatrixOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
+  auto *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isMatrix()) {
@@ -3958,7 +3959,7 @@ idivOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isInteger() || ! token2->isInteger()) {
@@ -3977,7 +3978,7 @@ idivOp(PSViewOperatorMgr *mgr)
 
   PSVinteger integer1 = token1->getIntegerValue();
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), integer1/integer2);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), integer1/integer2);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -3989,7 +3990,7 @@ idtransformOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber()) {
@@ -4002,7 +4003,7 @@ idtransformOp(PSViewOperatorMgr *mgr)
     PSVreal x = token1->getRealValue();
     PSVreal y = token2->getRealValue();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     CMatrix2D *matrix = gstate_token->getInverseCTMMatrix();
 
@@ -4022,7 +4023,7 @@ idtransformOp(PSViewOperatorMgr *mgr)
 
     matrix = token2->getMatrix();
 
-    if (matrix == NULL)
+    if (matrix == nullptr)
       return;
 
     PSViewToken *token0 = mgr->getPSView()->getOperandStack()->pop();
@@ -4064,7 +4065,7 @@ ifOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isBoolean() || ! token2->isProcedure()) {
@@ -4085,7 +4086,7 @@ ifelseOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
     return;
 
   if (! token1->isBoolean() || ! token2->isProcedure() || ! token3->isProcedure()) {
@@ -4105,19 +4106,19 @@ imageOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token5 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token5 == NULL)
+  if (token5 == nullptr)
     return;
 
   PSViewToken *token1, *token2, *token3, *token4;
 
   int decode_size = 0;
 
-  vector<double> decode_array;
+  std::vector<double> decode_array;
 
   if (token5->isDictionary()) {
-    PSViewDictionaryToken *dictionary_token = (PSViewDictionaryToken *) token5;
+    auto *dictionary_token = static_cast<PSViewDictionaryToken *>(token5);
 
-    PSViewToken *decode = dictionary_token->getValue("Decode");
+    auto *decode = dictionary_token->getValue("Decode");
 
     token1 = dictionary_token->getValue("Width");
     token2 = dictionary_token->getValue("Height");
@@ -4125,8 +4126,8 @@ imageOp(PSViewOperatorMgr *mgr)
     token4 = dictionary_token->getValue("ImageMatrix");
     token5 = dictionary_token->getValue("DataSource");
 
-    if (token1 == NULL || token2 == NULL || token3 == NULL ||
-        token4 == NULL || token5 == NULL || decode == NULL) {
+    if (token1 == nullptr || token2 == nullptr || token3 == nullptr ||
+        token4 == nullptr || token5 == nullptr || decode == nullptr) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED);
       return;
     }
@@ -4137,21 +4138,21 @@ imageOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    PSViewArrayToken *array_token = (PSViewArrayToken *) decode;
+    auto *array_token = static_cast<PSViewArrayToken *>(decode);
 
-    decode_size = array_token->getNumValues();
+    decode_size = int(array_token->getNumValues());
 
-    decode_array.resize(decode_size);
+    decode_array.resize(uint(decode_size));
 
     for (int i = 1; i <= decode_size; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isNumber()) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
         return;
       }
 
-      decode_array[i - 1] = sub_token->getRealValue();
+      decode_array[uint(i - 1)] = sub_token->getRealValue();
     }
   }
   else {
@@ -4160,7 +4161,7 @@ imageOp(PSViewOperatorMgr *mgr)
     token2 = mgr->getPSView()->getOperandStack()->pop();
     token1 = mgr->getPSView()->getOperandStack()->pop();
 
-    if (token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL) {
+    if (token1 == nullptr || token2 == nullptr || token3 == nullptr || token4 == nullptr) {
       return;
     }
 
@@ -4189,14 +4190,14 @@ imageOp(PSViewOperatorMgr *mgr)
   }
 
   if (token5->isFile()) {
-    PSViewFileToken *file_token = (PSViewFileToken *) token5;
+    auto *file_token = static_cast<PSViewFileToken *>(token5);
 
-    string str;
+    std::string str;
 
     int c = file_token->readChar();
 
     while (c != EOF) {
-      str += c;
+      str += char(c);
 
       c = file_token->readChar();
     }
@@ -4205,7 +4206,7 @@ imageOp(PSViewOperatorMgr *mgr)
   }
 
   if (token5->isString()) {
-    PSViewStringToken *string_token = (PSViewStringToken *) token5;
+    auto *string_token = static_cast<PSViewStringToken *>(token5);
 
     PSVinteger length = string_token->getLength();
 
@@ -4216,20 +4217,20 @@ imageOp(PSViewOperatorMgr *mgr)
 
     PSVinteger num_bytes = num_bits/8;
 
-    char *image_data = new char [num_bytes];
+    unsigned char *image_data = new unsigned char [uint(num_bytes)];
 
-    memset(image_data, 0, num_bytes*sizeof(char));
+    memset(image_data, 0, uint(num_bytes)*sizeof(char));
 
     int bit_num  = 7;
     int byte_num = 0;
 
-    int bit_mask = 1 << bit_num;
+    unsigned char bit_mask = 1 << bit_num;
 
     for (int i = 0; i < length; i++) {
       int c = string_token->getChar(i + 1);
 
       for (int j = 0; j < 8; j++) {
-        int char_mask = 1 << (7 - j);
+        uint char_mask = 1 << (7 - j);
 
         if (c & char_mask)
           image_data[byte_num] |= bit_mask;
@@ -4252,10 +4253,10 @@ imageOp(PSViewOperatorMgr *mgr)
         break;
     }
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-    gstate_token->image(image_data, (int) width, (int) height, (int) bits_per_sample, &matrix,
-                        &decode_array[0], decode_size);
+    gstate_token->image(reinterpret_cast<char *>(image_data), int(width), int(height),
+                        int(bits_per_sample), &matrix, &decode_array[0], decode_size);
 
     delete [] image_data;
   }
@@ -4269,22 +4270,22 @@ imageOp(PSViewOperatorMgr *mgr)
 
     PSVinteger num_bytes = num_bits/8;
 
-    char *image_data = new char [num_bytes];
+    char *image_data = new char [uint(num_bytes)];
 
     for (int i = 0; i < num_bytes; i++)
-      image_data[i] = '\0';
+      image_data[uint(i)] = '\0';
 
     int bit_num  = 7;
     int byte_num = 0;
 
-    int bit_mask = 1 << bit_num;
+    unsigned char bit_mask = 1 << bit_num;
 
     while (byte_num < num_bytes) {
       token5->execute();
 
       PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-      if (token == NULL)
+      if (token == nullptr)
         break;
 
       if (! token->isString()) {
@@ -4292,12 +4293,12 @@ imageOp(PSViewOperatorMgr *mgr)
         break;
       }
 
-      PSViewStringToken *string_token = (PSViewStringToken *) token;
+      auto *string_token = static_cast<PSViewStringToken *>(token);
 
       PSVinteger length = string_token->getLength();
 
       if (length == 0) {
-        byte_num = num_bytes;
+        byte_num = int(num_bytes);
 
         break;
       }
@@ -4306,7 +4307,7 @@ imageOp(PSViewOperatorMgr *mgr)
         int c = string_token->getChar(i + 1);
 
         for (int j = 0; j < 8; j++) {
-          int char_mask = 1 << (7 - j);
+          uint char_mask = 1 << (7 - j);
 
           if (c & char_mask)
             image_data[byte_num] |= bit_mask;
@@ -4331,9 +4332,9 @@ imageOp(PSViewOperatorMgr *mgr)
     }
 
     if (byte_num == num_bytes) {
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-      gstate_token->image(image_data, (int) width, (int) height, (int) bits_per_sample, &matrix,
+      gstate_token->image(image_data, int(width), int(height), int(bits_per_sample), &matrix,
                           &decode_array[0], decode_size);
     }
 
@@ -4347,22 +4348,23 @@ imageMaskOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token5 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token5 == NULL)
+  if (token5 == nullptr)
     return;
 
   PSViewToken *token1, *token2, *token3, *token4;
 
   if (token5->isDictionary()) {
-    PSViewDictionaryToken *dictionary_token = (PSViewDictionaryToken *) token5;
+    auto *dictionary_token = static_cast<PSViewDictionaryToken *>(token5);
 
-    PSViewToken *decode = dictionary_token->getValue("Decode");
+    auto *decode = dictionary_token->getValue("Decode");
 
     token1 = dictionary_token->getValue("Width");
     token2 = dictionary_token->getValue("Height");
     token4 = dictionary_token->getValue("ImageMatrix");
     token5 = dictionary_token->getValue("DataSource");
 
-    if (token1 == NULL || token2 == NULL || token4 == NULL || token5 == NULL || decode == NULL) {
+    if (token1 == nullptr || token2 == nullptr || token4 == nullptr ||
+        token5 == nullptr || decode == nullptr) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED);
       return;
     }
@@ -4373,28 +4375,28 @@ imageMaskOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    PSViewArrayToken *array_token = (PSViewArrayToken *) decode;
+    auto *array_token = static_cast<PSViewArrayToken *>(decode);
 
-    int decode_size = array_token->getNumValues();
+    int decode_size = int(array_token->getNumValues());
 
     if (decode_size != 2) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
       return;
     }
 
-    vector<double> decode_array;
+    std::vector<double> decode_array;
 
-    decode_array.resize(decode_size);
+    decode_array.resize(uint(decode_size));
 
     for (int i = 1; i <= decode_size; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isNumber()) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
         return;
       }
 
-      decode_array[i - 1] = sub_token->getRealValue();
+      decode_array[uint(i - 1)] = sub_token->getRealValue();
     }
 
     if      (decode_array[0] == 1 && decode_array[1] == 0)
@@ -4412,7 +4414,7 @@ imageMaskOp(PSViewOperatorMgr *mgr)
     token2 = mgr->getPSView()->getOperandStack()->pop();
     token1 = mgr->getPSView()->getOperandStack()->pop();
 
-    if (token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL)
+    if (token1 == nullptr || token2 == nullptr || token3 == nullptr || token4 == nullptr)
       return;
 
     if (! token1->isInteger() || ! token2->isInteger() || ! token3->isBoolean() ||
@@ -4438,14 +4440,14 @@ imageMaskOp(PSViewOperatorMgr *mgr)
   }
 
   if (token5->isFile()) {
-    PSViewFileToken *file_token = (PSViewFileToken *) token5;
+    auto *file_token = static_cast<PSViewFileToken *>(token5);
 
-    string str;
+    std::string str;
 
     int c = file_token->readChar();
 
     while (c != EOF) {
-      str += c;
+      str += char(c);
 
       c = file_token->readChar();
     }
@@ -4454,7 +4456,7 @@ imageMaskOp(PSViewOperatorMgr *mgr)
   }
 
   if (token5->isString()) {
-    PSViewStringToken *string_token = (PSViewStringToken *) token5;
+    auto *string_token = static_cast<PSViewStringToken *>(token5);
 
     PSVinteger length = string_token->getLength();
 
@@ -4465,14 +4467,14 @@ imageMaskOp(PSViewOperatorMgr *mgr)
 
     PSVinteger num_bytes = num_bits/8;
 
-    char *image_data = new char [num_bytes];
+    char *image_data = new char [uint(num_bytes)];
 
-    memset(image_data, 0, num_bytes*sizeof(char));
+    memset(image_data, 0, uint(num_bytes)*sizeof(char));
 
     int bit_num  = 7;
     int byte_num = 0;
 
-    int bit_mask = 1 << bit_num;
+    unsigned char bit_mask = 1 << bit_num;
 
     for (int i = 0; i < length; i++) {
       int c = string_token->getChar(i + 1);
@@ -4501,9 +4503,9 @@ imageMaskOp(PSViewOperatorMgr *mgr)
         break;
     }
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-    gstate_token->imageMask(image_data, (int) width, (int) height, (int) polarity, &matrix);
+    gstate_token->imageMask(image_data, int(width), int(height), int(polarity), &matrix);
 
     delete [] image_data;
   }
@@ -4517,7 +4519,7 @@ imageMaskOp(PSViewOperatorMgr *mgr)
 
     PSVinteger num_bytes = num_bits/8;
 
-    char *image_data = new char [num_bytes];
+    char *image_data = new char [uint(num_bytes)];
 
     for (int i = 0; i < num_bytes; i++)
       image_data[i] = '\0';
@@ -4525,14 +4527,14 @@ imageMaskOp(PSViewOperatorMgr *mgr)
     PSVinteger bit_num  = 7;
     PSVinteger byte_num = 0;
 
-    int bit_mask = 1 << bit_num;
+    unsigned char bit_mask = 1 << bit_num;
 
     while (byte_num < num_bytes) {
       token5->execute();
 
       PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-      if (token == NULL)
+      if (token == nullptr)
         break;
 
       if (! token->isString()) {
@@ -4541,7 +4543,7 @@ imageMaskOp(PSViewOperatorMgr *mgr)
         break;
       }
 
-      PSViewStringToken *string_token = (PSViewStringToken *) token;
+      auto *string_token = static_cast<PSViewStringToken *>(token);
 
       PSVinteger length = string_token->getLength();
 
@@ -4580,9 +4582,9 @@ imageMaskOp(PSViewOperatorMgr *mgr)
     }
 
     if (byte_num == num_bytes) {
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-      gstate_token->imageMask(image_data, (int) width, (int) height, (int) polarity, &matrix);
+      gstate_token->imageMask(image_data, int(width), int(height), int(polarity), &matrix);
     }
 
     delete [] image_data;
@@ -4595,7 +4597,7 @@ indexOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isInteger()) {
@@ -4620,7 +4622,7 @@ indexOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  token = mgr->getPSView()->getOperandStack()->peek((int) (num_stack - count));
+  token = mgr->getPSView()->getOperandStack()->peek(int(num_stack - count));
 
   PSViewToken *token1 = token->dup();
 
@@ -4631,7 +4633,7 @@ void
 PSViewOperatorMgr::
 initClipOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->initClip();
 }
@@ -4640,7 +4642,7 @@ void
 PSViewOperatorMgr::
 initGraphicsOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->initGraphics();
 }
@@ -4649,7 +4651,7 @@ void
 PSViewOperatorMgr::
 initMatrixOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->initMatrix();
 }
@@ -4660,7 +4662,7 @@ internalDictOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isInteger()) {
@@ -4669,7 +4671,7 @@ internalDictOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  int integer = token->getIntegerValue();
+  int integer = int(token->getIntegerValue());
 
   if (integer != 1183615869) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_ACCESS);
@@ -4677,7 +4679,7 @@ internalDictOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dict = mgr->getPSView()->getDictionaryMgr()->getInternalDictionary();
+  auto *dict = mgr->getPSView()->getDictionaryMgr()->getInternalDictionary();
 
   mgr->getPSView()->getOperandStack()->push(dict);
 }
@@ -4688,7 +4690,7 @@ invertMatrixOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token2 == NULL)
+  if (token2 == nullptr)
     return;
 
   if (! token2->isMatrix()) {
@@ -4699,14 +4701,14 @@ invertMatrixOp(PSViewOperatorMgr *mgr)
 
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL)
+  if (token1 == nullptr)
     return;
 
   CAutoPtr<CMatrix2D> matrix1;
 
   matrix1 = token1->getMatrix();
 
-  if (matrix1 == NULL)
+  if (matrix1 == nullptr)
     return;
 
   CMatrix2D imatrix;
@@ -4729,7 +4731,7 @@ itransformOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber()) {
@@ -4742,7 +4744,7 @@ itransformOp(PSViewOperatorMgr *mgr)
     PSVreal x = token1->getRealValue();
     PSVreal y = token2->getRealValue();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     CMatrix2D *matrix = gstate_token->getInverseCTMMatrix();
 
@@ -4761,7 +4763,7 @@ itransformOp(PSViewOperatorMgr *mgr)
 
     matrix = token2->getMatrix();
 
-    if (matrix == NULL)
+    if (matrix == nullptr)
       return;
 
     PSViewToken *token0 = mgr->getPSView()->getOperandStack()->pop();
@@ -4802,7 +4804,7 @@ knownOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isDictionary()) {
@@ -4811,11 +4813,11 @@ knownOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dictionary_token1 = (PSViewDictionaryToken *) token1;
+  auto *dictionary_token1 = static_cast<PSViewDictionaryToken *>(token1);
 
   PSViewToken *token = dictionary_token1->getValue(token2);
 
-  if (token != NULL)
+  if (token != nullptr)
     trueOp(mgr);
   else
     falseOp(mgr);
@@ -4828,7 +4830,7 @@ kshowOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isProcedure() || ! token2->isString()) {
@@ -4837,11 +4839,11 @@ kshowOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
-  string str = string_token2->toString();
+  std::string str = string_token2->toString();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->kshow(token1, str);
 }
@@ -4850,7 +4852,7 @@ void
 PSViewOperatorMgr::
 languageLevelOp(PSViewOperatorMgr *mgr)
 {
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), 2);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), 2);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -4862,7 +4864,7 @@ leOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   PSVinteger flag = token1->compare(token2);
@@ -4879,33 +4881,33 @@ lengthOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   PSVinteger length;
 
   if      (token->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+    auto *array_token = static_cast<PSViewArrayToken *>(token);
 
     length = array_token->getNumValues();
   }
   else if (token->isPackedArray()) {
-    PSViewPackedArrayToken *array_token = (PSViewPackedArrayToken *) token;
+    auto *array_token = static_cast<PSViewPackedArrayToken *>(token);
 
     length = array_token->getNumValues();
   }
   else if (token->isDictionary()) {
-    PSViewDictionaryToken *dictionary_token = (PSViewDictionaryToken *) token;
+    auto *dictionary_token = static_cast<PSViewDictionaryToken *>(token);
 
     length = dictionary_token->getNumValues();
   }
   else if (token->isString()) {
-    PSViewStringToken *string_token = (PSViewStringToken *) token;
+    auto *string_token = static_cast<PSViewStringToken *>(token);
 
     length = string_token->getLength();
   }
   else if (token->isName()) {
-    PSViewNameToken *name_token = (PSViewNameToken *) token;
+    auto *name_token = static_cast<PSViewNameToken *>(token);
 
     length = name_token->getLength();
   }
@@ -4915,7 +4917,7 @@ lengthOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewIntegerToken *token1 = new PSViewIntegerToken(mgr->getPSView(), length);
+  auto *token1 = new PSViewIntegerToken(mgr->getPSView(), length);
 
   mgr->getPSView()->getOperandStack()->push(token1);
 }
@@ -4927,7 +4929,7 @@ lineToOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -4939,7 +4941,7 @@ lineToOp(PSViewOperatorMgr *mgr)
   PSVreal x = token1->getRealValue();
   PSVreal y = token2->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->lineTo(x, y);
 }
@@ -4950,7 +4952,7 @@ lnOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -4961,7 +4963,7 @@ lnOp(PSViewOperatorMgr *mgr)
 
   PSVreal real = token->getRealValue();
 
-  PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), log(real));
+  auto *token1 = new PSViewRealToken(mgr->getPSView(), log(real));
 
   mgr->getPSView()->getOperandStack()->push(token1);
 }
@@ -4972,12 +4974,12 @@ loadOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   PSViewToken *token1 = mgr->getPSView()->getDictionaryMgr()->lookup(token);
 
-  if (token1 == NULL) {
+  if (token1 == nullptr) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED);
 
     return;
@@ -4992,7 +4994,7 @@ logOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -5003,7 +5005,7 @@ logOp(PSViewOperatorMgr *mgr)
 
   PSVreal real = token->getRealValue();
 
-  PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), log10(real));
+  auto *token1 = new PSViewRealToken(mgr->getPSView(), log10(real));
 
   mgr->getPSView()->getOperandStack()->push(token1);
 }
@@ -5014,7 +5016,7 @@ loopOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isProcedure()) {
@@ -5040,7 +5042,7 @@ ltOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   PSVinteger flag = token1->compare(token2);
@@ -5058,7 +5060,7 @@ makeFontOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isDictionary() || ! token2->isMatrix()) {
@@ -5071,11 +5073,11 @@ makeFontOp(PSViewOperatorMgr *mgr)
 
   matrix = token2->getMatrix();
 
-  PSViewDictionaryToken *dict = (PSViewDictionaryToken *) token1;
+  auto *dict = static_cast<PSViewDictionaryToken *>(token1);
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  PSViewDictionaryToken *font = gstate_token->makeFont(dict, matrix);
+  auto *font = gstate_token->makeFont(dict, matrix);
 
   mgr->getPSView()->getOperandStack()->push(font);
 }
@@ -5087,7 +5089,7 @@ makePatternOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isDictionary() || ! token2->isMatrix()) {
@@ -5100,11 +5102,11 @@ makePatternOp(PSViewOperatorMgr *mgr)
 
   matrix = token2->getMatrix();
 
-  PSViewDictionaryToken *dict = (PSViewDictionaryToken *) token1;
+  auto *dict = static_cast<PSViewDictionaryToken *>(token1);
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  PSViewDictionaryToken *pattern = gstate_token->makePattern(dict, matrix);
+  auto *pattern = gstate_token->makePattern(dict, matrix);
 
   mgr->getPSView()->getOperandStack()->push(pattern);
 }
@@ -5124,7 +5126,7 @@ matrixOp(PSViewOperatorMgr *mgr)
 
   matrix.setIdentity();
 
-  PSViewArrayToken *token = new PSViewArrayToken(mgr->getPSView(), &matrix);
+  auto *token = new PSViewArrayToken(mgr->getPSView(), &matrix);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -5135,7 +5137,7 @@ maxLengthOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isDictionary()) {
@@ -5144,11 +5146,11 @@ maxLengthOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dictionary_token = (PSViewDictionaryToken *) token;
+  auto *dictionary_token = static_cast<PSViewDictionaryToken *>(token);
 
-  PSVinteger length = dictionary_token->getMaxValues();
+  auto length = dictionary_token->getMaxValues();
 
-  PSViewIntegerToken *token1 = new PSViewIntegerToken(mgr->getPSView(), length);
+  auto *token1 = new PSViewIntegerToken(mgr->getPSView(), length);
 
   mgr->getPSView()->getOperandStack()->push(token1);
 }
@@ -5160,7 +5162,7 @@ modOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isInteger() || ! token2->isInteger()) {
@@ -5179,7 +5181,7 @@ modOp(PSViewOperatorMgr *mgr)
 
   PSVinteger integer1 = token1->getIntegerValue();
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), integer1 % integer2);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), integer1 % integer2);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -5191,7 +5193,7 @@ moveToOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -5203,7 +5205,7 @@ moveToOp(PSViewOperatorMgr *mgr)
   PSVreal x = token1->getRealValue();
   PSVreal y = token2->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->moveTo(x, y);
 }
@@ -5215,7 +5217,7 @@ mulOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -5227,8 +5229,7 @@ mulOp(PSViewOperatorMgr *mgr)
   PSViewToken *token;
 
   if (token1->isInteger() && token2->isInteger()) {
-    PSVinteger result = token1->getIntegerValue() *
-                        token2->getIntegerValue();
+    PSVinteger result = token1->getIntegerValue() * token2->getIntegerValue();
 
     token = new PSViewIntegerToken(mgr->getPSView(), result);
   }
@@ -5248,7 +5249,7 @@ neOp(PSViewOperatorMgr *mgr)
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (token1->compare(token2) == 0)
@@ -5263,7 +5264,7 @@ negOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -5280,7 +5281,7 @@ negOp(PSViewOperatorMgr *mgr)
     if (integer != LONG_MIN)
       token1 = new PSViewIntegerToken(mgr->getPSView(), -integer);
     else
-      token1 = new PSViewRealToken(mgr->getPSView(), -((double) integer));
+      token1 = new PSViewRealToken(mgr->getPSView(), -double(integer));
   }
   else {
     PSVreal real = token->getRealValue();
@@ -5295,7 +5296,7 @@ void
 PSViewOperatorMgr::
 newPathOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->newPath();
 }
@@ -5306,7 +5307,7 @@ noAccessOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isArray() && ! token->isPackedArray() &&
@@ -5326,7 +5327,7 @@ notOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isBoolean() && ! token->isInteger()) {
@@ -5344,7 +5345,7 @@ notOp(PSViewOperatorMgr *mgr)
   else {
     PSVinteger integer = token->getIntegerValue();
 
-    PSViewIntegerToken *token1 = new PSViewIntegerToken(mgr->getPSView(), ~integer);
+    auto *token1 = new PSViewIntegerToken(mgr->getPSView(), ~integer);
 
     mgr->getPSView()->getOperandStack()->push(token1);
   }
@@ -5354,7 +5355,7 @@ void
 PSViewOperatorMgr::
 nullOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token = new PSViewNullToken(mgr->getPSView());
+  auto *token = new PSViewNullToken(mgr->getPSView());
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -5366,7 +5367,7 @@ orOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if ((! token1->isBoolean() && ! token1->isInteger()) ||
@@ -5390,7 +5391,7 @@ orOp(PSViewOperatorMgr *mgr)
     PSVinteger integer1 = token1->getIntegerValue();
     PSVinteger integer2 = token2->getIntegerValue();
 
-    PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), integer1 | integer2);
+    auto *token = new PSViewIntegerToken(mgr->getPSView(), integer1 | integer2);
 
     mgr->getPSView()->getOperandStack()->push(token);
   }
@@ -5402,7 +5403,7 @@ packedArrayOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL)
+  if (token1 == nullptr)
     return;
 
   if (! token1->isInteger()) {
@@ -5419,15 +5420,15 @@ packedArrayOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewPackedArrayToken *packed_array = new PSViewPackedArrayToken(mgr->getPSView(), dimension);
+  auto *packed_array = new PSViewPackedArrayToken(mgr->getPSView(), dimension);
 
   for (int i = 1; i <= dimension; i++) {
     PSViewToken *sub_token = mgr->getPSView()->getOperandStack()->pop();
 
-    if (sub_token == NULL)
+    if (sub_token == nullptr)
       return;
 
-    packed_array->setValue(dimension - i + 1, sub_token);
+    packed_array->setValue(int(dimension - i + 1), sub_token);
   }
 
   mgr->getPSView()->getOperandStack()->push(packed_array);
@@ -5439,14 +5440,14 @@ pathBBoxOp(PSViewOperatorMgr *mgr)
 {
   double llx, lly, urx, ury;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->pathBBox(&llx, &lly, &urx, &ury);
 
-  PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), llx);
-  PSViewRealToken *token2 = new PSViewRealToken(mgr->getPSView(), lly);
-  PSViewRealToken *token3 = new PSViewRealToken(mgr->getPSView(), urx);
-  PSViewRealToken *token4 = new PSViewRealToken(mgr->getPSView(), ury);
+  auto *token1 = new PSViewRealToken(mgr->getPSView(), llx);
+  auto *token2 = new PSViewRealToken(mgr->getPSView(), lly);
+  auto *token3 = new PSViewRealToken(mgr->getPSView(), urx);
+  auto *token4 = new PSViewRealToken(mgr->getPSView(), ury);
 
   mgr->getPSView()->getOperandStack()->push(token1);
   mgr->getPSView()->getOperandStack()->push(token2);
@@ -5463,8 +5464,8 @@ pathForAllOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL ||
-      token3 == NULL || token4 == NULL)
+  if (token1 == nullptr || token2 == nullptr ||
+      token3 == nullptr || token4 == nullptr)
     return;
 
   if (! token1->isProcedure() || ! token2->isProcedure() ||
@@ -5474,7 +5475,7 @@ pathForAllOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->pathForAll(token1, token2, token3, token4);
 }
@@ -5492,7 +5493,7 @@ printOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isString()) {
@@ -5501,9 +5502,9 @@ printOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token = (PSViewStringToken *) token;
+  auto *string_token = static_cast<PSViewStringToken *>(token);
 
-  string str = string_token->toString();
+  std::string str = string_token->toString();
 
   CStrUtil::printf("%s", str.c_str());
 }
@@ -5512,9 +5513,9 @@ void
 PSViewOperatorMgr::
 productOp(PSViewOperatorMgr *mgr)
 {
-  static string product = "PSView";
+  static std::string product = "PSView";
 
-  PSViewStringToken *token = new PSViewStringToken(mgr->getPSView(), product);
+  auto *token = new PSViewStringToken(mgr->getPSView(), product);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -5549,7 +5550,7 @@ putOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
     return;
 
   if (token1->isArray() || token1->isString()) {
@@ -5564,7 +5565,7 @@ putOp(PSViewOperatorMgr *mgr)
     PSVinteger num_tokens;
 
     if (token1->isArray()) {
-      PSViewArrayToken *array_token = (PSViewArrayToken *) token1;
+      auto *array_token = static_cast<PSViewArrayToken *>(token1);
 
       num_tokens = array_token->getNumValues();
 
@@ -5574,10 +5575,10 @@ putOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      array_token->setValue(ind + 1, token3);
+      array_token->setValue(uint(ind + 1), token3);
     }
     else if (token1->isPackedArray()) {
-      PSViewPackedArrayToken *array_token = (PSViewPackedArrayToken *) token1;
+      auto *array_token = static_cast<PSViewPackedArrayToken *>(token1);
 
       num_tokens = array_token->getNumValues();
 
@@ -5587,10 +5588,10 @@ putOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      array_token->setValue(ind + 1, token3);
+      array_token->setValue(int(ind + 1), token3);
     }
     else {
-      PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+      auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
       num_tokens = string_token1->getLength();
 
@@ -5608,11 +5609,11 @@ putOp(PSViewOperatorMgr *mgr)
 
       PSVinteger c = token3->getIntegerValue();
 
-      string_token1->setChar(ind + 1, c);
+      string_token1->setChar(int(ind + 1), char(c));
     }
   }
   else if (token1->isDictionary()) {
-    PSViewDictionaryToken *dict = (PSViewDictionaryToken *) token1;
+    auto *dict = static_cast<PSViewDictionaryToken *>(token1);
 
     dict->addValue(token2, token3);
   }
@@ -5631,7 +5632,7 @@ putIntervalOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
     return;
 
   if (! token1->isArray() && ! token1->isString()) {
@@ -5666,12 +5667,12 @@ putIntervalOp(PSViewOperatorMgr *mgr)
   PSVinteger num_tokens1;
 
   if (token1->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token1;
+    auto *array_token = static_cast<PSViewArrayToken *>(token1);
 
     num_tokens1 = array_token->getNumValues();
   }
   else {
-    PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+    auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
     num_tokens1 = string_token1->getLength();
   }
@@ -5679,17 +5680,17 @@ putIntervalOp(PSViewOperatorMgr *mgr)
   PSVinteger num_tokens3;
 
   if (token3->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token3;
+    auto *array_token = static_cast<PSViewArrayToken *>(token3);
 
     num_tokens3 = array_token->getNumValues();
   }
   else if (token3->isPackedArray()) {
-    PSViewPackedArrayToken *array_token = (PSViewPackedArrayToken *) token3;
+    auto *array_token = static_cast<PSViewPackedArrayToken *>(token3);
 
     num_tokens3 = array_token->getNumValues();
   }
   else {
-    PSViewStringToken *string_token3 = (PSViewStringToken *) token3;
+    auto *string_token3 = static_cast<PSViewStringToken *>(token3);
 
     num_tokens3 = string_token3->getLength();
   }
@@ -5701,36 +5702,36 @@ putIntervalOp(PSViewOperatorMgr *mgr)
   }
 
   if (token1->isArray()) {
-    PSViewToken **tokens = new PSViewToken * [num_tokens3 + 1];
+    auto **tokens = new PSViewToken * [uint(num_tokens3 + 1)];
 
     if (token3->isArray()) {
-      PSViewArrayToken *array_token3 = (PSViewArrayToken *) token3;
+      auto *array_token3 = static_cast<PSViewArrayToken *>(token3);
 
       for (int i = 1; i <= num_tokens3; i++)
-        tokens[i - 1] = array_token3->getValue(i);
+        tokens[uint(i - 1)] = array_token3->getValue(uint(i));
     }
     else {
-      PSViewPackedArrayToken *packed_array_token3 = (PSViewPackedArrayToken *) token3;
+      auto *packed_array_token3 = static_cast<PSViewPackedArrayToken *>(token3);
 
       for (int i = 1; i <= num_tokens3; i++)
-        tokens[i - 1] = packed_array_token3->getValue(i);
+        tokens[uint(i - 1)] = packed_array_token3->getValue(i);
     }
 
-    PSViewArrayToken *array_token1 = (PSViewArrayToken *) token1;
+    auto *array_token1 = static_cast<PSViewArrayToken *>(token1);
 
     array_token1->setSubValues(ind + 1, tokens, num_tokens3);
   }
   else {
-    PSViewStringToken *string_token3 = (PSViewStringToken *) token3;
+    auto *string_token3 = static_cast<PSViewStringToken *>(token3);
 
-    string str;
+    std::string str;
 
     for (int i = 1; i <= num_tokens3; i++)
-      str += string_token3->getChar(i);
+      str += char(string_token3->getChar(i));
 
-    PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+    auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
-    string_token1->setChars(str, ind + 1);
+    string_token1->setChars(str, int(ind + 1));
   }
 }
 
@@ -5749,7 +5750,7 @@ randOp(PSViewOperatorMgr *mgr)
 {
   long r = COSRand::rand();
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), r);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), r);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -5760,7 +5761,7 @@ rcheckOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isArray() && ! token->isPackedArray() && ! token->isDictionary() &&
@@ -5786,8 +5787,8 @@ rcurveToOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL ||
-      token4 == NULL || token5 == NULL || token6 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr ||
+      token4 == nullptr || token5 == nullptr || token6 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -5805,7 +5806,7 @@ rcurveToOp(PSViewOperatorMgr *mgr)
   double x3 = token5->getRealValue();
   double y3 = token6->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->rcurveTo(x1, y1, x2, y2, x3, y3);
 }
@@ -5816,7 +5817,7 @@ readOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isFile()) {
@@ -5824,12 +5825,12 @@ readOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken *file_token = (PSViewFileToken *) token;
+  auto *file_token = static_cast<PSViewFileToken *>(token);
 
   int c = file_token->readChar();
 
   if (c != EOF) {
-    PSViewIntegerToken *token1 = new PSViewIntegerToken(mgr->getPSView(), c);
+    auto *token1 = new PSViewIntegerToken(mgr->getPSView(), c);
 
     mgr->getPSView()->getOperandStack()->push(token1);
 
@@ -5846,7 +5847,7 @@ readHexStringOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isFile() || ! token2->isString()) {
@@ -5855,14 +5856,14 @@ readHexStringOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken   *file_token1   = (PSViewFileToken   *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *file_token1   = static_cast<PSViewFileToken   *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
   PSVinteger length = string_token2->getLength();
 
   int i = 1;
 
-  string hex_string;
+  std::string hex_string;
 
   while (i <= length) {
     int c = file_token1->readChar();
@@ -5873,12 +5874,12 @@ readHexStringOp(PSViewOperatorMgr *mgr)
     if (! isxdigit(c))
       continue;
 
-    hex_string += c;
+    hex_string += char(c);
 
     if (hex_string.size() == 2) {
-      int hex_value = CStrUtil::toBaseInteger(hex_string, 16);
+      int hex_value = int(CStrUtil::toBaseInteger(hex_string, 16));
 
-      string_token2->setChar(i++, hex_value);
+      string_token2->setChar(i++, char(hex_value));
 
       hex_string = "";
     }
@@ -5887,9 +5888,9 @@ readHexStringOp(PSViewOperatorMgr *mgr)
   if (hex_string.size() == 1) {
     hex_string += '0';
 
-    int hex_value = CStrUtil::toBaseInteger(hex_string, 16);
+    int hex_value = int(CStrUtil::toBaseInteger(hex_string, 16));
 
-    string_token2->setChar(i++, (PSVchar) hex_value);
+    string_token2->setChar(i++, char(hex_value));
   }
 
   PSViewToken *token;
@@ -5914,7 +5915,7 @@ readLineOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isFile() || ! token2->isString()) {
@@ -5923,8 +5924,8 @@ readLineOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken   *file_token1   = (PSViewFileToken   *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *file_token1   = static_cast<PSViewFileToken   *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
   PSVinteger length = string_token2->getLength();
 
@@ -5939,7 +5940,7 @@ readLineOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    string_token2->setChar(i++, c);
+    string_token2->setChar(i++, char(c));
 
     c = file_token1->readChar();
   }
@@ -5960,7 +5961,7 @@ readOnlyOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isArray() && ! token->isPackedArray() &&
@@ -5983,7 +5984,7 @@ readStringOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isFile() || ! token2->isString()) {
@@ -5992,8 +5993,8 @@ readStringOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken   *file_token1   = (PSViewFileToken   *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *file_token1   = static_cast<PSViewFileToken   *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
   PSVinteger length = string_token2->getLength();
 
@@ -6005,7 +6006,7 @@ readStringOp(PSViewOperatorMgr *mgr)
     if (c == EOF)
       break;
 
-    string_token2->setChar(i, c);
+    string_token2->setChar(i, char(c));
   }
 
   PSViewToken *token;
@@ -6027,9 +6028,9 @@ void
 PSViewOperatorMgr::
 realTimeOp(PSViewOperatorMgr *mgr)
 {
-  time_t real_time = time(NULL);
+  time_t real_time = time(nullptr);
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), (int) real_time);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), int(real_time));
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -6040,7 +6041,7 @@ rectClipOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token4 == NULL)
+  if (token4 == nullptr)
     return;
 
   if (token4->isNumber()) {
@@ -6048,7 +6049,7 @@ rectClipOp(PSViewOperatorMgr *mgr)
     PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
     PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-    if (token1 == NULL || token2 == NULL || token3 == NULL)
+    if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
       return;
 
     if (! token1->isNumber() || ! token2->isNumber() ||
@@ -6063,12 +6064,12 @@ rectClipOp(PSViewOperatorMgr *mgr)
     PSVreal width  = token3->getRealValue();
     PSVreal height = token4->getRealValue();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->rectClip(&x, &y, &width, &height, 1);
   }
   else if (token4->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token4;
+    auto *array_token = static_cast<PSViewArrayToken *>(token4);
 
     PSVinteger num_tokens = array_token->getNumValues();
 
@@ -6079,7 +6080,7 @@ rectClipOp(PSViewOperatorMgr *mgr)
     }
 
     for (int i = 1; i <= num_tokens; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isNumber()) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -6090,31 +6091,30 @@ rectClipOp(PSViewOperatorMgr *mgr)
 
     PSVinteger num_arrays = num_tokens/4;
 
-    vector<double> x, y, width, height;
+    std::vector<double> x, y, width, height;
 
-    x     .resize(num_arrays);
-    y     .resize(num_arrays);
-    width .resize(num_arrays);
-    height.resize(num_arrays);
+    x     .resize(uint(num_arrays));
+    y     .resize(uint(num_arrays));
+    width .resize(uint(num_arrays));
+    height.resize(uint(num_arrays));
 
     PSViewToken *tokens[4];
 
-    for (int i = 0; i < num_arrays; i++) {
+    for (uint i = 0; i < uint(num_arrays); i++) {
       tokens[0] = array_token->getValue(4*i + 1);
       tokens[1] = array_token->getValue(4*i + 2);
       tokens[2] = array_token->getValue(4*i + 3);
       tokens[3] = array_token->getValue(4*i + 4);
 
-      x     [i] = tokens[0]->getRealValue();
-      y     [i] = tokens[1]->getRealValue();
-      width [i] = tokens[2]->getRealValue();
-      height[i] = tokens[3]->getRealValue();
+      x     [i] = double(tokens[0]->getRealValue());
+      y     [i] = double(tokens[1]->getRealValue());
+      width [i] = double(tokens[2]->getRealValue());
+      height[i] = double(tokens[3]->getRealValue());
     }
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-    gstate_token->rectClip(&x[0], &y[0], &width[0], &height[0],
-                           (int) num_arrays);
+    gstate_token->rectClip(&x[0], &y[0], &width[0], &height[0], int(num_arrays));
   }
   else if (token4->isString())
     CStrUtil::eprintf("PSView: RectClip not implemented for Strings\n");
@@ -6128,7 +6128,7 @@ rectFillOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token4 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token4 == NULL)
+  if (token4 == nullptr)
     return;
 
   if (token4->isNumber()) {
@@ -6136,7 +6136,7 @@ rectFillOp(PSViewOperatorMgr *mgr)
     PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
     PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-    if (token1 == NULL || token2 == NULL || token3 == NULL)
+    if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
       return;
 
     if (! token1->isNumber() || ! token2->isNumber() ||
@@ -6151,12 +6151,12 @@ rectFillOp(PSViewOperatorMgr *mgr)
     PSVreal width  = token3->getRealValue();
     PSVreal height = token4->getRealValue();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->rectFill(x, y, width, height);
   }
   else if (token4->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token4;
+    auto *array_token = static_cast<PSViewArrayToken *>(token4);
 
     PSVinteger num_tokens = array_token->getNumValues();
 
@@ -6167,7 +6167,7 @@ rectFillOp(PSViewOperatorMgr *mgr)
     }
 
     for (int i = 1; i < num_tokens; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isNumber()) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -6180,7 +6180,7 @@ rectFillOp(PSViewOperatorMgr *mgr)
 
     PSViewToken *tokens[4];
 
-    for (int i = 0; i < num_arrays; i++) {
+    for (uint i = 0; i < uint(num_arrays); i++) {
       tokens[0] = array_token->getValue(4*i + 1);
       tokens[1] = array_token->getValue(4*i + 2);
       tokens[2] = array_token->getValue(4*i + 3);
@@ -6191,7 +6191,7 @@ rectFillOp(PSViewOperatorMgr *mgr)
       double width  = tokens[2]->getRealValue();
       double height = tokens[3]->getRealValue();
 
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
       gstate_token->rectFill(x, y, width, height);
     }
@@ -6208,7 +6208,7 @@ rectStrokeOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   CAutoPtr<CMatrix2D> matrix;
@@ -6220,7 +6220,7 @@ rectStrokeOp(PSViewOperatorMgr *mgr)
 
     token4 = mgr->getPSView()->getOperandStack()->pop();
 
-    if (token4 == NULL)
+    if (token4 == nullptr)
       return;
   }
   else
@@ -6231,7 +6231,7 @@ rectStrokeOp(PSViewOperatorMgr *mgr)
     PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
     PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-    if (token1 == NULL || token2 == NULL || token3 == NULL)
+    if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
       return;
 
     if (! token1->isNumber() || ! token2->isNumber() || ! token3->isNumber()) {
@@ -6245,12 +6245,12 @@ rectStrokeOp(PSViewOperatorMgr *mgr)
     PSVreal width  = token3->getRealValue();
     PSVreal height = token4->getRealValue();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->rectStroke(x, y, width, height, matrix);
   }
   else if (token4->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token4;
+    auto *array_token = static_cast<PSViewArrayToken *>(token4);
 
     PSVinteger num_tokens = array_token->getNumValues();
 
@@ -6261,7 +6261,7 @@ rectStrokeOp(PSViewOperatorMgr *mgr)
     }
 
     for (int i = 1; i <= num_tokens; i++) {
-      token = array_token->getValue(i);
+      token = array_token->getValue(uint(i));
 
       if (! token->isNumber()) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -6274,7 +6274,7 @@ rectStrokeOp(PSViewOperatorMgr *mgr)
 
     PSViewToken *tokens[4];
 
-    for (int i = 0; i < num_arrays; i++) {
+    for (uint i = 0; i < uint(num_arrays); i++) {
       tokens[0] = array_token->getValue(4*i + 1);
       tokens[1] = array_token->getValue(4*i + 2);
       tokens[2] = array_token->getValue(4*i + 3);
@@ -6285,7 +6285,7 @@ rectStrokeOp(PSViewOperatorMgr *mgr)
       double width  = tokens[2]->getRealValue();
       double height = tokens[3]->getRealValue();
 
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
       gstate_token->rectStroke(x, y, width, height, matrix);
     }
@@ -6303,7 +6303,7 @@ renameFileOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isString() || ! token2->isString()) {
@@ -6312,11 +6312,11 @@ renameFileOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
-  string filename1 = string_token1->toString();
-  string filename2 = string_token2->toString();
+  std::string filename1 = string_token1->toString();
+  std::string filename2 = string_token2->toString();
 
   rename(filename1.c_str(), filename2.c_str());
 }
@@ -6328,7 +6328,7 @@ repeatOp(PSViewOperatorMgr *mgr)
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isProcedure() || ! token2->isInteger()) {
@@ -6352,7 +6352,7 @@ repeatOp(PSViewOperatorMgr *mgr)
 
   token1 = mgr->getPSView()->getExecutionStack()->pop();
 
-  while (token1 != NULL && token1 != mgr->getPSView()->getMarkToken()) {
+  while (token1 != nullptr && token1 != mgr->getPSView()->getMarkToken()) {
     token1->execute();
 
     if (mgr->getPSView()->getExitFlag()) {
@@ -6370,7 +6370,7 @@ resetFileOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isFile()) {
@@ -6379,7 +6379,7 @@ resetFileOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken *file_token = (PSViewFileToken *) token;
+  auto *file_token = static_cast<PSViewFileToken *>(token);
 
   file_token->reset();
 }
@@ -6400,30 +6400,29 @@ resourceForAllOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
-  PSViewStringToken *string_token3 = (PSViewStringToken *) token3;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
+  auto *string_token3 = static_cast<PSViewStringToken *>(token3);
 
-  string templ   = string_token1->toString();
-  string scratch = string_token3->toString();
+  std::string templ   = string_token1->toString();
+  std::string scratch = string_token3->toString();
 
-  size_t scratch_len = scratch.size();
+  auto scratch_len = scratch.size();
 
   CGlob pattern(templ);
 
-  PSViewNameToken *name_token = (PSViewNameToken *) token2;
+  auto *name_token = static_cast<PSViewNameToken *>(token2);
 
-  vector<PSViewResource *> resources =
-    mgr->getPSView()->getResourceMgr()->getResources(name_token->getValue());
+  auto resources = mgr->getPSView()->getResourceMgr()->getResources(name_token->getValue());
 
-  int num = resources.size();
+  auto num = resources.size();
 
-  for (int i = 0; i < num; i++) {
-    PSViewToken *resource = resources[i]->getKey();
+  for (uint i = 0; i < num; i++) {
+    auto *resource = resources[i]->getKey();
 
-    string str;
+    std::string str;
 
     if (resource->isName()) {
-      PSViewNameToken *name_token1 = (PSViewNameToken *) resource;
+      auto *name_token1 = static_cast<PSViewNameToken *>(resource);
 
       str = name_token1->getString();
     }
@@ -6470,7 +6469,7 @@ void
 PSViewOperatorMgr::
 reversePathOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->reversePath();
 }
@@ -6479,7 +6478,7 @@ void
 PSViewOperatorMgr::
 revisionOp(PSViewOperatorMgr *mgr)
 {
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), 0);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), 0);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -6491,7 +6490,7 @@ rlineToOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -6503,7 +6502,7 @@ rlineToOp(PSViewOperatorMgr *mgr)
   PSVreal x = token1->getRealValue();
   PSVreal y = token2->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->rlineTo(x, y);
 }
@@ -6515,7 +6514,7 @@ rmoveToOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -6527,7 +6526,7 @@ rmoveToOp(PSViewOperatorMgr *mgr)
   PSVreal x = token1->getRealValue();
   PSVreal y = token2->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->rmoveTo(x, y);
 }
@@ -6539,7 +6538,7 @@ rollOp(PSViewOperatorMgr *mgr)
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isInteger() || ! token2->isInteger()) {
@@ -6551,14 +6550,14 @@ rollOp(PSViewOperatorMgr *mgr)
   PSVinteger integer1 = token1->getIntegerValue();
   PSVinteger integer2 = token2->getIntegerValue();
 
-  mgr->getPSView()->getOperandStack()->roll(integer2, integer1);
+  mgr->getPSView()->getOperandStack()->roll(int(integer2), int(integer1));
 }
 
 void
 PSViewOperatorMgr::
 rootFontOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   PSViewToken *token = gstate_token->getRootFont();
 
@@ -6571,7 +6570,7 @@ rotateOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL)
+  if (token1 == nullptr)
     return;
 
   if (token1->isNumber()) {
@@ -6581,7 +6580,7 @@ rotateOp(PSViewOperatorMgr *mgr)
 
     matrix.setRotation(-CMathGen::DegToRad(angle));
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->postMultiplyCTMMatrix(&matrix);
   }
@@ -6616,7 +6615,7 @@ roundOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -6630,7 +6629,7 @@ roundOp(PSViewOperatorMgr *mgr)
 
     real = CMathRound::Round(real);
 
-    PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), real);
+    auto *token1 = new PSViewRealToken(mgr->getPSView(), real);
 
     mgr->getPSView()->getOperandStack()->push(token1);
   }
@@ -6647,7 +6646,7 @@ runOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isString()) {
@@ -6656,9 +6655,9 @@ runOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token = (PSViewStringToken *) token;
+  auto *string_token = static_cast<PSViewStringToken *>(token);
 
-  string filename = string_token->toString();
+  std::string filename = string_token->toString();
 
   mgr->getPSView()->openCurrentFile(filename);
 
@@ -6671,7 +6670,7 @@ void
 PSViewOperatorMgr::
 rrandOp(PSViewOperatorMgr *mgr)
 {
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), mgr->getRandomSeed());
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), mgr->getRandomSeed());
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -6692,7 +6691,7 @@ scaleOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber()) {
@@ -6709,7 +6708,7 @@ scaleOp(PSViewOperatorMgr *mgr)
 
     matrix.setScale(x, y);
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->postMultiplyCTMMatrix(&matrix);
   }
@@ -6748,7 +6747,7 @@ scaleFontOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isDictionary() || ! token2->isNumber()) {
@@ -6757,11 +6756,11 @@ scaleFontOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dict = (PSViewDictionaryToken *) token1;
+  auto *dict = static_cast<PSViewDictionaryToken *>(token1);
 
   PSVreal scale = token2->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   PSViewDictionaryToken *font = gstate_token->scaleFont(dict, scale);
 
@@ -6775,7 +6774,7 @@ searchOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isString() || ! token2->isString()) {
@@ -6784,8 +6783,8 @@ searchOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
   PSVinteger pos = string_token1->isSubString(string_token2);
 
@@ -6815,7 +6814,7 @@ selectFontOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isName()) {
@@ -6827,14 +6826,14 @@ selectFontOp(PSViewOperatorMgr *mgr)
   if (token2->isNumber()) {
     PSVreal scale = token2->getRealValue();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->selectScaleFont(token1, scale);
   }
   else if (token2->isMatrix()) {
     CMatrix2D *matrix = token2->getMatrix();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->selectMakeFont(token1, matrix);
   }
@@ -6849,7 +6848,7 @@ void
 PSViewOperatorMgr::
 serialNumberOp(PSViewOperatorMgr *mgr)
 {
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), 0);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), 0);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -6860,7 +6859,7 @@ setBlackGenerationOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isProcedure()) {
@@ -6869,7 +6868,7 @@ setBlackGenerationOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setBlackGeneration(token);
 }
@@ -6885,8 +6884,8 @@ setCacheDeviceOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL ||
-      token4 == NULL || token5 == NULL || token6 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr ||
+      token4 == nullptr || token5 == nullptr || token6 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -6904,7 +6903,7 @@ setCacheDeviceOp(PSViewOperatorMgr *mgr)
   double urx = token5->getRealValue();
   double ury = token6->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setCacheDevice(wx, wy, llx, lly, urx, ury);
 }
@@ -6916,7 +6915,7 @@ setCharWidthOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -6928,7 +6927,7 @@ setCharWidthOp(PSViewOperatorMgr *mgr)
   double wx = token1->getRealValue();
   double wy = token2->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setCharWidth(wx, wy);
 }
@@ -6942,8 +6941,8 @@ setCMYKColorOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL ||
-      token3 == NULL || token4 == NULL)
+  if (token1 == nullptr || token2 == nullptr ||
+      token3 == nullptr || token4 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() ||
@@ -6958,7 +6957,7 @@ setCMYKColorOp(PSViewOperatorMgr *mgr)
   PSVreal yellow  = token3->getRealValue();
   PSVreal black   = token4->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setColorSpace(mgr->getPSView()->getGStateMgr()->getCMYKColorSpace());
 
@@ -6971,7 +6970,7 @@ void
 PSViewOperatorMgr::
 setColorOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   const PSViewName &color_space = gstate_token->getColorSpace();
 
@@ -6982,7 +6981,7 @@ setColorOp(PSViewOperatorMgr *mgr)
   if (pattern) {
     token = mgr->getPSView()->getOperandStack()->pop();
 
-    if (token == NULL)
+    if (token == nullptr)
       return;
 
     if (! token->isDictionary()) {
@@ -7003,7 +7002,7 @@ setColorOp(PSViewOperatorMgr *mgr)
     setGrayOp(mgr);
 
   if (pattern) {
-    PSViewGStateToken *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token1->setPatternColor(true);
 
@@ -7019,7 +7018,7 @@ setColorSpaceOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isArray() && ! token->isName()) {
@@ -7029,9 +7028,9 @@ setColorSpaceOp(PSViewOperatorMgr *mgr)
   }
 
   if (token->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+    auto *array_token = static_cast<PSViewArrayToken *>(token);
 
-    int num_tokens = array_token->getNumValues();
+    auto num_tokens = array_token->getNumValues();
 
     if (num_tokens < 1) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -7047,7 +7046,7 @@ setColorSpaceOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    PSViewNameToken *name_token = (PSViewNameToken *) sub_token;
+    auto *name_token = static_cast<PSViewNameToken *>(sub_token);
 
     const PSViewName &color_space = name_token->getValue();
 
@@ -7067,7 +7066,7 @@ setColorSpaceOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      PSViewNameToken *name_token1 = (PSViewNameToken *) sub_token;
+      auto *name_token1 = static_cast<PSViewNameToken *>(sub_token);
 
       const PSViewName &color_space1 = name_token1->getValue();
 
@@ -7082,7 +7081,7 @@ setColorSpaceOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
       gstate_token->setColorSpace(color_space1);
       gstate_token->setPatternColor(true);
@@ -7105,14 +7104,14 @@ setColorSpaceOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
       gstate_token->setColorSpace(color_space);
       gstate_token->setPatternColor(false);
     }
   }
   else {
-    PSViewNameToken *name_token = (PSViewNameToken *) token;
+    auto *name_token = static_cast<PSViewNameToken *>(token);
 
     const PSViewName &color_space = name_token->getValue();
 
@@ -7127,7 +7126,7 @@ setColorSpaceOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->setColorSpace(color_space);
     gstate_token->setPatternColor(false);
@@ -7141,7 +7140,7 @@ setDashOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isArray() || ! token2->isNumber()) {
@@ -7150,18 +7149,18 @@ setDashOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) token1;
+  auto *array_token = static_cast<PSViewArrayToken *>(token1);
 
   PSVinteger num_tokens = array_token->getNumValues();
 
   int zero_count = 0;
 
-  vector<double> dash_array;
+  std::vector<double> dash_array;
 
-  dash_array.resize(num_tokens);
+  dash_array.resize(uint(num_tokens));
 
   for (int i = 1; i <= num_tokens; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isNumber()) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -7169,15 +7168,15 @@ setDashOp(PSViewOperatorMgr *mgr)
       return;
     }
 
-    dash_array[i - 1] = sub_token->getRealValue();
+    dash_array[uint(i - 1)] = sub_token->getRealValue();
 
-    if (dash_array[i - 1] < 0.0) {
+    if (dash_array[uint(i - 1)] < 0.0) {
       mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_LIMIT_CHECK);
 
       return;
     }
 
-    if (dash_array[i - 1] == 0.0)
+    if (dash_array[uint(i - 1)] == 0.0)
       zero_count++;
   }
 
@@ -7195,9 +7194,9 @@ setDashOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  gstate_token->setDashPattern(&dash_array[0], (int) num_tokens, dash_offset);
+  gstate_token->setDashPattern(&dash_array[0], int(num_tokens), dash_offset);
 }
 
 void
@@ -7207,7 +7206,7 @@ setFilePositionOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isFile() || ! token2->isInteger()) {
@@ -7218,9 +7217,9 @@ setFilePositionOp(PSViewOperatorMgr *mgr)
 
   PSVinteger pos = token2->getIntegerValue();
 
-  PSViewFileToken *file_token1 = (PSViewFileToken *) token1;
+  auto *file_token1 = static_cast<PSViewFileToken *>(token1);
 
-  file_token1->setPosition(pos);
+  file_token1->setPosition(uint(pos));
 }
 
 void
@@ -7229,7 +7228,7 @@ setFlatOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -7240,7 +7239,7 @@ setFlatOp(PSViewOperatorMgr *mgr)
 
   PSVreal flat = token->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setFlat(flat);
 }
@@ -7251,7 +7250,7 @@ setFontOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isDictionary()) {
@@ -7259,9 +7258,9 @@ setFontOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dict_token = (PSViewDictionaryToken *) token;
+  auto *dict_token = static_cast<PSViewDictionaryToken *>(token);
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setFont(dict_token);
 }
@@ -7272,7 +7271,7 @@ setGlobalOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isBoolean()) {
@@ -7292,7 +7291,7 @@ setGrayOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -7303,7 +7302,7 @@ setGrayOp(PSViewOperatorMgr *mgr)
 
   PSVreal gray = token->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setColorSpace(mgr->getPSView()->getGStateMgr()->getGrayColorSpace());
 
@@ -7318,7 +7317,7 @@ setGStateOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isGState()) {
@@ -7327,7 +7326,7 @@ setGStateOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = (PSViewGStateToken *) token;
+  auto *gstate_token = static_cast<PSViewGStateToken *>(token);
 
   mgr->getPSView()->getGStateTokenMgr()->setCurrent(gstate_token);
 }
@@ -7340,7 +7339,7 @@ setHSBColorOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() || ! token3->isNumber()) {
@@ -7353,7 +7352,7 @@ setHSBColorOp(PSViewOperatorMgr *mgr)
   PSVreal saturation = token2->getRealValue();
   PSVreal brightness = token3->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setColorSpace(mgr->getPSView()->getGStateMgr()->getRGBColorSpace());
 
@@ -7368,7 +7367,7 @@ setLineCapOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isInteger()) {
@@ -7383,9 +7382,9 @@ setLineCapOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  gstate_token->setLineCap((CLineCapType) (line_cap + 1));
+  gstate_token->setLineCap(CLineCapType(line_cap + 1));
 }
 
 void
@@ -7394,7 +7393,7 @@ setLineJoinOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isInteger()) {
@@ -7409,9 +7408,9 @@ setLineJoinOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
-  gstate_token->setLineJoin((CLineJoinType) (line_join + 1));
+  gstate_token->setLineJoin(CLineJoinType(line_join + 1));
 }
 
 void
@@ -7420,7 +7419,7 @@ setLineWidthOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -7431,7 +7430,7 @@ setLineWidthOp(PSViewOperatorMgr *mgr)
 
   PSVreal line_width = token->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setLineWidth(line_width);
 }
@@ -7442,17 +7441,17 @@ setMatrixOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   CAutoPtr<CMatrix2D> matrix;
 
   matrix = token->getMatrix();
 
-  if (matrix == NULL)
+  if (matrix == nullptr)
     return;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setCTMMatrix(matrix);
 }
@@ -7463,7 +7462,7 @@ setMitreLimitOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -7480,7 +7479,7 @@ setMitreLimitOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setMitreLimit(mitre_limit);
 }
@@ -7491,7 +7490,7 @@ setPackingOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isBoolean()) {
@@ -7511,7 +7510,7 @@ setPatternOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isDictionary()) {
@@ -7520,9 +7519,9 @@ setPatternOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dict_token = (PSViewDictionaryToken *) token;
+  auto *dict_token = static_cast<PSViewDictionaryToken *>(token);
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setPattern(dict_token);
 }
@@ -7535,7 +7534,7 @@ setRGBColorOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL || token3 == NULL)
+  if (token1 == nullptr || token2 == nullptr || token3 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber() || ! token3->isNumber()) {
@@ -7548,7 +7547,7 @@ setRGBColorOp(PSViewOperatorMgr *mgr)
   PSVreal green = token2->getRealValue();
   PSVreal blue  = token3->getRealValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setColorSpace(mgr->getPSView()->getGStateMgr()->getRGBColorSpace());
 
@@ -7563,7 +7562,7 @@ setStrokeAdjustOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isBoolean()) {
@@ -7574,7 +7573,7 @@ setStrokeAdjustOp(PSViewOperatorMgr *mgr)
 
   PSVboolean boolean = token->getBooleanValue();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setStrokeAdjust(boolean);
 }
@@ -7585,7 +7584,7 @@ setUnderColorRemovalOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isProcedure()) {
@@ -7594,7 +7593,7 @@ setUnderColorRemovalOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->setUnderColorRemoval(token);
 }
@@ -7605,7 +7604,7 @@ showOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isString()) {
@@ -7613,11 +7612,11 @@ showOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token = (PSViewStringToken *) token;
+  auto *string_token = static_cast<PSViewStringToken *>(token);
 
-  string str = string_token->toString();
+  std::string str = string_token->toString();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->show(str);
 }
@@ -7626,7 +7625,7 @@ void
 PSViewOperatorMgr::
 showPageOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->showPage();
 }
@@ -7637,7 +7636,7 @@ sinOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -7648,7 +7647,7 @@ sinOp(PSViewOperatorMgr *mgr)
 
   PSVreal real = token->getRealValue();
 
-  PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), sin(CMathGen::DegToRad(real)));
+  auto *token1 = new PSViewRealToken(mgr->getPSView(), sin(CMathGen::DegToRad(real)));
 
   mgr->getPSView()->getOperandStack()->push(token1);
 }
@@ -7659,7 +7658,7 @@ sqrtOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -7676,7 +7675,7 @@ sqrtOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), sqrt(real));
+  auto *token1 = new PSViewRealToken(mgr->getPSView(), sqrt(real));
 
   mgr->getPSView()->getOperandStack()->push(token1);
 }
@@ -7687,7 +7686,7 @@ srandOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isInteger()) {
@@ -7698,7 +7697,7 @@ srandOp(PSViewOperatorMgr *mgr)
 
   mgr->setRandomSeed(token->getIntegerValue());
 
-  COSRand::srand((long) mgr->getRandomSeed());
+  COSRand::srand(int(mgr->getRandomSeed()));
 }
 
 void
@@ -7710,7 +7709,7 @@ stackOp(PSViewOperatorMgr *mgr)
   for (int i = num_stack; i >= 1; i--) {
     PSViewToken *token = mgr->getPSView()->getOperandStack()->peek(i);
 
-    const string &str = token->toString();
+    const std::string &str = token->toString();
 
     CStrUtil::printf("%s\n", str.c_str());
   }
@@ -7722,7 +7721,7 @@ statusOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isFile() && ! token->isString()) {
@@ -7732,7 +7731,7 @@ statusOp(PSViewOperatorMgr *mgr)
   }
 
   if (token->isFile()) {
-    PSViewFileToken *file_token = (PSViewFileToken *) token;
+    auto *file_token = static_cast<PSViewFileToken *>(token);
 
     if (file_token->isValid())
       trueOp(mgr);
@@ -7740,16 +7739,16 @@ statusOp(PSViewOperatorMgr *mgr)
       falseOp(mgr);
   }
   else {
-    PSViewStringToken *string_token = (PSViewStringToken *) token;
+    auto *string_token = static_cast<PSViewStringToken *>(token);
 
-    string filename = string_token->toString();
+    std::string filename = string_token->toString();
 
     struct stat file_stat;
 
     int error = stat(filename.c_str(), &file_stat);
 
     if (error == 0) {
-      PSViewIntegerToken *token1 = new PSViewIntegerToken(mgr->getPSView(), 1);
+      auto *token1 = new PSViewIntegerToken(mgr->getPSView(), 1);
 
       mgr->getPSView()->getOperandStack()->push(token1);
 
@@ -7791,7 +7790,7 @@ stopOp(PSViewOperatorMgr *mgr)
   if (i <= num)
     return;
 
-  PSViewNameToken *key = new PSViewNameToken(mgr->getPSView(), "handleerror");
+  auto *key = new PSViewNameToken(mgr->getPSView(), "handleerror");
 
   PSViewToken *value = mgr->getPSView()->getDictionaryMgr()->lookup(key);
 
@@ -7807,10 +7806,10 @@ stoppedOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
-  PSViewOperatorToken *token1 = new PSViewOperatorToken(mgr->getPSView(), "stopped");
+  auto *token1 = new PSViewOperatorToken(mgr->getPSView(), "stopped");
 
   mgr->getPSView()->getOperandStack()->push(token1);
 
@@ -7818,11 +7817,11 @@ stoppedOp(PSViewOperatorMgr *mgr)
 
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token2 != NULL && token2->isOperator() &&
+  if (token2 != nullptr && token2->isOperator() &&
       token2->toString() == "stopped")
     falseOp(mgr);
   else {
-    if (token2 != NULL)
+    if (token2 != nullptr)
       mgr->getPSView()->getOperandStack()->push(token2);
 
     trueOp(mgr);
@@ -7836,13 +7835,12 @@ storeOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
-  PSViewDictionaryToken *dictionary =
-    mgr->getPSView()->getDictionaryMgr()->lookupDictionary(token1);
+  auto *dictionary = mgr->getPSView()->getDictionaryMgr()->lookupDictionary(token1);
 
-  if (dictionary != NULL)
+  if (dictionary != nullptr)
     dictionary->addValue(token1, token2);
   else
     mgr->getPSView()->getDictionaryMgr()->addToCurrent(token1, token2);
@@ -7854,7 +7852,7 @@ stringOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isInteger()) {
@@ -7865,7 +7863,7 @@ stringOp(PSViewOperatorMgr *mgr)
 
   PSVinteger length = token->getIntegerValue();
 
-  PSViewStringToken *string_token = new PSViewStringToken(mgr->getPSView(), length);
+  auto *string_token = new PSViewStringToken(mgr->getPSView(), length);
 
   mgr->getPSView()->getOperandStack()->push(string_token);
 }
@@ -7876,7 +7874,7 @@ stringWidthOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isString()) {
@@ -7885,17 +7883,17 @@ stringWidthOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token = (PSViewStringToken *) token;
+  auto *string_token = static_cast<PSViewStringToken *>(token);
 
-  string str = string_token->toString();
+  std::string str = string_token->toString();
 
   double x, y;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->stringWidth(str, &x, &y);
 
-  PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), x);
+  auto *token1 = new PSViewRealToken(mgr->getPSView(), x);
 
   mgr->getPSView()->getOperandStack()->push(token1);
 
@@ -7908,7 +7906,7 @@ void
 PSViewOperatorMgr::
 strokeOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->stroke();
 }
@@ -7917,7 +7915,7 @@ void
 PSViewOperatorMgr::
 strokePathOp(PSViewOperatorMgr *mgr)
 {
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->strokePath();
 }
@@ -7929,7 +7927,7 @@ subOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber() || ! token2->isNumber()) {
@@ -7957,7 +7955,7 @@ void
 PSViewOperatorMgr::
 systemDictOp(PSViewOperatorMgr *mgr)
 {
-  PSViewDictionaryToken *token = mgr->getPSView()->getDictionaryMgr()->getSystemDictionary();
+  auto *token = mgr->getPSView()->getDictionaryMgr()->getSystemDictionary();
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -7968,7 +7966,7 @@ tokenOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isFile() && ! token->isString()) {
@@ -7979,27 +7977,27 @@ tokenOp(PSViewOperatorMgr *mgr)
   PSViewToken *token1;
 
   if (token->isFile()) {
-    PSViewFileToken *file_token = (PSViewFileToken *) token;
+    auto *file_token = static_cast<PSViewFileToken *>(token);
 
     token1 = file_token->readToken();
   }
   else {
-    PSViewStringToken *string_token = (PSViewStringToken *) token;
+    auto *string_token = static_cast<PSViewStringToken *>(token);
 
-    string str = string_token->toString();
+    std::string str = string_token->toString();
 
     PSVinteger pos = 0;
 
     token1 = mgr->readStringFileToken(str, &pos);
 
-    if (token1 != NULL) {
-      string_token->setBounds(pos + 1, str.size() - pos);
+    if (token1 != nullptr) {
+      string_token->setBounds(uint(pos + 1), int(str.size() - uint(pos)));
 
       mgr->getPSView()->getOperandStack()->push(token);
     }
   }
 
-  if (token1 != NULL) {
+  if (token1 != nullptr) {
     mgr->getPSView()->getOperandStack()->push(token1);
     trueOp(mgr);
   }
@@ -8014,7 +8012,7 @@ transformOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber()) {
@@ -8027,7 +8025,7 @@ transformOp(PSViewOperatorMgr *mgr)
     PSVreal x = token1->getRealValue();
     PSVreal y = token2->getRealValue();
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     CMatrix2D *matrix = gstate_token->getCTMMatrix();
 
@@ -8046,7 +8044,7 @@ transformOp(PSViewOperatorMgr *mgr)
 
     matrix = token2->getMatrix();
 
-    if (matrix == NULL)
+    if (matrix == nullptr)
       return;
 
     PSViewToken *token0 = mgr->getPSView()->getOperandStack()->pop();
@@ -8079,7 +8077,7 @@ translateOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isNumber()) {
@@ -8096,7 +8094,7 @@ translateOp(PSViewOperatorMgr *mgr)
 
     matrix.setTranslation(x, y);
 
-    PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+    auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
     gstate_token->postMultiplyCTMMatrix(&matrix);
   }
@@ -8132,7 +8130,7 @@ void
 PSViewOperatorMgr::
 trueOp(PSViewOperatorMgr *mgr)
 {
-  PSViewBooleanToken *token = new PSViewBooleanToken(mgr->getPSView(), true);
+  auto *token = new PSViewBooleanToken(mgr->getPSView(), true);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -8143,7 +8141,7 @@ truncateOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isNumber()) {
@@ -8156,11 +8154,11 @@ truncateOp(PSViewOperatorMgr *mgr)
     PSVreal real = token->getRealValue();
 
     if (real >= 0)
-      real = (double) ((long) real);
+      real = double(long(real));
     else
-      real = (double) ((long) real);
+      real = double(long(real));
 
-    PSViewRealToken *token1 = new PSViewRealToken(mgr->getPSView(), real);
+    auto *token1 = new PSViewRealToken(mgr->getPSView(), real);
 
     mgr->getPSView()->getOperandStack()->push(token1);
   }
@@ -8177,7 +8175,7 @@ typeOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   PSViewToken *token1 = token->toName();
@@ -8192,7 +8190,7 @@ undefOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isDictionary()) {
@@ -8201,7 +8199,7 @@ undefOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewDictionaryToken *dictionary_token1 = (PSViewDictionaryToken *) token1;
+  auto *dictionary_token1 = static_cast<PSViewDictionaryToken *>(token1);
 
   dictionary_token1->deleteValue(token2);
 }
@@ -8212,10 +8210,10 @@ undefineFontOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->undefineFont(token);
 }
@@ -8226,7 +8224,7 @@ undefineUserObjectOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isInteger()) {
@@ -8245,17 +8243,17 @@ undefineUserObjectOp(PSViewOperatorMgr *mgr)
 
   PSViewDictionaryToken *dict = mgr->getPSView()->getDictionaryMgr()->getUserDictionary();
 
-  PSViewNameToken *key = new PSViewNameToken(mgr->getPSView(), "UserObjects");
+  auto *key = new PSViewNameToken(mgr->getPSView(), "UserObjects");
 
   PSViewToken *user_objects = dict->getValue(key);
 
-  if (user_objects == NULL || ! user_objects->isArray()) {
+  if (user_objects == nullptr || ! user_objects->isArray()) {
     mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED);
 
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) user_objects;
+  auto *array_token = static_cast<PSViewArrayToken *>(user_objects);
 
   PSVinteger len = array_token->getNumValues();
 
@@ -8265,9 +8263,9 @@ undefineUserObjectOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewNullToken *sub_token = new PSViewNullToken(mgr->getPSView());
+  auto *sub_token = new PSViewNullToken(mgr->getPSView());
 
-  array_token->setValue(ind + 1, sub_token);
+  array_token->setValue(uint(ind + 1), sub_token);
 
   delete key;
 }
@@ -8285,11 +8283,11 @@ void
 PSViewOperatorMgr::
 userTimeOp(PSViewOperatorMgr *mgr)
 {
-  time_t real_time = time(NULL);
+  time_t real_time = time(nullptr);
 
-  int dt = (int) (real_time - mgr->getPSView()->getStartTime());
+  int dt = int(real_time - mgr->getPSView()->getStartTime());
 
-  PSViewToken *token = new PSViewIntegerToken(mgr->getPSView(), dt);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), dt);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -8298,9 +8296,9 @@ void
 PSViewOperatorMgr::
 versionOp(PSViewOperatorMgr *mgr)
 {
-  static string version = "1.0";
+  static std::string version = "1.0";
 
-  PSViewStringToken *token = new PSViewStringToken(mgr->getPSView(), version);
+  auto *token = new PSViewStringToken(mgr->getPSView(), version);
 
   mgr->getPSView()->getOperandStack()->push(token);
 }
@@ -8313,7 +8311,7 @@ vmStatusOp(PSViewOperatorMgr *mgr)
 
   mgr->getPSView()->getMemoryMgr()->getStatus(&depth, &used, &max);
 
-  PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), depth);
+  auto *token = new PSViewIntegerToken(mgr->getPSView(), depth);
 
   mgr->getPSView()->getOperandStack()->push(token);
 
@@ -8332,7 +8330,7 @@ wcheckOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (! token->isArray() && ! token->isPackedArray() &&
@@ -8354,12 +8352,12 @@ whereOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
-  PSViewDictionaryToken *token1 = mgr->getPSView()->getDictionaryMgr()->lookupDictionary(token);
+  auto *token1 = mgr->getPSView()->getDictionaryMgr()->lookupDictionary(token);
 
-  if (token1 != NULL) {
+  if (token1 != nullptr) {
     mgr->getPSView()->getOperandStack()->push(token1);
 
     trueOp(mgr);
@@ -8377,8 +8375,8 @@ widthShowOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL ||
-      token3 == NULL || token4 == NULL)
+  if (token1 == nullptr || token2 == nullptr ||
+      token3 == nullptr || token4 == nullptr)
     return;
 
   if (! token1->isNumber () || ! token2->isNumber() ||
@@ -8391,13 +8389,13 @@ widthShowOp(PSViewOperatorMgr *mgr)
   double cx = token1->getRealValue();
   double cy = token2->getRealValue();
 
-  int c = token3->getIntegerValue();
+  int c = int(token3->getIntegerValue());
 
-  PSViewStringToken *string_token4 = (PSViewStringToken *) token4;
+  auto *string_token4 = static_cast<PSViewStringToken *>(token4);
 
-  string str = string_token4->toString();
+  std::string str = string_token4->toString();
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   gstate_token->widthShow(cx, cy, c, str);
 }
@@ -8406,10 +8404,10 @@ void
 PSViewOperatorMgr::
 writeOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isFile() || ! token2->isInteger()) {
@@ -8418,21 +8416,21 @@ writeOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken *file_token1 = (PSViewFileToken *) token1;
+  auto *file_token1 = static_cast<PSViewFileToken *>(token1);
 
   PSVinteger c = token2->getIntegerValue();
 
-  file_token1->writeChar((PSVchar) c);
+  file_token1->writeChar(PSVchar(c));
 }
 
 void
 PSViewOperatorMgr::
 writeHexStringOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isFile() || ! token2->isString()) {
@@ -8441,20 +8439,20 @@ writeHexStringOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken   *file_token1   = (PSViewFileToken   *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *file_token1   = static_cast<PSViewFileToken   *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
   PSVinteger length = string_token2->getLength();
 
   for (PSVinteger i = 1; i <= length; i++) {
-    PSVinteger c = string_token2->getChar(i);
+    auto c = string_token2->getChar(int(i));
 
     char hex_string[16];
 
-    sprintf(hex_string, "%02x", (int) c);
+    sprintf(hex_string, "%02x", int(c));
 
-    file_token1->writeChar(hex_string[0]);
-    file_token1->writeChar(hex_string[1]);
+    file_token1->writeChar(PSVchar(hex_string[0]));
+    file_token1->writeChar(PSVchar(hex_string[1]));
   }
 }
 
@@ -8465,7 +8463,7 @@ writeStringOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isFile() || ! token2->isString()) {
@@ -8474,15 +8472,15 @@ writeStringOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewFileToken   *file_token1   = (PSViewFileToken   *) token1;
-  PSViewStringToken *string_token2 = (PSViewStringToken *) token2;
+  auto *file_token1   = static_cast<PSViewFileToken   *>(token1);
+  auto *string_token2 = static_cast<PSViewStringToken *>(token2);
 
-  PSVinteger length = string_token2->getLength();
+  auto length = string_token2->getLength();
 
   for (PSVinteger i = 1; i <= length; i++) {
-    PSVinteger c = string_token2->getChar(i);
+    auto c = string_token2->getChar(int(i));
 
-    file_token1->writeChar((PSVchar) c);
+    file_token1->writeChar(PSVchar(c));
   }
 }
 
@@ -8492,7 +8490,7 @@ xcheckOp(PSViewOperatorMgr *mgr)
 {
   PSViewToken *token = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token == NULL)
+  if (token == nullptr)
     return;
 
   if (token->isExecutable())
@@ -8505,10 +8503,10 @@ void
 PSViewOperatorMgr::
 xorOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if ((! token1->isBoolean() && ! token1->isInteger()) ||
@@ -8532,7 +8530,7 @@ xorOp(PSViewOperatorMgr *mgr)
     PSVinteger integer1 = token1->getIntegerValue();
     PSVinteger integer2 = token2->getIntegerValue();
 
-    PSViewIntegerToken *token = new PSViewIntegerToken(mgr->getPSView(), integer1 ^ integer2);
+    auto *token = new PSViewIntegerToken(mgr->getPSView(), integer1 ^ integer2);
 
     mgr->getPSView()->getOperandStack()->push(token);
   }
@@ -8545,7 +8543,7 @@ xshowOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isString() ||
@@ -8557,7 +8555,7 @@ xshowOp(PSViewOperatorMgr *mgr)
 
   double current_x, current_y;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   bool flag = gstate_token->getCurrentPoint(&current_x, &current_y);
 
@@ -8567,19 +8565,19 @@ xshowOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
   if (token2->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token2;
+    auto *array_token = static_cast<PSViewArrayToken *>(token2);
 
     PSVinteger num_tokens = array_token->getNumValues();
 
-    vector<double> x;
+    std::vector<double> x;
 
-    x.resize(num_tokens);
+    x.resize(uint(num_tokens));
 
     for (int i = 1; i <= num_tokens; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isNumber()) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -8587,10 +8585,10 @@ xshowOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      x[i - 1] = sub_token->getRealValue();
+      x[uint(i - 1)] = sub_token->getRealValue();
     }
 
-    string str = " ";
+    std::string str = " ";
 
     PSVinteger length = string_token1->getLength();
 
@@ -8601,15 +8599,15 @@ xshowOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      str[0] = string_token1->getChar(i);
+      str[0] = char(string_token1->getChar(i));
 
-      PSViewGStateToken *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
       gstate_token1->moveTo(current_x, current_y);
 
       gstate_token1->show(str);
 
-      current_x += x[i - 1];
+      current_x += x[uint(i - 1)];
     }
   }
   else
@@ -8623,7 +8621,7 @@ xyshowOp(PSViewOperatorMgr *mgr)
   PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
   PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isString() ||
@@ -8635,7 +8633,7 @@ xyshowOp(PSViewOperatorMgr *mgr)
 
   double current_x, current_y;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   bool flag = gstate_token->getCurrentPoint(&current_x, &current_y);
 
@@ -8646,17 +8644,17 @@ xyshowOp(PSViewOperatorMgr *mgr)
   }
 
   if (token2->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token2;
+    auto *array_token = static_cast<PSViewArrayToken *>(token2);
 
     PSVinteger num_tokens = array_token->getNumValues();
 
-    vector<double> x, y;
+    std::vector<double> x, y;
 
-    x.resize(num_tokens/2 + 1);
-    y.resize(num_tokens/2 + 1);
+    x.resize(uint(num_tokens/2 + 1));
+    y.resize(uint(num_tokens/2 + 1));
 
     for (int i = 1; i <= num_tokens; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isNumber()) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -8665,14 +8663,14 @@ xyshowOp(PSViewOperatorMgr *mgr)
       }
 
       if (i & 1)
-        x[i/2    ] = sub_token->getRealValue();
+        x[uint(i/2    )] = sub_token->getRealValue();
       else
-        y[i/2 - 1] = sub_token->getRealValue();
+        y[uint(i/2 - 1)] = sub_token->getRealValue();
     }
 
-    string str = " ";
+    std::string str = " ";
 
-    PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+    auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
     PSVinteger length = string_token1->getLength();
 
@@ -8682,16 +8680,16 @@ xyshowOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      str[0] = string_token1->getChar(i);
+      str[0] = char(string_token1->getChar(i));
 
-      PSViewGStateToken *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
       gstate_token1->moveTo(current_x, current_y);
 
       gstate_token1->show(str);
 
-      current_x += x[i - 1];
-      current_y += y[i - 1];
+      current_x += x[uint(i - 1)];
+      current_y += y[uint(i - 1)];
     }
   }
   else
@@ -8702,10 +8700,10 @@ void
 PSViewOperatorMgr::
 yshowOp(PSViewOperatorMgr *mgr)
 {
-  PSViewToken *token2 = mgr->getPSView()->getOperandStack()->pop();
-  PSViewToken *token1 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token2 = mgr->getPSView()->getOperandStack()->pop();
+  auto *token1 = mgr->getPSView()->getOperandStack()->pop();
 
-  if (token1 == NULL || token2 == NULL)
+  if (token1 == nullptr || token2 == nullptr)
     return;
 
   if (! token1->isString() || (! token2->isArray() && ! token2->isString())) {
@@ -8715,7 +8713,7 @@ yshowOp(PSViewOperatorMgr *mgr)
 
   double current_x, current_y;
 
-  PSViewGStateToken *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+  auto *gstate_token = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
   bool flag = gstate_token->getCurrentPoint(&current_x, &current_y);
 
@@ -8724,31 +8722,31 @@ yshowOp(PSViewOperatorMgr *mgr)
     return;
   }
 
-  PSViewStringToken *string_token1 = (PSViewStringToken *) token1;
+  auto *string_token1 = static_cast<PSViewStringToken *>(token1);
 
   if (token2->isArray()) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token2;
+    auto *array_token = static_cast<PSViewArrayToken *>(token2);
 
-    PSVinteger num_tokens = array_token->getNumValues();
+    auto num_tokens = array_token->getNumValues();
 
-    vector<double> y;
+    std::vector<double> y;
 
-    y.resize(num_tokens);
+    y.resize(uint(num_tokens));
 
     for (int i = 1; i <= num_tokens; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isNumber()) {
         mgr->getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
         return;
       }
 
-      y[i - 1] = sub_token->getRealValue();
+      y[uint(i - 1)] = sub_token->getRealValue();
     }
 
-    string str = " ";
+    std::string str = " ";
 
-    PSVinteger length = string_token1->getLength();
+    auto length = string_token1->getLength();
 
     for (int i = 1; i <= length; i++) {
       if (i > num_tokens) {
@@ -8756,15 +8754,15 @@ yshowOp(PSViewOperatorMgr *mgr)
         return;
       }
 
-      str[0] = string_token1->getChar(i);
+      str[0] = char(string_token1->getChar(i));
 
-      PSViewGStateToken *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
+      auto *gstate_token1 = mgr->getPSView()->getGStateTokenMgr()->getCurrent();
 
       gstate_token1->moveTo(current_x, current_y);
 
       gstate_token1->show(str);
 
-      current_y += y[i - 1];
+      current_y += y[uint(i - 1)];
     }
   }
   else
@@ -8779,7 +8777,7 @@ unimplementedOp(PSViewOperatorMgr *mgr)
 
   CStrUtil::eprintf("  Last Executed ");
 
-  PSViewToken *token = mgr->getPSView()->getTokenMgr()->getLastExecuteToken();
+  auto *token = mgr->getPSView()->getTokenMgr()->getLastExecuteToken();
 
   token->print();
 
@@ -8808,11 +8806,11 @@ charPathStrokeFalseOp(PSViewOperatorMgr *)
 
 PSViewToken *
 PSViewOperatorMgr::
-readStringFileToken(const string &str, PSVinteger *pos)
+readStringFileToken(const std::string &str, PSVinteger *pos)
 {
-  PSViewStringFileToken *token = new PSViewStringFileToken(getPSView(), str.substr(*pos));
+  auto *token = new PSViewStringFileToken(getPSView(), str.substr(uint(*pos)));
 
-  PSViewToken *token1 = token->readToken();
+  auto *token1 = token->readToken();
 
   *pos += token->getFile()->bytesUsed();
 
@@ -8824,8 +8822,7 @@ readStringFileToken(const string &str, PSVinteger *pos)
 //---------------
 
 PSViewOperator::
-PSViewOperator(PSViewOperatorMgr *mgr, const string &name,
-               PSViewOperatorProc proc) :
+PSViewOperator(PSViewOperatorMgr *mgr, const std::string &name, PSViewOperatorProc proc) :
  mgr_(mgr), name_(mgr_->getPSView()->getNameMgr()->getName(name)),
  proc_(proc) {
 }

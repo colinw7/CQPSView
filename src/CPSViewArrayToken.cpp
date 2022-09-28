@@ -25,7 +25,7 @@ PSViewArrayToken(CPSView *psview, CMatrix2D *matrix) :
                     &data[3], &data[4], &data[5]);
 
   for (uint i = 1; i <= 6; ++i) {
-    PSViewToken *sub_token = new PSViewRealToken(psview_, data[i - 1]);
+    auto *sub_token = new PSViewRealToken(psview_, data[i - 1]);
 
     setValue(i, sub_token);
   }
@@ -122,16 +122,16 @@ setSubValues(PSVinteger pos, PSViewToken **sub_tokens,
     }
   }
 
-  array_->setSubValues(pos, sub_tokens, num_sub_tokens);
+  array_->setSubValues(uint(pos), sub_tokens, uint(num_sub_tokens));
 }
 
 PSViewArrayToken *
 PSViewArrayToken::
 split(PSVinteger n)
 {
-  PSViewArray *array = array_->split(n);
+  auto *array = array_->split(uint(n));
 
-  PSViewArrayToken *token = new PSViewArrayToken(psview_, array);
+  auto *token = new PSViewArrayToken(psview_, array);
 
   return token;
 }
@@ -140,7 +140,7 @@ void
 PSViewArrayToken::
 setBounds(PSVinteger pos, PSVinteger len)
 {
-  array_->setBounds(pos, len);
+  array_->setBounds(int(pos), uint(len));
 }
 
 void
@@ -156,7 +156,7 @@ executeToken()
       if (i == num_tokens)
         psview_->getExecutionStack()->pop();
 
-      PSViewToken *sub_token = array_->getValue(i);
+      PSViewToken *sub_token = array_->getValue(uint(i));
 
       if (sub_token->isProcedure())
         psview_->getOperandStack()->push(sub_token);
@@ -189,7 +189,7 @@ print()
   for (PSVinteger i = 1; i <= num_values; ++i) {
     if (i > 1) CStrUtil::printf(" ");
 
-    PSViewToken *token = array_->getValue(i);
+    PSViewToken *token = array_->getValue(uint(i));
 
     token->print();
   }
@@ -200,7 +200,7 @@ print()
     CStrUtil::printf("}");
 }
 
-string
+std::string
 PSViewArrayToken::
 toString()
 {

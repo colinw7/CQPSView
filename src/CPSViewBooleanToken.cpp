@@ -33,7 +33,7 @@ PSViewBooleanToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewBooleanToken *boolean_token = dynamic_cast<PSViewBooleanToken *>(token);
+    auto *boolean_token = dynamic_cast<PSViewBooleanToken *>(token);
 
     if      (value_ == boolean_token->value_)
       return 0;
@@ -69,7 +69,7 @@ print()
   CStrUtil::printf("%s", value_ ? "true" : "false");
 }
 
-string
+std::string
 PSViewBooleanToken::
 toString()
 {

@@ -1,10 +1,12 @@
 #include <CQPSViewRenderer.h>
 #include <CQUtil.h>
 
+#include <QPainterPath>
+
 CQPSViewRenderer::
 CQPSViewRenderer() :
- painter_   (NULL),
- path_      (NULL),
+ painter_   (nullptr),
+ path_      (nullptr),
  fillType_  (FILL_TYPE_WINDING),
  flatness_  (0),
  antiAlias_ (false)
@@ -34,7 +36,7 @@ beginDraw()
 
   painter_->fillRect(qimage_.rect(), QBrush(QColor(255,255,255)));
 
-  painter_->setWorldMatrix(CQUtil::toQMatrix(range_.getMatrix()*viewMatrix_));
+  painter_->setWorldTransform(CQUtil::toQTransform(range_.getMatrix()*viewMatrix_));
 
   transform_  = painter_->worldTransform();
   itransform_ = transform_.inverted();
@@ -153,7 +155,7 @@ setViewMatrix(const CMatrix2D &m)
 {
   viewMatrix_ = m;
 
-  painter_->setWorldMatrix(CQUtil::toQMatrix(range_.getMatrix()*viewMatrix_));
+  painter_->setWorldTransform(CQUtil::toQTransform(range_.getMatrix()*viewMatrix_));
 
   transform_  = painter_->worldTransform();
   itransform_ = transform_.inverted();

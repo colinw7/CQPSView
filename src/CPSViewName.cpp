@@ -9,12 +9,12 @@ PSViewNameMgr(CPSView *psview) :
 
 const PSViewName &
 PSViewNameMgr::
-getName(const string &str)
+getName(const std::string &str)
 {
   if (names_.find(str) != names_.end())
     return *names_[str];
 
-  PSViewName *name = new PSViewName(str);
+  auto *name = new PSViewName(str);
 
   names_[str] = name;
 
@@ -22,7 +22,7 @@ getName(const string &str)
 }
 
 PSViewName::
-PSViewName(const string &str) :
+PSViewName(const std::string &str) :
  str_(str)
 {
 }

@@ -26,8 +26,8 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
   }
 
   void moveTo(const CPoint2D &point) {
-    PSViewToken *token1 = new PSViewRealToken(psview_, point.x);
-    PSViewToken *token2 = new PSViewRealToken(psview_, point.y);
+    auto *token1 = new PSViewRealToken(psview_, point.x);
+    auto *token2 = new PSViewRealToken(psview_, point.y);
 
     psview_->getOperandStack()->push(token1);
     psview_->getOperandStack()->push(token2);
@@ -36,8 +36,8 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
   }
 
   void lineTo(const CPoint2D &point) {
-    PSViewToken *token1 = new PSViewRealToken(psview_, point.x);
-    PSViewToken *token2 = new PSViewRealToken(psview_, point.y);
+    auto *token1 = new PSViewRealToken(psview_, point.x);
+    auto *token2 = new PSViewRealToken(psview_, point.y);
 
     psview_->getOperandStack()->push(token1);
     psview_->getOperandStack()->push(token2);
@@ -46,10 +46,10 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
   }
 
   void bezier2To(const CPoint2D &point1, const CPoint2D &point2) {
-    PSViewToken *token1 = new PSViewRealToken(psview_, point1.x);
-    PSViewToken *token2 = new PSViewRealToken(psview_, point1.y);
-    PSViewToken *token3 = new PSViewRealToken(psview_, point2.x);
-    PSViewToken *token4 = new PSViewRealToken(psview_, point2.y);
+    auto *token1 = new PSViewRealToken(psview_, point1.x);
+    auto *token2 = new PSViewRealToken(psview_, point1.y);
+    auto *token3 = new PSViewRealToken(psview_, point2.x);
+    auto *token4 = new PSViewRealToken(psview_, point2.y);
 
     psview_->getOperandStack()->push(token1);
     psview_->getOperandStack()->push(token2);
@@ -60,12 +60,12 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
   }
 
   void bezier3To(const CPoint2D &point1, const CPoint2D &point2, const CPoint2D &point3) {
-    PSViewToken *token1 = new PSViewRealToken(psview_, point1.x);
-    PSViewToken *token2 = new PSViewRealToken(psview_, point1.y);
-    PSViewToken *token3 = new PSViewRealToken(psview_, point2.x);
-    PSViewToken *token4 = new PSViewRealToken(psview_, point2.y);
-    PSViewToken *token5 = new PSViewRealToken(psview_, point3.x);
-    PSViewToken *token6 = new PSViewRealToken(psview_, point3.y);
+    auto *token1 = new PSViewRealToken(psview_, point1.x);
+    auto *token2 = new PSViewRealToken(psview_, point1.y);
+    auto *token3 = new PSViewRealToken(psview_, point2.x);
+    auto *token4 = new PSViewRealToken(psview_, point2.y);
+    auto *token5 = new PSViewRealToken(psview_, point3.x);
+    auto *token6 = new PSViewRealToken(psview_, point3.y);
 
     psview_->getOperandStack()->push(token1);
     psview_->getOperandStack()->push(token2);
@@ -133,8 +133,8 @@ class PSViewPathStroker : public PSViewPathVisitor {
  public:
   PSViewPathStroker(PSViewGState *gstate) :
    gstate_ (gstate),
-   start_  (0,0),
-   current_(0,0),
+   start_  (0, 0),
+   current_(0, 0),
    closed_ (false),
    inner_  (),
    outer_  (),
@@ -205,11 +205,11 @@ class PSViewPathStroker : public PSViewPathVisitor {
   void strokeBezier2(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) {
     C2Bezier2D bezier(p1, p2, p3);
 
-    vector<CPoint2D> points;
+    std::vector<CPoint2D> points;
 
     CMathGeom2D::BezierToLines(bezier, points);
 
-    uint numPoints = points.size();
+    auto numPoints = points.size();
 
     for (uint i = 1; i < numPoints; ++i)
       strokeLine(points[i - 1], points[i]);
@@ -219,11 +219,11 @@ class PSViewPathStroker : public PSViewPathVisitor {
                      const CPoint2D &p3, const CPoint2D &p4) {
     C3Bezier2D bezier(p1, p2, p3, p4);
 
-    vector<CPoint2D> points;
+    std::vector<CPoint2D> points;
 
     CMathGeom2D::BezierToLines(bezier, points);
 
-    uint numPoints = points.size();
+    auto numPoints = points.size();
 
     for (uint i = 1; i < numPoints; ++i)
       strokeLine(points[i - 1], points[i]);
@@ -252,8 +252,8 @@ class PSViewPathStroker : public PSViewPathVisitor {
   }
 
   void buildPath() {
-    uint num_inner = inner_.size();
-    uint num_outer = outer_.size();
+    auto num_inner = inner_.size();
+    auto num_outer = outer_.size();
 
     if (num_inner == 0 || num_outer == 0)
       return;
@@ -397,8 +397,8 @@ class PSViewPathStroker : public PSViewPathVisitor {
   CPoint2D              start_;
   CPoint2D              current_;
   bool                  closed_;
-  vector<CLine2D>       inner_;
-  vector<CLine2D>       outer_;
+  std::vector<CLine2D>  inner_;
+  std::vector<CLine2D>  outer_;
   CAutoPtr<PSViewPath>  path_;
 
  private:
@@ -418,7 +418,7 @@ PSViewGStateMgr(CPSView *psview) :
  font_dir_             (),
  default_ctm_matrix_   (),
  current_font_id_      (0),
- default_font_         (NULL)
+ default_font_         (nullptr)
 {
   font_dir_ = COSUser::getUserHome() + "/data/PSView/fonts";
 
@@ -456,9 +456,11 @@ createDefaultFont()
 
   //------
 
-  PSViewToken *key = new PSViewNameToken(getPSView(), "FontType");
+  auto *key = new PSViewNameToken(getPSView(), "FontType");
 
-  PSViewToken *value = new PSViewIntegerToken(getPSView(), PSVIEW_FONT_TYPE_DEFAULT);
+  PSViewToken *value;
+
+  value = new PSViewIntegerToken(getPSView(), PSVIEW_FONT_TYPE_DEFAULT);
 
   default_font_->addValue(key, value);
 
@@ -480,7 +482,7 @@ PSViewGState::
 PSViewGState(PSViewGStateMgr *mgr) :
  mgr_               (mgr),
  ctm_matrix_        (),
- color_space_       (NULL),
+ color_space_       (nullptr),
  pattern_color_     (false),
  pen_               (),
  brush_             (),
@@ -492,16 +494,16 @@ PSViewGState(PSViewGStateMgr *mgr) :
  black_generation_  (),
  undercolor_removal_(),
  font_              (),
- graphics_          (NULL),
+ graphics_          (nullptr),
  pattern_           (),
  path_              (),
  clippath_          ()
 {
-  pen_.setColor(CRGBA(0,0,0));
+  pen_.setColor(CRGBA(0, 0, 0));
   pen_.setMitreLimit(10.0);
   pen_.setFlatness(2.0);
 
-  brush_.setColor(CRGBA(0,0,0));
+  brush_.setColor(CRGBA(0, 0, 0));
 
   ctm_matrix_.setIdentity();
 
@@ -534,7 +536,7 @@ PSViewGState(const PSViewGState &gstate) :
  black_generation_  (                     ),
  undercolor_removal_(                     ),
  font_              (                     ),
- graphics_          (NULL                 ),
+ graphics_          (nullptr                 ),
  pattern_           (                     ),
  path_              (                     ),
  clippath_          (                     )
@@ -582,12 +584,12 @@ operator=(const PSViewGState &gstate)
   hsb_                = gstate.hsb_;
   hsb_valid_          = gstate.hsb_valid_;
   stroke_adjust_      = gstate.stroke_adjust_;
-  black_generation_   = NULL;
-  undercolor_removal_ = NULL;
-  font_               = NULL;
-  pattern_            = NULL;
-  path_               = NULL;
-  clippath_           = NULL;
+  black_generation_   = nullptr;
+  undercolor_removal_ = nullptr;
+  font_               = nullptr;
+  pattern_            = nullptr;
+  path_               = nullptr;
+  clippath_           = nullptr;
 
   if (gstate.black_generation_.isValid())
     black_generation_ = gstate.black_generation_->dup();
@@ -636,7 +638,7 @@ initGraphics()
   setLineJoin    (LINE_JOIN_TYPE_MITRE);
   setMitreLimit  (10.0);
   setStrokeAdjust(false);
-  setDashPattern (NULL, 0, 0.0);
+  setDashPattern (nullptr, 0, 0.0);
 }
 
 void
@@ -650,7 +652,7 @@ void
 PSViewGState::
 setGraphics()
 {
-  if (graphics_ != NULL) {
+  if (graphics_ != nullptr) {
     CPen pen = pen_;
 
     double tx, ty;
@@ -676,7 +678,7 @@ void
 PSViewGState::
 initClip()
 {
-  if (graphics_ != NULL) {
+  if (graphics_ != nullptr) {
     clippath_->init();
 
     double xmin = 0.0, ymin = 0.0, xmax = CPSView::PAGE_WIDTH - 1, ymax = CPSView::PAGE_HEIGHT - 1;
@@ -875,7 +877,7 @@ getCurrentPoint(double *x, double *y)
 
 void
 PSViewGState::
-show(const string &str)
+show(const std::string &str)
 {
   PSViewGStateFont *font = getFont();
 
@@ -895,16 +897,16 @@ show(const string &str)
   if (type == PSVIEW_FONT_TYPE_0) {
     PSViewDictionaryToken *font_dictionary = font->getDictionary();
 
-    string str1 = " ";
+    std::string str1 = " ";
 
-    int i = 0;
+    uint i = 0;
 
-    int len = str.size();
+    auto len = str.size();
 
     while (i < len) {
-      PSViewDictionaryToken *font_dictionary1 = NULL;
+      PSViewDictionaryToken *font_dictionary1 = nullptr;
 
-      str1[0] = getType0Char(str, &i, &font_dictionary1);
+      str1[0] = char(getType0Char(str, &i, &font_dictionary1));
 
       setFont1(font_dictionary1);
 
@@ -929,9 +931,9 @@ show(const string &str)
 
   //------
 
-  int len = str.size();
+  auto len = str.size();
 
-  for (int i = 1; i <= len; i++) {
+  for (uint i = 1; i <= len; i++) {
     if      (type == PSVIEW_FONT_TYPE_DEFAULT)
       showDefaultChar(str[i - 1], &p.x, &p.y);
     else if (type == PSVIEW_FONT_TYPE_1)
@@ -951,7 +953,7 @@ show(const string &str)
 
 void
 PSViewGState::
-ashow(double ax, double ay, const string &str)
+ashow(double ax, double ay, const std::string &str)
 {
   PSViewGStateFont *font = getFont();
 
@@ -971,16 +973,16 @@ ashow(double ax, double ay, const string &str)
   if (type == PSVIEW_FONT_TYPE_0) {
     PSViewDictionaryToken *font_dictionary = font->getDictionary();
 
-    string str1 = " ";
+    std::string str1 = " ";
 
-    int i = 0;
+    uint i = 0;
 
-    int len = str.size();
+    auto len = str.size();
 
     while (i < len) {
-      PSViewDictionaryToken *font_dictionary1 = NULL;
+      PSViewDictionaryToken *font_dictionary1 = nullptr;
 
-      str1[0] = getType0Char(str, &i, &font_dictionary1);
+      str1[0] = char(getType0Char(str, &i, &font_dictionary1));
 
       setFont1(font_dictionary1);
 
@@ -1005,9 +1007,9 @@ ashow(double ax, double ay, const string &str)
 
   //------
 
-  int len = str.size();
+  auto len = str.size();
 
-  for (int i = 1; i <= len; i++) {
+  for (uint i = 1; i <= len; i++) {
     if      (type == PSVIEW_FONT_TYPE_DEFAULT)
       showDefaultChar(str[i - 1], &p.x, &p.y);
     else if (type == PSVIEW_FONT_TYPE_1)
@@ -1030,7 +1032,7 @@ ashow(double ax, double ay, const string &str)
 
 void
 PSViewGState::
-widthShow(double cx, double cy, int c, const string &str)
+widthShow(double cx, double cy, int c, const std::string &str)
 {
   PSViewGStateFont *font = getFont();
 
@@ -1050,16 +1052,16 @@ widthShow(double cx, double cy, int c, const string &str)
   if (type == PSVIEW_FONT_TYPE_0) {
     PSViewDictionaryToken *font_dictionary = font->getDictionary();
 
-    string str1 = " ";
+    std::string str1 = " ";
 
-    int i = 0;
+    uint i = 0;
 
-    int len = str.size();
+    auto len = str.size();
 
     while (i < len) {
-      PSViewDictionaryToken *font_dictionary1 = NULL;
+      PSViewDictionaryToken *font_dictionary1 = nullptr;
 
-      str1[0] = getType0Char(str, &i, &font_dictionary1);
+      str1[0] = char(getType0Char(str, &i, &font_dictionary1));
 
       setFont1(font_dictionary1);
 
@@ -1084,9 +1086,9 @@ widthShow(double cx, double cy, int c, const string &str)
 
   //------
 
-  int len = str.size();
+  auto len = str.size();
 
-  for (int i = 1; i <= len; i++) {
+  for (uint i = 1; i <= len; i++) {
     if      (type == PSVIEW_FONT_TYPE_DEFAULT)
       showDefaultChar(str[i - 1], &p.x, &p.y);
     else if (type == PSVIEW_FONT_TYPE_1)
@@ -1111,7 +1113,7 @@ widthShow(double cx, double cy, int c, const string &str)
 
 void
 PSViewGState::
-awidthShow(double cx, double cy, int c, double ax, double ay, const string &str)
+awidthShow(double cx, double cy, int c, double ax, double ay, const std::string &str)
 {
   PSViewGStateFont *font = getFont();
 
@@ -1131,16 +1133,16 @@ awidthShow(double cx, double cy, int c, double ax, double ay, const string &str)
   if (type == PSVIEW_FONT_TYPE_0) {
     PSViewDictionaryToken *font_dictionary = font->getDictionary();
 
-    string str1 = " ";
+    std::string str1 = " ";
 
-    int i = 0;
+    uint i = 0;
 
-    int len = str.size();
+    auto len = str.size();
 
     while (i < len) {
-      PSViewDictionaryToken *font_dictionary1 = NULL;
+      PSViewDictionaryToken *font_dictionary1 = nullptr;
 
-      str1[0] = getType0Char(str, &i, &font_dictionary1);
+      str1[0] = char(getType0Char(str, &i, &font_dictionary1));
 
       setFont1(font_dictionary1);
 
@@ -1165,9 +1167,9 @@ awidthShow(double cx, double cy, int c, double ax, double ay, const string &str)
 
   //------
 
-  int len = str.size();
+  auto len = str.size();
 
-  for (int i = 1; i <= len; i++) {
+  for (uint i = 1; i <= len; i++) {
     if      (type == PSVIEW_FONT_TYPE_DEFAULT)
       showDefaultChar(str[i - 1], &p.x, &p.y);
     else if (type == PSVIEW_FONT_TYPE_1)
@@ -1229,7 +1231,7 @@ glyphShow(const PSViewName &name)
     if (font_data->build_type == PSVIEW_FONT_BUILD_TYPE_GLYPH) {
       getPSView()->getOperandStack()->push(font->getDictionary());
 
-      PSViewToken *token = new PSViewNameToken(getPSView(), name);
+      auto *token = new PSViewNameToken(getPSView(), name);
 
       getPSView()->getOperandStack()->push(token);
 
@@ -1245,7 +1247,7 @@ glyphShow(const PSViewName &name)
 
       CMatrix2D *matrix = getCTMMatrix();
 
-      matrix->getValues(&x1, &y1, &x2, &y2, NULL, NULL);
+      matrix->getValues(&x1, &y1, &x2, &y2, nullptr, nullptr);
       matrix->setValues( x1,  y1,  x2,  y2,    0,    0);
 
       CMatrix2D tmatrix;
@@ -1268,15 +1270,15 @@ glyphShow(const PSViewName &name)
       p.y += y1;
     }
     else {
-      PSViewArrayToken *array_token = (PSViewArrayToken *) font_data->encoding;
+      auto *array_token = static_cast<PSViewArrayToken *>(font_data->encoding);
 
-      int c;
+      uint c;
 
       const PSViewName *name1 = &name;
 
       for (int i = 1; i <= 2; i++) {
         for (c = 1; c <= 256; c++) {
-          PSViewToken *token = array_token->getValue(c);
+          auto *token = array_token->getValue(c);
 
           if (! token->isName()) {
             getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
@@ -1284,7 +1286,7 @@ glyphShow(const PSViewName &name)
             return;
           }
 
-          PSViewNameToken *name_token = (PSViewNameToken *) token;
+          auto *name_token = static_cast<PSViewNameToken *>(token);
 
           if (name_token->getValue().compare(*name1) == 0)
             break;
@@ -1302,7 +1304,7 @@ glyphShow(const PSViewName &name)
         name1 = &getPSView()->getNameMgr()->getName(".notdef");
       }
 
-      showType3Char(c, &p.x, &p.y);
+      showType3Char(int(c), &p.x, &p.y);
     }
   }
   else {
@@ -1322,7 +1324,7 @@ glyphShow(const PSViewName &name)
 
 void
 PSViewGState::
-kshow(PSViewToken *proc, const string &str)
+kshow(PSViewToken *proc, const std::string &str)
 {
   PSViewGStateFont *font = getFont();
 
@@ -1353,16 +1355,16 @@ kshow(PSViewToken *proc, const string &str)
   if (type == PSVIEW_FONT_TYPE_0) {
     PSViewDictionaryToken *font_dictionary = font->getDictionary();
 
-    string str1 = " ";
+    std::string str1 = " ";
 
-    int i = 0;
+    uint i = 0;
 
-    int len = str.size();
+    auto len = str.size();
 
     while (i < len) {
-      PSViewDictionaryToken *font_dictionary1 = NULL;
+      PSViewDictionaryToken *font_dictionary1 = nullptr;
 
-      str1[0] = getType0Char(str, &i, &font_dictionary1);
+      str1[0] = char(getType0Char(str, &i, &font_dictionary1));
 
       setFont1(font_dictionary1);
 
@@ -1376,12 +1378,12 @@ kshow(PSViewToken *proc, const string &str)
 
   //------
 
-  int len = str.size();
+  auto len = str.size();
 
-  for (int i = 1; i <= len; i++) {
+  for (uint i = 1; i <= len; i++) {
     if (i > 1) {
-      PSViewToken *token1 = new PSViewIntegerToken(getPSView(), str[i - 2]);
-      PSViewToken *token2 = new PSViewIntegerToken(getPSView(), str[i - 1]);
+      auto *token1 = new PSViewIntegerToken(getPSView(), str[i - 2]);
+      auto *token2 = new PSViewIntegerToken(getPSView(), str[i - 1]);
 
       getPSView()->getOperandStack()->push(token1);
       getPSView()->getOperandStack()->push(token2);
@@ -1411,7 +1413,7 @@ kshow(PSViewToken *proc, const string &str)
 
 void
 PSViewGState::
-stringWidth(const string &str, double *wx, double *wy)
+stringWidth(const std::string &str, double *wx, double *wy)
 {
   PSViewGStateFont *font = getFont();
 
@@ -1431,16 +1433,16 @@ stringWidth(const string &str, double *wx, double *wy)
   if (type == PSVIEW_FONT_TYPE_0) {
     PSViewDictionaryToken *font_dictionary = font->getDictionary();
 
-    string str1 = " ";
+    std::string str1 = " ";
 
-    int i = 0;
+    uint i = 0;
 
-    int len = str.size();
+    auto len = str.size();
 
     while (i < len) {
-      PSViewDictionaryToken *font_dictionary1 = NULL;
+      PSViewDictionaryToken *font_dictionary1 = nullptr;
 
-      str1[0] = getType0Char(str, &i, &font_dictionary1);
+      str1[0] = char(getType0Char(str, &i, &font_dictionary1));
 
       setFont1(font_dictionary1);
 
@@ -1457,9 +1459,9 @@ stringWidth(const string &str, double *wx, double *wy)
   *wx = 0;
   *wy = 0;
 
-  int len = str.size();
+  auto len = str.size();
 
-  for (int i = 1; i <= len; i++) {
+  for (uint i = 1; i <= len; i++) {
     if      (type == PSVIEW_FONT_TYPE_DEFAULT)
       showDefaultChar(str[i - 1], wx, wy);
     else if (type == PSVIEW_FONT_TYPE_1)
@@ -1511,7 +1513,7 @@ defaultCharPath(int c, double *x, double *y)
 
 int
 PSViewGState::
-getType0Char(const string &str, int *pos, PSViewDictionaryToken **font_dictionary)
+getType0Char(const std::string &str, uint *pos, PSViewDictionaryToken **font_dictionary)
 {
   PSViewGStateFont *font = getFont();
 
@@ -1519,23 +1521,23 @@ getType0Char(const string &str, int *pos, PSViewDictionaryToken **font_dictionar
 
   //------
 
-  if (*font_dictionary == NULL)
+  if (*font_dictionary == nullptr)
     *font_dictionary = font_data->font_array[0];
 
   if      (font_data->map_type == 2) {
-    int font_num = font_data->encoding[str[*pos] % font_data->encoding_size];
+    int font_num = font_data->encoding[uint(str[*pos] % font_data->encoding_size)];
 
     (*pos)++;
 
-    *font_dictionary = font_data->font_array[font_num % font_data->num_fonts];
+    *font_dictionary = font_data->font_array[uint(font_num % font_data->num_fonts)];
   }
   else if (font_data->map_type == 3) {
     if (str[*pos] == font_data->escape_char) {
       (*pos)++;
 
-      int font_num = font_data->encoding[str[*pos] % font_data->encoding_size];
+      int font_num = font_data->encoding[uint(str[*pos] % font_data->encoding_size)];
 
-      *font_dictionary = font_data->font_array[font_num % font_data->num_fonts];
+      *font_dictionary = font_data->font_array[uint(font_num % font_data->num_fonts)];
 
       (*pos)++;
     }
@@ -1560,14 +1562,14 @@ showType3Char(int c, double *x, double *y)
 
   //------
 
-  c = ((uint) c) & 0xFF;
+  c = int(uint(c) & 0xFF);
 
   PSViewToken *show_char;
 
   if (font_data->build_type == PSVIEW_FONT_BUILD_TYPE_GLYPH) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) font_data->encoding;
+    auto *array_token = static_cast<PSViewArrayToken *>(font_data->encoding);
 
-    show_char = array_token->getValue(c + 1);
+    show_char = array_token->getValue(uint(c + 1));
   }
   else
     show_char = new PSViewIntegerToken(getPSView(), c);
@@ -1584,7 +1586,7 @@ showType3Char(int c, double *x, double *y)
 
   CMatrix2D *matrix = getCTMMatrix();
 
-  matrix->getValues(&x1, &y1, &x2, &y2, NULL, NULL);
+  matrix->getValues(&x1, &y1, &x2, &y2, nullptr, nullptr);
   matrix->setValues( x1,  y1,  x2,  y2,    0,    0);
 
   CMatrix2D tmatrix;
@@ -1611,7 +1613,7 @@ showType3Char(int c, double *x, double *y)
 
 void
 PSViewGState::
-charPath(const string &str, int flag)
+charPath(const std::string &str, int flag)
 {
   PSViewGStateFont *font = getFont();
 
@@ -1622,9 +1624,9 @@ charPath(const string &str, int flag)
 
     path_->getCurrentPoint(p);
 
-    int len = str.size();
+    auto len = str.size();
 
-    for (int i = 1; i <= len; i++)
+    for (uint i = 1; i <= len; i++)
       defaultCharPath(str[i - 1], &p.x, &p.y);
 
     return;
@@ -1642,8 +1644,8 @@ charPath(const string &str, int flag)
 
   //------
 
-  PSViewToken *key1 = new PSViewNameToken(getPSView(), "fill");
-  PSViewToken *key2 = new PSViewNameToken(getPSView(), "stroke");
+  auto *key1 = new PSViewNameToken(getPSView(), "fill");
+  auto *key2 = new PSViewNameToken(getPSView(), "stroke");
 
   PSViewDictionaryToken *dict1 = getPSView()->getDictionaryMgr()->lookupDictionary(key1);
   PSViewDictionaryToken *dict2 = getPSView()->getDictionaryMgr()->lookupDictionary(key2);
@@ -1651,7 +1653,7 @@ charPath(const string &str, int flag)
   PSViewToken *value1 = getPSView()->getDictionaryMgr()->lookup(key1);
   PSViewToken *value2 = getPSView()->getDictionaryMgr()->lookup(key2);
 
-  PSViewToken *value = new PSViewOperatorToken(getPSView(), "charpathfill");
+  auto *value = new PSViewOperatorToken(getPSView(), "charpathfill");
 
   dict1->addValue(key1, value);
 
@@ -1676,9 +1678,9 @@ charPath(const string &str, int flag)
 
   //------
 
-  int len = str.size();
+  auto len = str.size();
 
-  for (int i = 1; i <= len; i++)
+  for (uint i = 1; i <= len; i++)
     addType3CharPath(str[i - 1], &p.x, &p.y);
 
   //------
@@ -1709,14 +1711,14 @@ addType3CharPath(int c, double *x, double *y)
 
   //------
 
-  c = ((uint) c) & 0xFF;
+  c = int(uint(c) & 0xFF);
 
   PSViewToken *show_char;
 
   if (font_data->build_type == PSVIEW_FONT_BUILD_TYPE_GLYPH) {
-    PSViewArrayToken *array_token = (PSViewArrayToken *) font_data->encoding;
+    auto *array_token = static_cast<PSViewArrayToken *>(font_data->encoding);
 
-    show_char = array_token->getValue(c + 1);
+    show_char = array_token->getValue(uint(c + 1));
   }
   else
     show_char = new PSViewIntegerToken(getPSView(), c);
@@ -1733,7 +1735,7 @@ addType3CharPath(int c, double *x, double *y)
 
   CMatrix2D *matrix = getCTMMatrix();
 
-  matrix->getValues(&x1, &y1, &x2, &y2, NULL, NULL);
+  matrix->getValues(&x1, &y1, &x2, &y2, nullptr, nullptr);
   matrix->setValues( x1,  y1,  x2,  y2,    0,    0);
 
   CMatrix2D tmatrix;
@@ -1778,14 +1780,14 @@ image(char *image_data, int width, int height, int bits_per_sample, CMatrix2D *m
     return;
   }
 
-  if (graphics_ == NULL) return;
+  if (graphics_ == nullptr) return;
 
   int num_colors = 1 << bits_per_sample;
 
   int bit_num  = 7;
   int byte_num = 0;
 
-  CRGBA rgba(1,1,1);
+  CRGBA rgba(1, 1, 1);
 
   double y = 0.0;
 
@@ -1817,7 +1819,7 @@ image(char *image_data, int width, int height, int bits_per_sample, CMatrix2D *m
       if (color < decode_size)
         rgba.setGray(decode_array[color]);
       else
-        rgba.setGray(((double) color)/(num_colors - 1));
+        rgba.setGray(double(color)/double(num_colors - 1));
 
       double x11, y11, x21, y21;
 
@@ -1836,7 +1838,7 @@ image(char *image_data, int width, int height, int bits_per_sample, CMatrix2D *m
       points[2].x = x22; points[2].y = y22;
       points[3].x = x12; points[3].y = y22;
 
-      pen_  .setColor(CRGBA(0,0,0,0));
+      pen_  .setColor(CRGBA(0, 0, 0, 0));
       brush_.setColor(rgba);
 
       path_->init();
@@ -1925,7 +1927,7 @@ imageMask(char *image_data, int width, int height, int polarity, CMatrix2D *matr
     return;
   }
 
-  if (graphics_ == NULL)
+  if (graphics_ == nullptr)
     return;
 
   int bit_num  = 7;
@@ -2064,7 +2066,7 @@ rectStroke(double x, double y, double width, double height, CMatrix2D *matrix)
 
   closePath();
 
-  if (matrix != NULL)
+  if (matrix != nullptr)
     postMultiplyCTMMatrix(matrix);
 
   stroke();
@@ -2431,7 +2433,7 @@ void
 PSViewGState::
 showPage()
 {
-  // if (graphics_ != NULL)
+  // if (graphics_ != nullptr)
   //   graphics_->showPage();
 }
 
@@ -2439,8 +2441,8 @@ void
 PSViewGState::
 erasePage()
 {
-  if (graphics_ != NULL)
-    graphics_->clear(CRGBA(1,1,1));
+  if (graphics_ != nullptr)
+    graphics_->clear(CRGBA(1, 1, 1));
 }
 
 void
@@ -2505,7 +2507,7 @@ defineFont(PSViewToken *key, PSViewDictionaryToken *dictionary)
 {
   PSViewToken *token = dictionary->getValue("FontType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
 
     return;
@@ -2534,9 +2536,9 @@ void
 PSViewGState::
 defineType0Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 {
-  PSViewToken *token = dictionary->getValue("FontMatrix");
+  auto *token = dictionary->getValue("FontMatrix");
 
-  if (token == NULL || ! token->isMatrix()) {
+  if (token == nullptr || ! token->isMatrix()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
@@ -2545,7 +2547,7 @@ defineType0Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = dictionary->getValue("FMapType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
@@ -2554,17 +2556,17 @@ defineType0Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = dictionary->getValue("Encoding");
 
-  if (token == NULL || ! token->isArray()) {
+  if (token == nullptr || ! token->isArray()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+  auto *array_token = static_cast<PSViewArrayToken *>(token);
 
-  PSVinteger encoding_size = array_token->getNumValues();
+  auto encoding_size = array_token->getNumValues();
 
   for (int i = 1; i <= encoding_size; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isInteger()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
@@ -2576,17 +2578,17 @@ defineType0Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = dictionary->getValue("FDepVector");
 
-  if (token == NULL || ! token->isArray()) {
+  if (token == nullptr || ! token->isArray()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
 
-  array_token = (PSViewArrayToken *) token;
+  array_token = static_cast<PSViewArrayToken *>(token);
 
-  PSVinteger num_fonts = array_token->getNumValues();
+  auto num_fonts = array_token->getNumValues();
 
   for (int i = 1; i <= num_fonts; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isDictionary()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
@@ -2596,9 +2598,9 @@ defineType0Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   //------
 
-  PSViewToken *key1 = new PSViewNameToken(getPSView(), "FID");
+  auto *key1 = new PSViewNameToken(getPSView(), "FID");
 
-  PSViewToken *value1 = new PSViewFontIdToken(getPSView(), mgr_->getNextFontId());
+  auto *value1 = new PSViewFontIdToken(getPSView(), mgr_->getNextFontId());
 
   dictionary->addValue(key1, value1);
 
@@ -2606,10 +2608,10 @@ defineType0Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = getPSView()->getDictionaryMgr()->lookup("FontDirectory");
 
-  if (token == NULL || ! token->isDictionary())
+  if (token == nullptr || ! token->isDictionary())
     return;
 
-  PSViewDictionaryToken *dictionary_token = (PSViewDictionaryToken *) token;
+  auto *dictionary_token = static_cast<PSViewDictionaryToken *>(token);
 
   dictionary_token->addValue(key, dictionary);
 
@@ -2626,7 +2628,7 @@ defineType3Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 {
   PSViewToken *token = dictionary->getValue("FontMatrix");
 
-  if (token == NULL || ! token->isMatrix()) {
+  if (token == nullptr || ! token->isMatrix()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
@@ -2635,12 +2637,12 @@ defineType3Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = dictionary->getValue("Encoding");
 
-  if (token == NULL || ! token->isArray()) {
+  if (token == nullptr || ! token->isArray()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+  auto *array_token = static_cast<PSViewArrayToken *>(token);
 
   PSVinteger num_tokens = array_token->getNumValues();
 
@@ -2650,7 +2652,7 @@ defineType3Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
   }
 
   for (int i = 1; i <= 256; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isName()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
@@ -2662,12 +2664,12 @@ defineType3Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = dictionary->getValue("FontBBox");
 
-  if (token == NULL || ! token->isArray()) {
+  if (token == nullptr || ! token->isArray()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
 
-  array_token = (PSViewArrayToken *) token;
+  array_token = static_cast<PSViewArrayToken *>(token);
 
   num_tokens = array_token->getNumValues();
 
@@ -2677,7 +2679,7 @@ defineType3Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
   }
 
   for (int i = 1; i <= 4; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isNumber()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
@@ -2689,7 +2691,7 @@ defineType3Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = dictionary->getValue("BuildChar");
 
-  if (token != NULL && ! token->isProcedure()) {
+  if (token != nullptr && ! token->isProcedure()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
@@ -2698,16 +2700,16 @@ defineType3Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = dictionary->getValue("BuildGlyph");
 
-  if (token != NULL && ! token->isProcedure()) {
+  if (token != nullptr && ! token->isProcedure()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
 
   //------
 
-  PSViewToken *key1 = new PSViewNameToken(getPSView(), "FID");
+  auto *key1 = new PSViewNameToken(getPSView(), "FID");
 
-  PSViewToken *value1 = new PSViewFontIdToken(getPSView(), mgr_->getNextFontId());
+  auto *value1 = new PSViewFontIdToken(getPSView(), mgr_->getNextFontId());
 
   dictionary->addValue(key1, value1);
 
@@ -2715,12 +2717,12 @@ defineType3Font(PSViewToken *key, PSViewDictionaryToken *dictionary)
 
   token = getPSView()->getDictionaryMgr()->lookup("FontDirectory");
 
-  if (token == NULL || ! token->isDictionary()) {
+  if (token == nullptr || ! token->isDictionary()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
 
-  PSViewDictionaryToken *dictionary_token = (PSViewDictionaryToken *) token;
+  auto *dictionary_token = static_cast<PSViewDictionaryToken *>(token);
 
   dictionary_token->addValue(key, dictionary);
 
@@ -2737,12 +2739,12 @@ undefineFont(PSViewToken *key)
 {
   PSViewToken *token = getPSView()->getDictionaryMgr()->lookup("FontDirectory");
 
-  if (token == NULL || ! token->isDictionary())
+  if (token == nullptr || ! token->isDictionary())
     return;
 
-  PSViewDictionaryToken *dictionary = (PSViewDictionaryToken *) token;
+  auto *dictionary = static_cast<PSViewDictionaryToken *>(token);
 
-  dictionary->addValue(key, NULL);
+  dictionary->addValue(key, nullptr);
 }
 
 PSViewDictionaryToken *
@@ -2751,17 +2753,17 @@ findFont(PSViewToken *key)
 {
   PSViewToken *token = getPSView()->getDictionaryMgr()->lookup("FontDirectory");
 
-  if (token == NULL || ! token->isDictionary())
+  if (token == nullptr || ! token->isDictionary())
     return mgr_->getDefaultFont();
 
-  PSViewDictionaryToken *dictionary = (PSViewDictionaryToken *) token;
+  auto *dictionary = static_cast<PSViewDictionaryToken *>(token);
 
   token = dictionary->getValue(key);
 
   PSViewDictionaryToken *font;
 
-  if (token != NULL && token->isDictionary())
-    font = (PSViewDictionaryToken *) token;
+  if (token != nullptr && token->isDictionary())
+    font = static_cast<PSViewDictionaryToken *>(token);
   else
     font = readFont(key);
 
@@ -2775,17 +2777,17 @@ readFont(PSViewToken *key)
   if (! key->isName())
     return mgr_->getDefaultFont();
 
-  PSViewToken *key1 = NULL;
+  PSViewToken *key1 = nullptr;
 
-  PSViewNameToken *name_token = (PSViewNameToken *) key;
+  auto *name_token = static_cast<PSViewNameToken *>(key);
 
   const PSViewName &name = name_token->getValue();
 
-  string name1 = name.getString();
+  std::string name1 = name.getString();
 
   bool file_found = false;
 
-  string font_dir;
+  std::string font_dir;
 
   if (! CEnvInst.get("PSVIEW_FONT_DIR", font_dir))
     font_dir = COSUser::getUserHome() + "/data/PSView/fonts";
@@ -2824,16 +2826,16 @@ readFont(PSViewToken *key)
   }
 
   if (! file_found) {
-    if (CStrUtil::casefind(name1, "Bold") != string::npos) {
-      if (CStrUtil::casefind(name1, "Italic" ) != string::npos ||
-          CStrUtil::casefind(name1, "Oblique") != string::npos)
+    if (CStrUtil::casefind(name1, "Bold") != std::string::npos) {
+      if (CStrUtil::casefind(name1, "Italic" ) != std::string::npos ||
+          CStrUtil::casefind(name1, "Oblique") != std::string::npos)
         name1 = "Helvetica-BoldOblique";
       else
         name1 = "Helvetica-Bold";
     }
     else {
-      if (CStrUtil::casefind(name1, "Italic" ) != string::npos ||
-          CStrUtil::casefind(name1, "Oblique") != string::npos)
+      if (CStrUtil::casefind(name1, "Italic" ) != std::string::npos ||
+          CStrUtil::casefind(name1, "Oblique") != std::string::npos)
         name1 = "Helvetica-Oblique";
       else
         name1 = "Helvetica";
@@ -2885,20 +2887,20 @@ readFont(PSViewToken *key)
 
   PSViewToken *token = getPSView()->getDictionaryMgr()->lookup("FontDirectory");
 
-  if (token == NULL || ! token->isDictionary())
+  if (token == nullptr || ! token->isDictionary())
     return mgr_->getDefaultFont();
 
-  PSViewDictionaryToken *dictionary = (PSViewDictionaryToken *) token;
+  auto *dictionary = static_cast<PSViewDictionaryToken *>(token);
 
   token = dictionary->getValue(key);
 
-  if (token == NULL || ! token->isDictionary())
+  if (token == nullptr || ! token->isDictionary())
     return mgr_->getDefaultFont();
 
-  if (key1 != NULL)
+  if (key1 != nullptr)
     dictionary->addValue(key1, token);
 
-  PSViewDictionaryToken *font = (PSViewDictionaryToken *) token;
+  auto *font = static_cast<PSViewDictionaryToken *>(token);
 
   return font;
 }
@@ -2916,7 +2918,7 @@ setFont1(PSViewDictionaryToken *font_dictionary)
 {
   PSViewToken *token = font_dictionary->getValue("FontType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
@@ -2935,7 +2937,7 @@ setFont1(PSViewDictionaryToken *font_dictionary)
 
   token = font_dictionary->getValue("FontMatrix");
 
-  if (token == NULL || ! token->isMatrix()) {
+  if (token == nullptr || ! token->isMatrix()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
     return;
   }
@@ -2954,12 +2956,12 @@ setFont1(PSViewDictionaryToken *font_dictionary)
   else if (type == PSVIEW_FONT_TYPE_0) {
     PSViewToken *token1 = font_dictionary->getValue("Encoding");
 
-    if (token1 == NULL || ! token1->isArray()) {
+    if (token1 == nullptr || ! token1->isArray()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
       return;
     }
 
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token1;
+    auto *array_token = static_cast<PSViewArrayToken *>(token1);
 
     PSVinteger encoding_size = array_token->getNumValues();
 
@@ -2968,26 +2970,26 @@ setFont1(PSViewDictionaryToken *font_dictionary)
       return;
     }
 
-    vector<int> encoding;
+    std::vector<int> encoding;
 
-    encoding.resize(encoding_size);
+    encoding.resize(uint(encoding_size));
 
     for (int i = 1; i <= encoding_size; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      PSViewToken *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isInteger()) {
         getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
         return;
       }
 
-      encoding[i - 1] = sub_token->getIntegerValue();
+      encoding[uint(i - 1)] = int(sub_token->getIntegerValue());
     }
 
     //------
 
     token1 = font_dictionary->getValue("FMapType");
 
-    if (token1 == NULL || ! token1->isInteger()) {
+    if (token1 == nullptr || ! token1->isInteger()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
       return;
     }
@@ -2998,26 +3000,26 @@ setFont1(PSViewDictionaryToken *font_dictionary)
 
     token1 = font_dictionary->getValue("EscChar");
 
-    if (token1 != NULL && ! token1->isInteger()) {
+    if (token1 != nullptr && ! token1->isInteger()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
       return;
     }
 
     PSVinteger escape_char = 255;
 
-    if (token1 != NULL)
+    if (token1 != nullptr)
       escape_char = token1->getIntegerValue();
 
     //------
 
     token1 = font_dictionary->getValue("FDepVector");
 
-    if (token1 == NULL || ! token1->isArray()) {
+    if (token1 == nullptr || ! token1->isArray()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
       return;
     }
 
-    array_token = (PSViewArrayToken *) token1;
+    array_token = static_cast<PSViewArrayToken *>(token1);
 
     PSVinteger num_fonts = array_token->getNumValues();
 
@@ -3026,32 +3028,32 @@ setFont1(PSViewDictionaryToken *font_dictionary)
       return;
     }
 
-    vector<PSViewDictionaryToken *> font_array;
+    std::vector<PSViewDictionaryToken *> font_array;
 
-    font_array.resize(num_fonts);
+    font_array.resize(uint(num_fonts));
 
     for (int i = 1; i <= num_fonts; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      PSViewToken *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isDictionary()) {
         getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
         return;
       }
 
-      font_array[i - 1] = (PSViewDictionaryToken *) sub_token;
+      font_array[uint(i - 1)] = static_cast<PSViewDictionaryToken *>(sub_token);
     }
 
     //------
 
-    font->setType1Font(font_dictionary, encoding_size, encoding,
-                        map_type, escape_char, num_fonts, font_array);
+    font->setType1Font(font_dictionary, int(encoding_size), encoding,
+                        int(map_type), char(escape_char), int(num_fonts), font_array);
   }
   else if (type == PSVIEW_FONT_TYPE_1)
     CStrUtil::eprintf("PSView: Type 1 Fonts not implemented\n");
   else if (type == PSVIEW_FONT_TYPE_3) {
     PSViewToken *encoding = font_dictionary->getValue("Encoding");
 
-    if (encoding == NULL || ! encoding->isArray()) {
+    if (encoding == nullptr || ! encoding->isArray()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
       return;
     }
@@ -3064,7 +3066,7 @@ setFont1(PSViewDictionaryToken *font_dictionary)
     PSViewToken         *build;
     PSViewFontBuildType  build_type;
 
-    if (build_glyph != NULL) {
+    if (build_glyph != nullptr) {
       build      = build_glyph;
       build_type = PSVIEW_FONT_BUILD_TYPE_GLYPH;
     }
@@ -3073,7 +3075,7 @@ setFont1(PSViewDictionaryToken *font_dictionary)
       build_type = PSVIEW_FONT_BUILD_TYPE_CHAR;
     }
 
-    if (build == NULL || ! build->isProcedure()) {
+    if (build == nullptr || ! build->isProcedure()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
       return;
     }
@@ -3101,7 +3103,7 @@ getRootFont()
 
   PSViewDictionaryToken *root_font = font->getDictionary();
 
-  if (root_font != NULL)
+  if (root_font != nullptr)
     return root_font;
   else
     return getCurrentFont();
@@ -3113,15 +3115,15 @@ selectScaleFont(PSViewToken *key, PSVreal scale)
 {
   getPSView()->getOperandStack()->push(key);
 
-  PSViewToken *findfont = getPSView()->getDictionaryMgr()->lookup("findfont");
+  auto *findfont = getPSView()->getDictionaryMgr()->lookup("findfont");
 
   findfont->execute();
 
-  PSViewToken *token = getPSView()->getOperandStack()->pop();
+  auto *token = getPSView()->getOperandStack()->pop();
 
-  PSViewDictionaryToken *font = (PSViewDictionaryToken *) token;
+  auto *font = static_cast<PSViewDictionaryToken *>(token);
 
-  PSViewDictionaryToken *font_dictionary1 = scaleFont(font, scale);
+  auto *font_dictionary1 = scaleFont(font, scale);
 
   setFont(font_dictionary1);
 }
@@ -3132,15 +3134,15 @@ selectMakeFont(PSViewToken *key, CMatrix2D *matrix)
 {
   getPSView()->getOperandStack()->push(key);
 
-  PSViewToken *findfont = getPSView()->getDictionaryMgr()->lookup("findfont");
+  auto *findfont = getPSView()->getDictionaryMgr()->lookup("findfont");
 
   findfont->execute();
 
-  PSViewToken *token = getPSView()->getOperandStack()->pop();
+  auto *token = getPSView()->getOperandStack()->pop();
 
-  PSViewDictionaryToken *font = (PSViewDictionaryToken *) token;
+  auto *font = static_cast<PSViewDictionaryToken *>(token);
 
-  PSViewDictionaryToken *font_dictionary1 = makeFont(font, matrix);
+  auto *font_dictionary1 = makeFont(font, matrix);
 
   setFont(font_dictionary1);
 }
@@ -3151,9 +3153,9 @@ scaleFont(PSViewDictionaryToken *font_dictionary, PSVreal scale)
 {
   PSViewToken *token = font_dictionary->getValue("FontType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
-    return NULL;
+    return nullptr;
   }
 
   PSVinteger type = token->getIntegerValue();
@@ -3163,34 +3165,34 @@ scaleFont(PSViewDictionaryToken *font_dictionary, PSVreal scale)
       type != PSVIEW_FONT_TYPE_1       &&
       type != PSVIEW_FONT_TYPE_3) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_LIMIT_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   if (type == PSVIEW_FONT_TYPE_0) {
     PSViewToken *vtoken = font_dictionary->getValue("FDepVector");
 
-    if (vtoken == NULL || ! vtoken->isArray()) {
+    if (vtoken == nullptr || ! vtoken->isArray()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
-      return NULL;
+      return nullptr;
     }
 
-    PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+    auto *array_token = static_cast<PSViewArrayToken *>(token);
 
-    int num_fonts = array_token->getNumValues();
+    auto num_fonts = array_token->getNumValues();
 
     for (int i = 1; i <= num_fonts; i++) {
-      PSViewToken *sub_token = array_token->getValue(i);
+      auto *sub_token = array_token->getValue(uint(i));
 
       if (! sub_token->isDictionary()) {
         getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
-        return NULL;
+        return nullptr;
       }
 
-      PSViewDictionaryToken *dictionary = (PSViewDictionaryToken *) sub_token;
+      auto *dictionary = static_cast<PSViewDictionaryToken *>(sub_token);
 
-      PSViewDictionaryToken *font_dictionary1 = scaleFont(dictionary, scale);
+      auto *font_dictionary1 = scaleFont(dictionary, scale);
 
-      array_token->setValue(i, font_dictionary1);
+      array_token->setValue(uint(i), font_dictionary1);
     }
 
     return font_dictionary;
@@ -3198,9 +3200,9 @@ scaleFont(PSViewDictionaryToken *font_dictionary, PSVreal scale)
 
   PSViewToken *token_m1 = font_dictionary->getValue("FontMatrix");
 
-  if (token_m1 == NULL) {
+  if (token_m1 == nullptr) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
-    return NULL;
+    return nullptr;
   }
 
   CAutoPtr<CMatrix2D> matrix;
@@ -3213,7 +3215,7 @@ scaleFont(PSViewDictionaryToken *font_dictionary, PSVreal scale)
 
   CMatrix2D matrix2 = matrix1 * (*matrix);
 
-  PSViewToken *token_m2 = new PSViewArrayToken(getPSView(), &matrix2);
+  auto *token_m2 = new PSViewArrayToken(getPSView(), &matrix2);
 
   //------
 
@@ -3232,7 +3234,7 @@ scaleFont(PSViewDictionaryToken *font_dictionary, PSVreal scale)
 
   //------
 
-  PSViewToken *key = new PSViewNameToken(getPSView(), "FontMatrix");
+  auto *key = new PSViewNameToken(getPSView(), "FontMatrix");
 
   font_dictionary1->addValue(key, token_m2);
 
@@ -3245,9 +3247,9 @@ makeFont(PSViewDictionaryToken *font_dictionary, CMatrix2D *matrix)
 {
   PSViewToken *token_m1 = font_dictionary->getValue("FontMatrix");
 
-  if (token_m1 == NULL) {
+  if (token_m1 == nullptr) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_FONT);
-    return NULL;
+    return nullptr;
   }
 
   CAutoPtr<CMatrix2D> matrix1;
@@ -3256,7 +3258,7 @@ makeFont(PSViewDictionaryToken *font_dictionary, CMatrix2D *matrix)
 
   CMatrix2D matrix2 = (*matrix) * (*matrix1);
 
-  PSViewToken *token_m2 = new PSViewArrayToken(getPSView(), &matrix2);
+  auto *token_m2 = new PSViewArrayToken(getPSView(), &matrix2);
 
   //------
 
@@ -3275,7 +3277,7 @@ makeFont(PSViewDictionaryToken *font_dictionary, CMatrix2D *matrix)
 
   //------
 
-  PSViewToken *key = new PSViewNameToken(getPSView(), "FontMatrix");
+  auto *key = new PSViewNameToken(getPSView(), "FontMatrix");
 
   font_dictionary1->addValue(key, token_m2);
 
@@ -3290,74 +3292,74 @@ makePattern(PSViewDictionaryToken *pattern_dictionary, CMatrix2D *matrix)
 {
   PSViewToken *token = pattern_dictionary->getValue("PatternType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   PSVinteger pattern_type = token->getIntegerValue();
 
   if (pattern_type != 1) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   //------
 
   token = pattern_dictionary->getValue("PaintType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   PSVinteger paint_type = token->getIntegerValue();
 
   if (paint_type != 1 && paint_type != 2) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   //------
 
   token = pattern_dictionary->getValue("TilingType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   PSVinteger tiling_type = token->getIntegerValue();
 
   if (tiling_type != 1 && tiling_type != 2 && tiling_type != 3) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   //------
 
   token = pattern_dictionary->getValue("BBox");
 
-  if (token == NULL || ! token->isArray()) {
+  if (token == nullptr || ! token->isArray()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+  auto *array_token = static_cast<PSViewArrayToken *>(token);
 
-  PSVinteger num_tokens = array_token->getNumValues();
+  auto num_tokens = array_token->getNumValues();
 
   if (num_tokens != 4) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   for (int i = 1; i <= 4; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    PSViewToken *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isNumber()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -3365,41 +3367,41 @@ makePattern(PSViewDictionaryToken *pattern_dictionary, CMatrix2D *matrix)
 
   token = pattern_dictionary->getValue("XStep");
 
-  if (token == NULL || ! token->isNumber()) {
+  if (token == nullptr || ! token->isNumber()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   PSVreal x_step = token->getRealValue();
 
   if (x_step == 0.0) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   //------
 
   token = pattern_dictionary->getValue("YStep");
 
-  if (token == NULL || ! token->isNumber()) {
+  if (token == nullptr || ! token->isNumber()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   PSVreal y_step = token->getRealValue();
 
   if (y_step == 0.0) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   //------
 
   PSViewToken *paint_proc = pattern_dictionary->getValue("PaintProc");
 
-  if (paint_proc == NULL || ! paint_proc->isProcedure()) {
+  if (paint_proc == nullptr || ! paint_proc->isProcedure()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
-    return NULL;
+    return nullptr;
   }
 
   //------
@@ -3434,7 +3436,7 @@ makePattern(PSViewDictionaryToken *pattern_dictionary, CMatrix2D *matrix)
 
   //------
 
-  PSViewToken *sub_token = new PSViewNameToken(getPSView(), "Implementation");
+  auto *sub_token = new PSViewNameToken(getPSView(), "Implementation");
 
   pattern1->addValue(sub_token, gstate_token);
 
@@ -3447,12 +3449,12 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
 {
   PSViewToken *token = pattern_dictionary->getValue("PatternType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
 
-  int pattern_type = token->getIntegerValue();
+  int pattern_type = int(token->getIntegerValue());
 
   if (pattern_type != 1) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -3463,12 +3465,12 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
 
   token = pattern_dictionary->getValue("PaintType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
 
-  int paint_type = token->getIntegerValue();
+  int paint_type = int(token->getIntegerValue());
 
   if (paint_type != 1 && paint_type != 2) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -3479,12 +3481,12 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
 
   token = pattern_dictionary->getValue("TilingType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
 
-  int tiling_type = token->getIntegerValue();
+  int tiling_type = int(token->getIntegerValue());
 
   if (tiling_type != 1 && tiling_type != 2 && tiling_type != 3) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -3495,14 +3497,14 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
 
   token = pattern_dictionary->getValue("BBox");
 
-  if (token == NULL || ! token->isArray()) {
+  if (token == nullptr || ! token->isArray()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+  auto *array_token = static_cast<PSViewArrayToken *>(token);
 
-  int num_tokens = array_token->getNumValues();
+  int num_tokens = int(array_token->getNumValues());
 
   if (num_tokens != 4) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
@@ -3512,7 +3514,7 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
   double bbox[4];
 
   for (int i = 1; i <= 4; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isNumber()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -3526,7 +3528,7 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
 
   token = pattern_dictionary->getValue("XStep");
 
-  if (token == NULL || ! token->isNumber()) {
+  if (token == nullptr || ! token->isNumber()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
@@ -3537,7 +3539,7 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
 
   token = pattern_dictionary->getValue("YStep");
 
-  if (token == NULL || ! token->isNumber()) {
+  if (token == nullptr || ! token->isNumber()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
@@ -3548,7 +3550,7 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
 
   PSViewToken *paint_proc = pattern_dictionary->getValue("PaintProc");
 
-  if (paint_proc == NULL || ! paint_proc->isProcedure()) {
+  if (paint_proc == nullptr || ! paint_proc->isProcedure()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
@@ -3557,14 +3559,14 @@ setPattern(PSViewDictionaryToken *pattern_dictionary)
 
   token = pattern_dictionary->getValue("Implementation");
 
-  if (token == NULL || ! token->isGState()) {
+  if (token == nullptr || ! token->isGState()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
 
-  PSViewGStateToken *gstate_token = (PSViewGStateToken *) token;
+  auto *gstate_token = static_cast<PSViewGStateToken *>(token);
 
-  PSViewGState *gstate = gstate_token->getGState();
+  auto *gstate = gstate_token->getGState();
 
   //------
 
@@ -3586,7 +3588,7 @@ execForm(PSViewDictionaryToken *form_dictionary)
 {
   PSViewToken *token = form_dictionary->getValue("FormType");
 
-  if (token == NULL || ! token->isInteger()) {
+  if (token == nullptr || ! token->isInteger()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
@@ -3602,12 +3604,12 @@ execForm(PSViewDictionaryToken *form_dictionary)
 
   token = form_dictionary->getValue("BBox");
 
-  if (token == NULL || ! token->isArray()) {
+  if (token == nullptr || ! token->isArray()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
 
-  PSViewArrayToken *array_token = (PSViewArrayToken *) token;
+  auto *array_token = static_cast<PSViewArrayToken *>(token);
 
   PSVinteger num_tokens = array_token->getNumValues();
 
@@ -3619,7 +3621,7 @@ execForm(PSViewDictionaryToken *form_dictionary)
   double bbox[4];
 
   for (int i = 1; i <= 4; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    PSViewToken *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isNumber()) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
@@ -3633,7 +3635,7 @@ execForm(PSViewDictionaryToken *form_dictionary)
 
   token = form_dictionary->getValue("Matrix");
 
-  if (token == NULL || ! token->isMatrix()) {
+  if (token == nullptr || ! token->isMatrix()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
@@ -3644,7 +3646,7 @@ execForm(PSViewDictionaryToken *form_dictionary)
 
   PSViewToken *paint_proc = form_dictionary->getValue("PaintProc");
 
-  if (paint_proc == NULL || ! paint_proc->isProcedure()) {
+  if (paint_proc == nullptr || ! paint_proc->isProcedure()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
     return;
   }
@@ -3653,7 +3655,7 @@ execForm(PSViewDictionaryToken *form_dictionary)
 
   token = new PSViewNameToken(getPSView(), "Implementation");
 
-  PSViewToken *sub_token = new PSViewNullToken(getPSView());
+  auto *sub_token = new PSViewNullToken(getPSView());
 
   form_dictionary->addValue(token, sub_token);
 
@@ -3769,7 +3771,7 @@ rgbToCMYK(const CRGBA &rgba)
 
   double black = cmyk.getBlack();
 
-  PSViewToken *token1 = new PSViewRealToken(getPSView(), black);
+  auto *token1 = new PSViewRealToken(getPSView(), black);
 
   getPSView()->getOperandStack()->push(token1);
 
@@ -3779,7 +3781,7 @@ rgbToCMYK(const CRGBA &rgba)
 
   PSViewToken *token2 = getPSView()->getOperandStack()->pop();
 
-  if (token2 != NULL) {
+  if (token2 != nullptr) {
     black = token2->getRealValue();
 
     black = std::min(std::max(black, 0.0), 1.0);
@@ -3803,7 +3805,7 @@ rgbToCMYK(const CRGBA &rgba)
 
   token2 = getPSView()->getOperandStack()->pop();
 
-  if (token2 != NULL) {
+  if (token2 != nullptr) {
     delta = token2->getRealValue();
 
     cmyk.lighten(delta);
@@ -3948,7 +3950,7 @@ setDashPattern(double *dash_array, int num_dashes, double dash_offset)
 {
   CLineDash dash;
 
-  dash.setDashes(dash_array, num_dashes, dash_offset);
+  dash.setDashes(dash_array, uint(num_dashes), dash_offset);
 
   pen_.setLineDash(dash);
 }
@@ -3960,7 +3962,7 @@ getDashPattern(const double **dash_array, int *num_dashes, double *dash_offset)
   const CLineDash &dash = pen_.getLineDash();
 
   *dash_array  = dash.getLengths();
-  *num_dashes  = dash.getNumLengths();
+  *num_dashes  = int(dash.getNumLengths());
   *dash_offset = dash.getOffset();
 }
 
@@ -3975,8 +3977,8 @@ PSViewToken *
 PSViewGState::
 getBlackGeneration()
 {
-  if (black_generation_ == NULL) {
-    black_generation_ = new PSViewArrayToken(getPSView(), (uint) 0);
+  if (black_generation_ == nullptr) {
+    black_generation_ = new PSViewArrayToken(getPSView(), uint(0));
 
     black_generation_->setExecutable();
   }
@@ -3995,8 +3997,8 @@ PSViewToken *
 PSViewGState::
 getUnderColorRemoval()
 {
-  if (undercolor_removal_ == NULL) {
-    undercolor_removal_ = new PSViewArrayToken(getPSView(), (uint) 0);
+  if (undercolor_removal_ == nullptr) {
+    undercolor_removal_ = new PSViewArrayToken(getPSView(), uint(0));
 
     undercolor_removal_->setExecutable();
   }
@@ -4029,7 +4031,7 @@ getInverseCTMMatrix()
   if (flag)
     return &imatrix;
   else
-    return NULL;
+    return nullptr;
 }
 
 void
@@ -4080,7 +4082,7 @@ multiplyByInverseCTMMatrix(double x1, double y1, double *x2, double *y2)
 {
   CMatrix2D *imatrix = getInverseCTMMatrix();
 
-  if (imatrix != NULL)
+  if (imatrix != nullptr)
     imatrix->multiplyPoint(x1, y1, x2, y2);
   else {
     *x2 = x1;

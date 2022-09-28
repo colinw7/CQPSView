@@ -11,7 +11,7 @@ PSViewNameToken(CPSView *psview, const PSViewName &value) :
 }
 
 PSViewNameToken::
-PSViewNameToken(CPSView *psview, const string &str) :
+PSViewNameToken(CPSView *psview, const std::string &str) :
  PSViewToken(psview, PSVIEW_TOKEN_TYPE_NAME,
              PSVIEW_TOKEN_NON_COMPOSITE,
              PSVIEW_TOKEN_EXECUTABLE,
@@ -53,12 +53,12 @@ PSViewNameToken::
 compare(PSViewToken *token)
 {
   if      (token->isType(type_)) {
-    PSViewNameToken *name_token = dynamic_cast<PSViewNameToken *>(token);
+    auto *name_token = dynamic_cast<PSViewNameToken *>(token);
 
     return value_.compare(name_token->value_);
   }
   else if (token->isType(PSVIEW_TOKEN_TYPE_STRING)) {
-    PSViewStringToken *string_token = dynamic_cast<PSViewStringToken *>(token);
+    auto *string_token = dynamic_cast<PSViewStringToken *>(token);
 
     PSViewNameToken name_token1 = PSViewNameToken(psview_, string_token->toString());
 
@@ -103,14 +103,14 @@ print()
   CStrUtil::printf("%s" , value_.getString().c_str());
 }
 
-string
+std::string
 PSViewNameToken::
 toString()
 {
   return value_.getString();
 }
 
-const string &
+const std::string &
 PSViewNameToken::
 getString()
 {
@@ -121,5 +121,5 @@ int
 PSViewNameToken::
 getLength()
 {
-  return value_.getLength();
+  return int(value_.getLength());
 }

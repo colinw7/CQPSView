@@ -20,7 +20,7 @@ PSViewTokenMgr::
 PSViewTokenMgr(CPSView *psview) :
  psview_            (psview),
  packing_           (false),
- last_execute_token_(NULL)
+ last_execute_token_(nullptr)
 {
 }
 
@@ -60,7 +60,7 @@ PSViewToken(CPSView *psview, PSViewTokenType type, PSViewTokenCompositeType comp
  psview_    (psview),
  type_      (type),
  composite_ (composite),
- memory_    (NULL),
+ memory_    (nullptr),
  executable_(executable),
  access_    (access)
 {
@@ -71,7 +71,7 @@ PSViewToken(const PSViewToken &token) :
  psview_    (token.psview_),
  type_      (token.type_),
  composite_ (token.composite_),
- memory_    (NULL),
+ memory_    (nullptr),
  executable_(token.executable_),
  access_    (token.access_)
 {
@@ -88,7 +88,7 @@ operator=(const PSViewToken &token)
 {
   type_       = token.type_;
   composite_  = token.composite_;
-  memory_     = NULL;
+  memory_     = nullptr;
   executable_ = token.executable_;
   access_     = token.access_;
 
@@ -229,7 +229,7 @@ PSViewToken::
 getBooleanValue()
 {
   if      (type_ == PSVIEW_TOKEN_TYPE_BOOLEAN) {
-    PSViewBooleanToken *boolean_token = dynamic_cast<PSViewBooleanToken *>(this);
+    auto *boolean_token = dynamic_cast<PSViewBooleanToken *>(this);
 
     return boolean_token->getValue();
   }
@@ -245,14 +245,14 @@ PSViewToken::
 getIntegerValue()
 {
   if      (type_ == PSVIEW_TOKEN_TYPE_INTEGER) {
-    PSViewIntegerToken *integer_token = dynamic_cast<PSViewIntegerToken *>(this);
+    auto *integer_token = dynamic_cast<PSViewIntegerToken *>(this);
 
     return integer_token->getValue();
   }
   else if (type_ == PSVIEW_TOKEN_TYPE_REAL) {
-    PSViewRealToken *real_token = dynamic_cast<PSViewRealToken *>(this);
+    auto *real_token = dynamic_cast<PSViewRealToken *>(this);
 
-    return (PSVinteger) real_token->getValue();
+    return PSVinteger(real_token->getValue());
   }
   else {
     CTHROW("No integer value for token");
@@ -266,12 +266,12 @@ PSViewToken::
 getRealValue()
 {
   if      (type_ == PSVIEW_TOKEN_TYPE_INTEGER) {
-    PSViewIntegerToken *integer_token = dynamic_cast<PSViewIntegerToken *>(this);
+    auto *integer_token = dynamic_cast<PSViewIntegerToken *>(this);
 
-    return (PSVreal) integer_token->getValue();
+    return PSVreal(integer_token->getValue());
   }
   else if (type_ == PSVIEW_TOKEN_TYPE_REAL) {
-    PSViewRealToken *real_token = dynamic_cast<PSViewRealToken *>(this);
+    auto *real_token = dynamic_cast<PSViewRealToken *>(this);
 
     return real_token->getValue();
   }
@@ -286,12 +286,12 @@ PSViewToken *
 PSViewToken::
 toName()
 {
-  PSViewToken *token1 = new PSViewNameToken(psview_, getTypeName());
+  auto *token1 = new PSViewNameToken(psview_, getTypeName());
 
   return token1;
 }
 
-string
+std::string
 PSViewToken::
 getTypeName()
 {
@@ -552,7 +552,7 @@ isMatrix()
   if (! isArray() || ! isLiteral())
     return false;
 
-  PSViewArrayToken *array_token = dynamic_cast<PSViewArrayToken *>(this);
+  auto *array_token = dynamic_cast<PSViewArrayToken *>(this);
 
   PSVinteger num_tokens = array_token->getNumValues();
 
@@ -560,7 +560,7 @@ isMatrix()
     return false;
 
   for (int i = 1; i <= 6; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isNumber())
       return false;
@@ -576,17 +576,17 @@ getMatrix()
   if (! isArray() || ! isLiteral()) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
 
-    return NULL;
+    return nullptr;
   }
 
-  PSViewArrayToken *array_token = dynamic_cast<PSViewArrayToken *>(this);
+  auto *array_token = dynamic_cast<PSViewArrayToken *>(this);
 
   PSVinteger num_tokens = array_token->getNumValues();
 
   if (num_tokens != 6) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_RANGE_CHECK);
 
-    return NULL;
+    return nullptr;
   }
 
   CMatrix2D *matrix = new CMatrix2D;
@@ -594,14 +594,14 @@ getMatrix()
   double data[6];
 
   for (int i = 1; i <= 6; i++) {
-    PSViewToken *sub_token = array_token->getValue(i);
+    auto *sub_token = array_token->getValue(uint(i));
 
     if (! sub_token->isNumber()) {
       delete matrix;
 
       psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_TYPE_CHECK);
 
-      return NULL;
+      return nullptr;
     }
 
     data[i - 1] = sub_token->getRealValue();
@@ -623,7 +623,7 @@ setMatrix(CMatrix2D *matrix)
     return;
   }
 
-  PSViewArrayToken *array_token = dynamic_cast<PSViewArrayToken *>(this);
+  auto *array_token = dynamic_cast<PSViewArrayToken *>(this);
 
   double data[6];
 
@@ -631,8 +631,8 @@ setMatrix(CMatrix2D *matrix)
                     &data[3], &data[4], &data[5]);
 
   for (int i = 1; i <= 6; i++) {
-    PSViewToken *sub_token = new PSViewRealToken(psview_, data[i - 1]);
+    auto *sub_token = new PSViewRealToken(psview_, data[i - 1]);
 
-    array_token->setValue(i, sub_token);
+    array_token->setValue(uint(i), sub_token);
   }
 }

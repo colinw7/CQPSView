@@ -33,7 +33,7 @@ PSViewFilterFile(PSViewFile *file, const PSViewName &name) :
 }
 
 PSViewFilterFile::
-PSViewFilterFile(PSViewFile *file, const string &name) :
+PSViewFilterFile(PSViewFile *file, const std::string &name) :
  PSViewFile (file->getPSView()),
  file_      (file),
  name_      (name),
@@ -72,35 +72,35 @@ init()
   int size = 0;
 
   if      (name_ == "ASCIIHexEncode") {
-    proc_ = (PSViewFilterFileProc) asciiHexEncode;
+    proc_ = reinterpret_cast<PSViewFilterFileProc>(asciiHexEncode);
     data_ = NULL;
     mode_ = PSVIEW_FILE_MODE_TYPE_WRITE;
     size  = 0;
   }
   else if (name_ == "ASCIIHexDecode") {
-    proc_ = (PSViewFilterFileProc) asciiHexDecode;
+    proc_ = reinterpret_cast<PSViewFilterFileProc>(asciiHexDecode);
     data_ = NULL;
     mode_ = PSVIEW_FILE_MODE_TYPE_READ;
     size  = 0;
   }
   else if (name_ == "ASCII85Encode") {
-    proc_ = (PSViewFilterFileProc) ascii85Encode;
+    proc_ = reinterpret_cast<PSViewFilterFileProc>(ascii85Encode);
     data_ = NULL;
     mode_ = PSVIEW_FILE_MODE_TYPE_WRITE;
     size  = 4;
   }
   else if (name_ == "EExecDecode") {
-    PSViewExecData *eexec_data = new PSViewExecData;
+    auto *eexec_data = new PSViewExecData;
 
-    proc_ = (PSViewFilterFileProc) eexecDecode;
-    data_ = (char *) eexec_data;
+    proc_ = reinterpret_cast<PSViewFilterFileProc>(eexecDecode);
+    data_ = reinterpret_cast<char *>(eexec_data);
     mode_ = PSVIEW_FILE_MODE_TYPE_READ;
     size  = 256;
   }
   else
     CTHROW("Invalid File Type" + name_);
 
-  buffer_.resize(size + 1);
+  buffer_.resize(uint(size + 1));
 
   buffer_pos_ = 0;
 }
@@ -209,7 +209,7 @@ getPosition(uint *pos)
   return file_->getPosition(pos);
 }
 
-string
+std::string
 PSViewFilterFile::
 getFileName()
 {
@@ -248,7 +248,7 @@ lookChar()
 
 void
 PSViewFilterFile::
-unreadChars(const vector<int> &chars)
+unreadChars(const std::vector<int> &chars)
 {
   file_->unreadChars(chars);
 }
@@ -302,7 +302,7 @@ asciiHexEncode(PSViewFilterFile *file, int c, char *)
   if (c == EOF)
     return 0;
 
-  string str = CStrUtil::toHexString(c, 2);
+  std::string str = CStrUtil::toHexString(c, 2);
 
   file->file_->writeChar(str[0]);
   file->file_->writeChar(str[1]);
@@ -314,7 +314,7 @@ int
 PSViewFilterFile::
 asciiHexDecode(PSViewFilterFile *file, char *, bool consume)
 {
-  vector<int> chars;
+  std::vector<int> chars;
 
   // skip space
   int c = file->file_->lookChar();
@@ -359,16 +359,18 @@ asciiHexDecode(PSViewFilterFile *file, char *, bool consume)
 
   uint v1, v2;
 
-  if (! CStrUtil::decodeHexChar(c1, &v1) || ! CStrUtil::decodeHexChar(c2, &v2)) {
+  if (! CStrUtil::decodeHexChar(static_cast<unsigned char>(c1), &v1) ||
+      ! CStrUtil::decodeHexChar(static_cast<unsigned char>(c2), &v2)) {
     if (! consume) file->file_->unreadChars(chars);
     return EOF;
   }
 
-  int cc = ((v1 & 0xF) << 4) | (v2 & 0xF);
+  uint cc = ((v1 & 0xF) << 4) | (v2 & 0xF);
 
-  if (! consume) file->file_->unreadChars(chars);
+  if (! consume)
+    file->file_->unreadChars(chars);
 
-  return cc;
+  return int(cc);
 }
 
 int
@@ -379,21 +381,21 @@ ascii85Encode(PSViewFilterFile *file, int c, char *)
     if (file->buffer_pos_ == 0)
       return 0;
 
-    int pos = file->buffer_pos_;
+    int pos = int(file->buffer_pos_);
 
     while (file->buffer_pos_ <= 3)
       file->buffer_[file->buffer_pos_++] = '\0';
 
-    int chars = (file->buffer_[0] << 24) | (file->buffer_[1] << 16) |
-                (file->buffer_[2] <<  8) |  file->buffer_[3];
+    uint chars = (uint(file->buffer_[0]) << 24U) | (uint(file->buffer_[1]) << 16U) |
+                 (uint(file->buffer_[2]) <<  8U) |  uint(file->buffer_[3]);
 
-    string str = file->charsToASCII85(chars);
+    std::string str = file->charsToASCII85(chars);
 
     if (str == "z")
       str = "!!!!!";
 
     for (int i = 0; i < pos + 1; i++)
-      file->file_->writeChar(str[i]);
+      file->file_->writeChar(str[uint(i)]);
 
     file->file_->writeChar('~');
     file->file_->writeChar('>');
@@ -404,17 +406,17 @@ ascii85Encode(PSViewFilterFile *file, int c, char *)
   }
 
   if (file->buffer_pos_ <= 3)
-    file->buffer_[file->buffer_pos_++] = c;
+    file->buffer_[file->buffer_pos_++] = char(c);
 
   if (file->buffer_pos_ == 4) {
-    int chars = (file->buffer_[0] << 24) | (file->buffer_[1] << 16) |
-                (file->buffer_[2] <<  8) |  file->buffer_[3];
+    uint chars = (uint(file->buffer_[0]) << 24U) | (uint(file->buffer_[1]) << 16U) |
+                 (uint(file->buffer_[2]) <<  8U) |  uint(file->buffer_[3]);
 
-    string str = file->charsToASCII85(chars);
+    std::string str = file->charsToASCII85(chars);
 
-    int len = str.size();
+    auto len = str.size();
 
-    for (int i = 0; i < len; i++)
+    for (uint i = 0; i < len; i++)
       file->file_->writeChar(str[i]);
 
     file->buffer_pos_ = 0;
@@ -427,7 +429,7 @@ int
 PSViewFilterFile::
 eexecDecode(PSViewFilterFile *file, char *data, bool consume)
 {
-  PSViewExecData *eexec_data = (PSViewExecData *) data;
+  auto *eexec_data = reinterpret_cast<PSViewExecData *>(data);
 
   uint pos;
 
@@ -439,14 +441,14 @@ eexecDecode(PSViewFilterFile *file, char *data, bool consume)
     eexec_data->pos_start_ = pos;
     eexec_data->pos_end_   = pos;
 
-    int i = 0;
+    uint i = 0;
 
     while (true) {
       file->skipSpace();
 
-      string str = "XX";
+      std::string str = "XX";
 
-      str[0] = file->readChar();
+      str[0] = char(file->readChar());
 
       if (str[0] == EOF || ! isxdigit(str[0]))
         break;
@@ -460,7 +462,7 @@ eexecDecode(PSViewFilterFile *file, char *data, bool consume)
 
         file->skipSpace();
 
-        str[1] = file->lookChar();
+        str[1] = char(file->lookChar());
 
         while (str[1] == '0') {
           zero_count++;
@@ -469,7 +471,7 @@ eexecDecode(PSViewFilterFile *file, char *data, bool consume)
 
           file->skipSpace();
 
-          str[1] = file->lookChar();
+          str[1] = char(file->lookChar());
         }
 
         if (zero_count == 512)
@@ -480,7 +482,7 @@ eexecDecode(PSViewFilterFile *file, char *data, bool consume)
 
       file->skipSpace();
 
-      str[1] = file->readChar();
+      str[1] = char(file->readChar());
 
       if (str[1] == EOF || ! isxdigit(str[1]))
         break;
@@ -492,12 +494,12 @@ eexecDecode(PSViewFilterFile *file, char *data, bool consume)
       c = PSViewExecData::decrypt(c, &eexec_data->r_);
 
       if (i < 4)
-        c = ps_id_chars[i];
+        c = uint(ps_id_chars[i]);
 
-      if (i >= (int) file->buffer_.size())
+      if (i >= file->buffer_.size())
         file->buffer_.resize(2*file->buffer_.size() + 3);
 
-      file->buffer_[i++] = c;
+      file->buffer_[i++] = char(c);
     }
 
     file->buffer_[i] = EOF;
@@ -516,11 +518,11 @@ eexecDecode(PSViewFilterFile *file, char *data, bool consume)
 
   int i = (pos - eexec_data->pos_start_)/2;
 
-  int c = file->buffer_[i];
+  int c = file->buffer_[uint(i)];
 
   if (consume) {
     file->readChar();
-    file->readChar();
+    file->readChar(); // dup
   }
 
   return c;
@@ -542,9 +544,9 @@ decrypt(uint cipher, ushort *r)
   static ushort c1 = 52845;
   static ushort c2 = 22719;
 
-  unsigned char plain = (cipher ^ (*r >> 8));
+  unsigned char plain = static_cast<unsigned char>(cipher ^ (*r >> 8));
 
-  *r = (cipher + *r)*c1 + c2;
+  *r = ushort((cipher + *r)*c1 + c2);
 
   return plain;
 }

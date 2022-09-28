@@ -18,7 +18,7 @@ PSViewMarkToken *
 PSViewMarkToken::
 dup() const
 {
-  return (PSViewMarkToken *) this;
+  return const_cast<PSViewMarkToken *>(this);
 }
 
 int
@@ -51,7 +51,7 @@ print()
   CStrUtil::printf("-mark-");
 }
 
-string
+std::string
 PSViewMarkToken::
 toString()
 {

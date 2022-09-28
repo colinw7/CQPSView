@@ -72,10 +72,10 @@
 #include <CPSViewStringFileToken.h>
 #include <CPSViewTextFileToken.h>
 
-using std::string;
-using std::vector;
-using std::list;
-using std::cerr;
-using std::endl;
+//using std::string;
+//using std::vector;
+//using std::list;
+//using std::cerr;
+//using std::endl;
 
 #endif

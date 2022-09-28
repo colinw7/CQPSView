@@ -33,9 +33,9 @@ PSViewFontIdToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewFontIdToken *font_id_token = dynamic_cast<PSViewFontIdToken *>(token);
+    auto *font_id_token = dynamic_cast<PSViewFontIdToken *>(token);
 
-    return (value_ - font_id_token->value_);
+    return int(value_ - font_id_token->value_);
   }
   else
     return type_ - token->getType();
@@ -64,7 +64,7 @@ print()
   CStrUtil::printf("-%s-", getTypeName().c_str());
 }
 
-string
+std::string
 PSViewFontIdToken::
 toString()
 {

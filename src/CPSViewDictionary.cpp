@@ -173,7 +173,7 @@ createError()
   //------
 
   for (int i = 0; error_names_[i] != NULL; ++i) {
-    PSViewToken *value = new PSViewNullToken(getPSView());
+    auto *value = new PSViewNullToken(getPSView());
 
     error_dictionary_->addValue(error_names_[i], value);
   }
@@ -182,7 +182,9 @@ createError()
 
   sub_error_dictionary_ = new PSViewDictionaryToken(this, SUB_ERROR_DICTIONARY_SIZE);
 
-  PSViewToken *value = new PSViewBooleanToken(getPSView(), false);
+  PSViewToken *value = nullptr;
+
+  value = new PSViewBooleanToken(getPSView(), false);
 
   sub_error_dictionary_->addValue("newerror", value);
 
@@ -223,7 +225,7 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 createSystem()
 {
-  PSViewDictionaryToken *dictionary = new PSViewDictionaryToken(this, SYSTEM_DICTIONARY_SIZE);
+  auto *dictionary = new PSViewDictionaryToken(this, SYSTEM_DICTIONARY_SIZE);
 
   //------
 
@@ -235,13 +237,15 @@ createSystem()
 
   //------
 
-  PSViewToken *value = new PSViewDictionaryToken(this, FONT_DIRECTORY_SIZE);
+  PSViewToken *value;
+
+  value = new PSViewDictionaryToken(this, FONT_DIRECTORY_SIZE);
 
   dictionary->addValue("FontDirectory", value);
 
   //------
 
-  PSViewArrayToken *array_token = new PSViewArrayToken(getPSView(), 256);
+  auto *array_token = new PSViewArrayToken(getPSView(), 256);
 
   dictionary->addValue("StandardEncoding", array_token);
 
@@ -253,7 +257,7 @@ createSystem()
     else
       sub_value = new PSViewNameToken(getPSView(), ".notdef");
 
-    array_token->setValue(i + 1, sub_value);
+    array_token->setValue(uint(i + 1), sub_value);
   }
 
   //------
@@ -283,7 +287,7 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 createGlobal()
 {
-  PSViewDictionaryToken *dictionary = new PSViewDictionaryToken(this, GLOBAL_DICTIONARY_SIZE);
+  auto *dictionary = new PSViewDictionaryToken(this, GLOBAL_DICTIONARY_SIZE);
 
   return dictionary;
 }
@@ -292,7 +296,7 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 createUser()
 {
-  PSViewDictionaryToken *dictionary = new PSViewDictionaryToken(this, USER_DICTIONARY_SIZE);
+  auto *dictionary = new PSViewDictionaryToken(this, USER_DICTIONARY_SIZE);
 
   //------
 
@@ -317,14 +321,14 @@ int
 PSViewDictionaryMgr::
 getNumDictionaries()
 {
-  return dictionary_stack_.size();
+  return int(dictionary_stack_.size());
 }
 
 void
 PSViewDictionaryMgr::
 addToCurrent(PSViewToken *key, PSViewToken *value)
 {
-  PSViewDictionaryToken *dictionary = getCurrentDictionary();
+  auto *dictionary = getCurrentDictionary();
 
   if (! dictionary->getWritable()) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_ACCESS);
@@ -336,9 +340,9 @@ addToCurrent(PSViewToken *key, PSViewToken *value)
 
 PSViewToken *
 PSViewDictionaryMgr::
-lookup(const string &str)
+lookup(const std::string &str)
 {
-  const PSViewName &name = getPSView()->getNameMgr()->getName(str);
+  const auto &name = getPSView()->getNameMgr()->getName(str);
 
   PSViewToken *token = lookup(name);
 
@@ -349,12 +353,12 @@ PSViewToken *
 PSViewDictionaryMgr::
 lookup(PSViewToken *key)
 {
-  int num = dictionary_stack_.size();
+  auto num = dictionary_stack_.size();
 
-  for (int i = num - 1; i >= 0; --i) {
-    PSViewDictionaryToken *dictionary = dictionary_stack_[i];
+  for (int i = int(num - 1); i >= 0; --i) {
+    auto *dictionary = dictionary_stack_[uint(i)];
 
-    PSViewToken *token = dictionary->getValue(key);
+    auto *token = dictionary->getValue(key);
 
     if (token != NULL)
       return token;
@@ -367,12 +371,12 @@ PSViewToken *
 PSViewDictionaryMgr::
 lookup(const PSViewName &name)
 {
-  int num = dictionary_stack_.size();
+  auto num = dictionary_stack_.size();
 
-  for (int i = num - 1; i >= 0; --i) {
-    PSViewDictionaryToken *dictionary = dictionary_stack_[i];
+  for (int i = int(num - 1); i >= 0; --i) {
+    auto *dictionary = dictionary_stack_[uint(i)];
 
-    PSViewToken *token = dictionary->getValue(name);
+    auto *token = dictionary->getValue(name);
 
     if (token != NULL)
       return token;
@@ -383,11 +387,11 @@ lookup(const PSViewName &name)
 
 PSViewDictionaryToken *
 PSViewDictionaryMgr::
-lookupDictionary(const string &str)
+lookupDictionary(const std::string &str)
 {
-  const PSViewName &name = getPSView()->getNameMgr()->getName(str);
+  const auto &name = getPSView()->getNameMgr()->getName(str);
 
-  PSViewDictionaryToken *dictionary = lookupDictionary(name);
+  auto *dictionary = lookupDictionary(name);
 
   return dictionary;
 }
@@ -396,12 +400,12 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 lookupDictionary(const PSViewName &name)
 {
-  int num = dictionary_stack_.size();
+  auto num = dictionary_stack_.size();
 
-  for (int i = num - 1; i >= 0; --i) {
-    PSViewDictionaryToken *dictionary = dictionary_stack_[i];
+  for (int i = int(num - 1); i >= 0; --i) {
+    auto *dictionary = dictionary_stack_[uint(i)];
 
-    PSViewToken *token = dictionary->getValue(name);
+    auto *token = dictionary->getValue(name);
 
     if (token != NULL)
       return dictionary;
@@ -414,12 +418,12 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 lookupDictionary(PSViewToken *key)
 {
-  int num = dictionary_stack_.size();
+  auto num = dictionary_stack_.size();
 
-  for (int i = num - 1; i >= 0; i--) {
-    PSViewDictionaryToken *dictionary = dictionary_stack_[i];
+  for (int i = int(num - 1); i >= 0; i--) {
+    auto *dictionary = dictionary_stack_[uint(i)];
 
-    PSViewToken *token = dictionary->getValue(key);
+    auto *token = dictionary->getValue(key);
 
     if (token != NULL)
       return dictionary;
@@ -432,7 +436,7 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 getSystemDictionary()
 {
-  PSViewDictionaryToken *dictionary = dictionary_stack_[0];
+  auto *dictionary = dictionary_stack_[0];
 
   return dictionary;
 }
@@ -441,7 +445,7 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 getGlobalDictionary()
 {
-  PSViewDictionaryToken *dictionary = dictionary_stack_[1];
+  auto *dictionary = dictionary_stack_[1];
 
   return dictionary;
 }
@@ -450,7 +454,7 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 getUserDictionary()
 {
-  PSViewDictionaryToken *dictionary = dictionary_stack_[2];
+  auto *dictionary = dictionary_stack_[2];
 
   return dictionary;
 }
@@ -466,7 +470,7 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 getCurrentDictionary()
 {
-  PSViewDictionaryToken *dictionary = dictionary_stack_[dictionary_stack_.size() - 1];
+  auto *dictionary = dictionary_stack_[dictionary_stack_.size() - 1];
 
   return dictionary;
 }
@@ -475,7 +479,7 @@ PSViewDictionaryToken *
 PSViewDictionaryMgr::
 getDictionary(int num)
 {
-  PSViewDictionaryToken *dictionary = dictionary_stack_[num - 1];
+  auto *dictionary = dictionary_stack_[uint(num - 1)];
 
   return dictionary;
 }
@@ -491,7 +495,7 @@ void
 PSViewDictionaryMgr::
 endDictionary()
 {
-  int num = dictionary_stack_.size();
+  auto num = dictionary_stack_.size();
 
   if (num <= 3) {
     getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_DICT_STACK_UNDERFLOW);
@@ -506,7 +510,7 @@ void
 PSViewDictionaryMgr::
 emptyDictionaryStack()
 {
-  int num = dictionary_stack_.size();
+  auto num = dictionary_stack_.size();
 
   while (num > 3) {
     dictionary_stack_.pop_back();
@@ -535,7 +539,7 @@ PSViewDictionary(const PSViewDictionary &dictionary) :
  end_    (0),
  used_   (0)
 {
-  int size = dictionary.end_ + 1;
+  int size = int(dictionary.end_ + 1);
 
   end_ = size - 1;
 
@@ -584,14 +588,14 @@ int
 PSViewDictionary::
 getNumValues()
 {
-  return used_;
+  return int(used_);
 }
 
 int
 PSViewDictionary::
 getMaxValues()
 {
-  return (end_ - start_ + 1);
+  return int(end_ - start_ + 1);
 }
 
 PSViewKeyValue *
@@ -601,7 +605,7 @@ getKeyValue(int i) const
   if (i < 1 || i > used_)
     CTHROW("Subscript Error");
 
-  return (PSViewKeyValue *) &keyvals_[start_ + i - 1];
+  return const_cast<PSViewKeyValue *>(&keyvals_[uint(start_ + i - 1)]);
 }
 
 PSViewToken *
@@ -625,10 +629,10 @@ getValue(PSViewToken *key)
   PSVinteger i = start_;
 
   for (PSVinteger j = 0; j < used_; ++j, ++i) {
-    PSViewToken *key1 = keyvals_[i].getKey();
+    PSViewToken *key1 = keyvals_[uint(i)].getKey();
 
     if (key1->compare(key) == 0)
-      return keyvals_[i].getValue();
+      return keyvals_[uint(i)].getValue();
   }
 
   return NULL;
@@ -641,10 +645,10 @@ getValue(const PSViewName &name)
   PSVinteger i = start_;
 
   for (PSVinteger j = 0; j < used_; ++j, ++i) {
-    PSViewToken *key1 = keyvals_[i].getKey();
+    PSViewToken *key1 = keyvals_[uint(i)].getKey();
 
     if (key1->getName().compare(name) == 0)
-      return keyvals_[i].getValue();
+      return keyvals_[uint(i)].getValue();
   }
 
   return NULL;
@@ -652,7 +656,7 @@ getValue(const PSViewName &name)
 
 PSViewToken *
 PSViewDictionary::
-getValue(const string &str)
+getValue(const std::string &str)
 {
   const PSViewName &name = getPSView()->getNameMgr()->getName(str);
 
@@ -666,7 +670,7 @@ setValue(PSVinteger pos, PSViewToken *key, PSViewToken *value)
   if (pos < 1 || pos > used_)
     CTHROW("Subscript Error");
 
-  keyvals_[start_ + pos - 1].setKeyValue(key, value);
+  keyvals_[uint(start_ + pos - 1)].setKeyValue(key, value);
 }
 
 void
@@ -682,7 +686,7 @@ resize()
 
   long num_keyvals1 = (2*num_keyvals + 1) % MAX_DICTIONARY_SIZE;
 
-  keyvals_.resize(num_keyvals1 + 1);
+  keyvals_.resize(uint(num_keyvals1 + 1));
 
   start_ = 0;
   end_   = num_keyvals1 - 1;
@@ -690,9 +694,9 @@ resize()
 
 void
 PSViewDictionary::
-addValue(const string &name, PSViewToken *value)
+addValue(const std::string &name, PSViewToken *value)
 {
-  PSViewToken *key = new PSViewNameToken(getPSView(), name);
+  auto *key = new PSViewNameToken(getPSView(), name);
 
   addValue(key, value);
 }
@@ -701,7 +705,7 @@ void
 PSViewDictionary::
 addValue(const PSViewName &key, PSViewToken *value)
 {
-  PSViewToken *key1 = new PSViewNameToken(getPSView(), key);
+  auto *key1 = new PSViewNameToken(getPSView(), key);
 
   addValue(key1, value);
 }
@@ -710,11 +714,11 @@ void
 PSViewDictionary::
 addValue(PSViewToken *key, PSViewToken *value)
 {
-  int i = start_;
+  int i = int(start_);
 
   for (int j = 0; j < used_; ++j) {
-    if (keyvals_[i].getKey()->compare(key) == 0) {
-      keyvals_[i].setValue(value);
+    if (keyvals_[uint(i)].getKey()->compare(key) == 0) {
+      keyvals_[uint(i)].setValue(value);
       return;
     }
 
@@ -731,7 +735,7 @@ addValue(PSViewToken *key, PSViewToken *value)
 
   keyvals_.push_back(PSViewKeyValue());
 
-  keyvals_[ind].setKeyValue(key, value);
+  keyvals_[uint(ind)].setKeyValue(key, value);
 
   ++used_;
 }
@@ -740,12 +744,12 @@ void
 PSViewDictionary::
 deleteValue(PSViewToken *key)
 {
-  int i = start_;
+  int i = int(start_);
 
   int j = 0;
 
   for ( ; j < used_; ++j) {
-    if (keyvals_[i].getKey()->compare(key) == 0)
+    if (keyvals_[uint(i)].getKey()->compare(key) == 0)
       break;
 
     ++i;
@@ -757,7 +761,7 @@ deleteValue(PSViewToken *key)
   --used_;
 
   for ( ; j < used_; ++j)
-    keyvals_[i].setKeyValue(keyvals_[i + 1]);
+    keyvals_[uint(i)].setKeyValue(keyvals_[uint(i + 1)]);
 
   keyvals_.pop_back();
 }

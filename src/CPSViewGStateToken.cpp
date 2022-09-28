@@ -130,7 +130,7 @@ PSViewGStateToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewGStateToken *gstate_token = dynamic_cast<PSViewGStateToken *>(token);
+    auto *gstate_token = dynamic_cast<PSViewGStateToken *>(token);
 
     return gstate_->compare(gstate_token->gstate_);
   }
@@ -161,7 +161,7 @@ print()
   CStrUtil::printf("-gstate-");
 }
 
-string
+std::string
 PSViewGStateToken::
 toString()
 {
@@ -269,29 +269,28 @@ getCurrentPoint(double *x, double *y)
 
 void
 PSViewGStateToken::
-show(const string &str)
+show(const std::string &str)
 {
   gstate_->show(str);
 }
 
 void
 PSViewGStateToken::
-ashow(double ax, double ay, const string &str)
+ashow(double ax, double ay, const std::string &str)
 {
   gstate_->ashow(ax, ay, str);
 }
 
 void
 PSViewGStateToken::
-widthShow(double cx, double cy, int c, const string &str)
+widthShow(double cx, double cy, int c, const std::string &str)
 {
   gstate_->widthShow(cx, cy, c, str);
 }
 
 void
 PSViewGStateToken::
-awidthShow(double cx, double cy, int c, double ax, double ay,
-           const string &str)
+awidthShow(double cx, double cy, int c, double ax, double ay, const std::string &str)
 {
   gstate_->awidthShow(cx, cy, c, ax, ay, str);
 }
@@ -305,21 +304,21 @@ glyphShow(const PSViewName &name)
 
 void
 PSViewGStateToken::
-kshow(PSViewToken *proc, const string &str)
+kshow(PSViewToken *proc, const std::string &str)
 {
   gstate_->kshow(proc, str);
 }
 
 void
 PSViewGStateToken::
-stringWidth(const string &str, double *wx, double *wy)
+stringWidth(const std::string &str, double *wx, double *wy)
 {
   gstate_->stringWidth(str, wx, wy);
 }
 
 void
 PSViewGStateToken::
-charPath(const string &str, bool flag)
+charPath(const std::string &str, bool flag)
 {
   gstate_->charPath(str, flag);
 }
@@ -609,7 +608,7 @@ getColorSpaceToken()
 {
   const PSViewName &color_space = gstate_->getColorSpace();
 
-  PSViewNameToken *token = new PSViewNameToken(psview_, color_space);
+  auto *token = new PSViewNameToken(psview_, color_space);
 
   token->setLiteral();
 

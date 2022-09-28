@@ -35,7 +35,7 @@ PSViewSaveToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewSaveToken *save_token = dynamic_cast<PSViewSaveToken *>(token);
+    auto *save_token = dynamic_cast<PSViewSaveToken *>(token);
 
     return save_->compare(save_token->save_);
   }
@@ -73,7 +73,7 @@ print()
   CStrUtil::printf("-save-");
 }
 
-string
+std::string
 PSViewSaveToken::
 toString()
 {

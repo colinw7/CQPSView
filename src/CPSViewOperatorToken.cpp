@@ -1,7 +1,7 @@
 #include <CPSViewI.h>
 
 PSViewOperatorToken::
-PSViewOperatorToken(CPSView *psview, const string &name) :
+PSViewOperatorToken(CPSView *psview, const std::string &name) :
  PSViewToken(psview, PSVIEW_TOKEN_TYPE_OPERATOR,
              PSVIEW_TOKEN_NON_COMPOSITE, PSVIEW_TOKEN_EXECUTABLE,
              PSVIEW_TOKEN_ACCESS_TYPE_READ_WRITE),
@@ -44,7 +44,7 @@ PSViewOperatorToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewOperatorToken *operator_token = dynamic_cast<PSViewOperatorToken *>(token);
+    auto *operator_token = dynamic_cast<PSViewOperatorToken *>(token);
 
     return operator_->compare(operator_token->operator_);
   }
@@ -75,7 +75,7 @@ print()
   CStrUtil::printf("--%s--", operator_->getName().getString().c_str());
 }
 
-string
+std::string
 PSViewOperatorToken::
 toString()
 {

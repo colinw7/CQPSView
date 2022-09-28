@@ -4,12 +4,12 @@
 const int BUFFER_SIZE = 512;
 
 PSViewTextFile::
-PSViewTextFile(CPSView *psview, const string &name, const string &mode) :
+PSViewTextFile(CPSView *psview, const std::string &name, const std::string &mode) :
  PSViewFile  (psview),
  name_       (name),
  mode_       (mode),
  mode_type_  (PSVIEW_FILE_MODE_TYPE_NONE),
- fp_         (NULL),
+ fp_         (nullptr),
  size_       (0),
  pos_        (0),
  buffer_     (),
@@ -26,7 +26,7 @@ PSViewTextFile(const PSViewTextFile &text_file) :
  name_       (text_file.name_),
  mode_       (text_file.mode_),
  mode_type_  (PSVIEW_FILE_MODE_TYPE_NONE),
- fp_         (NULL),
+ fp_         (nullptr),
  size_       (0),
  pos_        (0),
  buffer_     (),
@@ -76,7 +76,7 @@ init()
   else
     fp_ = fopen(name_.c_str(), mode_.c_str());
 
-  if (fp_ == NULL)
+  if (fp_ == nullptr)
     CTHROW("Can't open file " + name_);
 
   size_ = -1;
@@ -92,7 +92,7 @@ init()
       CTHROW("Not a regular File");
     }
 
-    size_ = file_stat.st_size;
+    size_ = int(file_stat.st_size);
   }
 
   pos_ = 0;
@@ -124,7 +124,7 @@ flush()
   if (! isWritable())
     return;
 
-  if (fp_ != NULL)
+  if (fp_ != nullptr)
     fflush(fp_);
 }
 
@@ -146,7 +146,7 @@ bool
 PSViewTextFile::
 isValid() const
 {
-  return (fp_ != NULL);
+  return (fp_ != nullptr);
 }
 
 int
@@ -163,7 +163,7 @@ bytesUsed()
   if (fp_ == stdin || fp_ == stdout || fp_ == stderr)
     return -1;
 
-  return(pos_ - buffer_num_ + buffer_pos_);
+  return int(pos_ - buffer_num_ + buffer_pos_);
 }
 
 int
@@ -180,10 +180,10 @@ bool
 PSViewTextFile::
 setPosition(uint pos)
 {
-  if ((int) pos >= size_)
+  if (int(pos) >= size_)
     return false;
 
-  if (fp_ == stdin  || fp_ == stdout || fp_ == stderr || fp_ == NULL)
+  if (fp_ == stdin  || fp_ == stdout || fp_ == stderr || fp_ == nullptr)
     return false;
 
   buffer_pos_ = pos - pos_ + buffer_pos_;
@@ -196,7 +196,7 @@ setPosition(uint pos)
 
   fseek(fp_, pos, SEEK_SET);
 
-  uint pos1 = ftell(fp_);
+  auto pos1 = ftell(fp_);
 
   if (pos1 != pos)
     return false;
@@ -215,7 +215,7 @@ bool
 PSViewTextFile::
 getPosition(uint *pos)
 {
-  if (fp_ == stdin || fp_ == stdout || fp_ == stderr || fp_ == NULL)
+  if (fp_ == stdin || fp_ == stdout || fp_ == stderr || fp_ == nullptr)
     return false;
 
   *pos = pos_;
@@ -223,7 +223,7 @@ getPosition(uint *pos)
   return true;
 }
 
-string
+std::string
 PSViewTextFile::
 getFileName()
 {
@@ -237,7 +237,7 @@ readChar()
   if (! (mode_type_ & PSVIEW_FILE_MODE_TYPE_READ))
     return EOF;
 
-  if (fp_ == NULL)
+  if (fp_ == nullptr)
     return EOF;
 
   if (buffer_pos_ >= buffer_num_) {
@@ -259,7 +259,7 @@ lookChar()
   if (! (mode_type_ & PSVIEW_FILE_MODE_TYPE_READ))
     return EOF;
 
-  if (fp_ == NULL)
+  if (fp_ == nullptr)
     return EOF;
 
   if (buffer_pos_ >= buffer_num_) {
@@ -276,10 +276,10 @@ void
 PSViewTextFile::
 unreadChars(const std::vector<int> &chars)
 {
-  uint len = chars.size();
+  auto len = chars.size();
 
   if (buffer_pos_ >= len)
-    buffer_pos_ -= len;
+    buffer_pos_ -= uint(len);
   else
     assert(false);
 }
@@ -291,7 +291,7 @@ loadBuffer()
   if (! (mode_type_ & PSVIEW_FILE_MODE_TYPE_READ))
     return false;
 
-  if (fp_ == NULL)
+  if (fp_ == nullptr)
     return false;
 
   buffer_pos_ = 0;
@@ -300,7 +300,7 @@ loadBuffer()
   int c;
 
   while (buffer_num_ < buffer_size_ && (c = fgetc(fp_)) != EOF)
-    buffer_[buffer_num_++] = c;
+    buffer_[buffer_num_++] = char(c);
   buffer_[buffer_num_] = '\0';
 
   if (buffer_num_ == 0)
@@ -316,7 +316,7 @@ writeChar(int c)
   if (! (mode_type_ & PSVIEW_FILE_MODE_TYPE_WRITE))
     return false;
 
-  if (fp_ == NULL)
+  if (fp_ == nullptr)
     return false;
 
   fputc(c, fp_);
@@ -344,14 +344,13 @@ close()
     buffer_size_ = 0;
   }
 
-  if (mode_type_ & PSVIEW_FILE_MODE_TYPE_WRITE && fp_ != NULL)
+  if (mode_type_ & PSVIEW_FILE_MODE_TYPE_WRITE && fp_ != nullptr)
     fflush(fp_);
 
-  if (fp_ != NULL   && fp_ != stdin &&
-      fp_ != stdout && fp_ != stderr)
+  if (fp_ != nullptr && fp_ != stdin && fp_ != stdout && fp_ != stderr)
     fclose(fp_);
 
-  fp_ = NULL;
+  fp_ = nullptr;
 
   size_ = 0;
   pos_  = 0;

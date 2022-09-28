@@ -8,15 +8,15 @@ struct PSViewSaveMemory {
   char         **address;
 
   PSViewSaveMemory() :
-   new_memory(NULL),
-   old_memory(NULL),
-   address   (NULL) {
+   new_memory(nullptr),
+   old_memory(nullptr),
+   address   (nullptr) {
   }
 };
 
 struct PSViewSaveData {
-  int                      depth_;
-  list<PSViewSaveMemory *> save_memory_list_;
+  int                           depth_;
+  std::list<PSViewSaveMemory *> save_memory_list_;
 
   PSViewSaveData() :
    depth_           (0),
@@ -32,7 +32,7 @@ PSViewMemoryMgr(CPSView *psview) :
  memory_type_       (PSVIEW_MEMORY_TYPE_LOCAL),
  memory_depth_      (1),
  memory_used_       (0),
- save_data_         (NULL),
+ save_data_         (nullptr),
  global_memory_list_(),
  local_memory_list_ ()
 {
@@ -48,7 +48,7 @@ void
 PSViewMemoryMgr::
 init()
 {
-  list<PSViewMemory *>::iterator pmemory;
+  std::list<PSViewMemory *>::iterator pmemory;
 
   for (pmemory = global_memory_list_.begin();
         pmemory != global_memory_list_.end(); ++pmemory)
@@ -77,7 +77,7 @@ PSViewMemoryMgr::
 getStatus(int *depth, int *used, int *max)
 {
   *depth = memory_depth_;
-  *used  = memory_used_;
+  *used  = int(memory_used_);
   *max   = -1;
 }
 
@@ -91,7 +91,7 @@ save()
 
   save_data_->depth_ = memory_depth_;
 
-  PSViewToken *token = new PSViewSaveToken(getPSView(), save_data_);
+  auto *token = new PSViewSaveToken(getPSView(), save_data_);
 
   return token;
 }
@@ -100,11 +100,11 @@ void
 PSViewMemoryMgr::
 restore(PSViewToken *token)
 {
-  PSViewSaveToken *save_token = (PSViewSaveToken *) token;
+  auto *save_token = static_cast<PSViewSaveToken *>(token);
 
-  save_data_ = (PSViewSaveData *) save_token->getValue();
+  save_data_ = static_cast<PSViewSaveData *>(save_token->getValue());
 
-  list<PSViewSaveMemory *>::iterator psave_memory;
+  std::list<PSViewSaveMemory *>::iterator psave_memory;
 
   for (psave_memory = save_data_->save_memory_list_.begin();
         psave_memory != save_data_->save_memory_list_.end(); ++psave_memory)
@@ -145,10 +145,9 @@ char *
 PSViewMemoryMgr::
 allocGlobal(uint size)
 {
-  PSViewMemory *memory = (PSViewMemory *)
-    new char [sizeof(PSViewMemory) + size];
+  auto *memory = reinterpret_cast<PSViewMemory *>(new char [sizeof(PSViewMemory) + size]);
 
-  if (memory == NULL) {
+  if (memory == nullptr) {
     CStrUtil::eprintf("PSView: Fatal Memory Error\n");
     exit(1);
   }
@@ -157,23 +156,22 @@ allocGlobal(uint size)
   memory->size  = size;
   memory->type  = PSVIEW_MEMORY_TYPE_GLOBAL;
   memory->ref   = 1;
-  memory->depth = memory_depth_;
+  memory->depth = ulong(memory_depth_);
 
   global_memory_list_.push_back(memory);
 
   memory_used_ += size;
 
-  return(((char *) memory) + sizeof(PSViewMemory));
+  return (reinterpret_cast<char *>(memory) + sizeof(PSViewMemory));
 }
 
 char *
 PSViewMemoryMgr::
 allocLocal(uint size)
 {
-  PSViewMemory *memory = (PSViewMemory *)
-    new char [sizeof(PSViewMemory) + size];
+  auto *memory = reinterpret_cast<PSViewMemory *>(new char [sizeof(PSViewMemory) + size]);
 
-  if (memory == NULL) {
+  if (memory == nullptr) {
     CStrUtil::eprintf("PSView: Fatal Memory Error\n");
     exit(1);
   }
@@ -182,42 +180,41 @@ allocLocal(uint size)
   memory->size  = size;
   memory->type  = PSVIEW_MEMORY_TYPE_LOCAL;
   memory->ref   = 1;
-  memory->depth = memory_depth_;
+  memory->depth = uint(memory_depth_);
 
   local_memory_list_.push_back(memory);
 
   memory_used_ += size;
 
-  return (((char *) memory) + sizeof(PSViewMemory));
+  return (reinterpret_cast<char *>(memory) + sizeof(PSViewMemory));
 }
 
 void
 PSViewMemoryMgr::
 change(char **address)
 {
-  PSViewMemory *memory = (PSViewMemory *) (*address - sizeof(PSViewMemory));
+  auto *memory = reinterpret_cast<PSViewMemory *>(*address - sizeof(PSViewMemory));
 
   if (memory->id != MEMORY_ID) {
     CStrUtil::eprintf("PSView: Fatal Memory Error\n");
     exit(1);
   }
 
-  if (memory->type == PSVIEW_MEMORY_TYPE_GLOBAL ||
-      (int) memory->depth >= memory_depth_)
+  if (memory->type == PSVIEW_MEMORY_TYPE_GLOBAL || int(memory->depth) >= memory_depth_)
     return;
 
-  PSViewSaveMemory *save_memory = new PSViewSaveMemory;
+  auto *save_memory = new PSViewSaveMemory;
 
-  if (save_memory == NULL) {
+  if (save_memory == nullptr) {
     CStrUtil::eprintf("PSView: Fatal Memory Error\n");
     exit(1);
   }
 
-  char *address1 = allocLocal(memory->size);
+  char *address1 = allocLocal(uint(memory->size));
 
   memcpy(address1, *address, memory->size);
 
-  save_memory->new_memory = (PSViewMemory *) (address1 - sizeof(PSViewMemory));
+  save_memory->new_memory = reinterpret_cast<PSViewMemory *>(address1 - sizeof(PSViewMemory));
   save_memory->old_memory = memory;
   save_memory->address    = address;
 
@@ -246,7 +243,8 @@ free(PSViewSaveMemory *save_memory)
 {
   delete [] save_memory->new_memory;
 
-  *save_memory->address = ((char *) save_memory->old_memory) + sizeof(PSViewMemory);
+  *save_memory->address =
+    (reinterpret_cast<char *>(save_memory->old_memory) + sizeof(PSViewMemory));
 
   delete save_memory;
 }
@@ -265,21 +263,21 @@ int
 PSViewMemoryMgr::
 getDepth(char *address)
 {
-  PSViewMemory *memory = (PSViewMemory *) (address - sizeof(PSViewMemory));
+  auto *memory = reinterpret_cast<PSViewMemory *>(address - sizeof(PSViewMemory));
 
   if (memory->id != MEMORY_ID) {
     CStrUtil::eprintf("PSView: Fatal Memory Error\n");
     exit(1);
   }
 
-  return memory->depth;
+  return int(memory->depth);
 }
 
 bool
 PSViewMemoryMgr::
 getGlobal(char *address)
 {
-  PSViewMemory *memory = (PSViewMemory *) (address - sizeof(PSViewMemory));
+  auto *memory = reinterpret_cast<PSViewMemory *>(address - sizeof(PSViewMemory));
 
   if (memory->id != MEMORY_ID) {
     CStrUtil::eprintf("PSView: Fatal Memory Error\n");
@@ -293,7 +291,7 @@ bool
 PSViewMemoryMgr::
 getLocal(char *address)
 {
-  PSViewMemory *memory = (PSViewMemory *) (address - sizeof(PSViewMemory));
+  auto *memory = reinterpret_cast<PSViewMemory *>(address - sizeof(PSViewMemory));
 
   if (memory->id != MEMORY_ID) {
     CStrUtil::eprintf("PSView: Fatal Memory Error\n");

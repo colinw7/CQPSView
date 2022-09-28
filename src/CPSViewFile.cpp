@@ -1,9 +1,9 @@
 #include <CPSViewI.h>
 
-string PSViewFile::ascii85_chars_ =
+std::string PSViewFile::ascii85_chars_ =
 "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuz";
 
-string PSViewFile::delim_chars_ = "()<>[]{}/%";
+std::string PSViewFile::delim_chars_ = "()<>[]{}/%";
 
 PSViewFile::
 PSViewFile(CPSView *psview) :
@@ -31,14 +31,14 @@ readToken()
   int c = lookChar();
 
   while (c == '%') {
-    string str;
+    std::string str;
 
-    str += readChar();
+    str += char(readChar());
 
     c = lookChar();
 
     while (c != EOF && c != '\n' && c != '\f') {
-      str += readChar();
+      str += char(readChar());
 
       c = lookChar();
     }
@@ -60,20 +60,20 @@ readToken()
 
   token = readNumber();
 
-  if (token == NULL)
+  if (token == nullptr)
     token = readString();
 
-  if (token == NULL)
+  if (token == nullptr)
     token = readName();
 
-  if (token == NULL)
+  if (token == nullptr)
     token = readProcedure();
 
-  if (token == NULL) {
+  if (token == nullptr) {
     if (isDelimiter()) {
       char delimiter_string[2];
 
-      delimiter_string[0] = readChar();
+      delimiter_string[0] = char(readChar());
       delimiter_string[1] = '\0';
 
       token = new PSViewNameToken(getPSView(), delimiter_string);
@@ -83,7 +83,7 @@ readToken()
   if (getPSView()->getDebug()) {
     CStrUtil::printf("Read ");
 
-    if (token != NULL)
+    if (token != nullptr)
       token->print();
     else
       CStrUtil::printf("<null>");
@@ -106,10 +106,10 @@ readNumber()
 
   bool sign1 = false;
 
-  string str;
+  std::string str;
 
   if (c == '+' || c == '-') {
-    str += readChar();
+    str += char(readChar());
 
     sign1 = true;
   }
@@ -117,23 +117,23 @@ readNumber()
   bool digits1 = false;
 
   while (isDigit()) {
-    str += readChar();
+    str += char(readChar());
 
     digits1 = true;
   }
 
   c = lookChar();
 
-  PSViewToken *token = NULL;
+  PSViewToken *token = nullptr;
 
   if (c == '.' || c == 'e' || c == 'E') {
     if (c == '.') {
-      str += readChar();
+      str += char(readChar());
 
       bool digits2 = false;
 
       while (isDigit()) {
-        str += readChar();
+        str += char(readChar());
 
         digits2 = true;
       }
@@ -145,18 +145,18 @@ readNumber()
     }
 
     if (c == 'e' || c == 'E') {
-      str += readChar();
+      str += char(readChar());
 
       c = lookChar();
 
       if (c == '+' || c == '-')
-        str += readChar();
+        str += char(readChar());
 
       if (! isDigit())
         goto fail;
 
       while (isDigit())
-        str += readChar();
+        str += char(readChar());
     }
 
     if (! isSeparator())
@@ -172,12 +172,12 @@ readNumber()
     if (! CStrUtil::isInteger(str))
       goto fail;
 
-    int base = CStrUtil::toInteger(str);
+    int base = int(CStrUtil::toInteger(str));
 
     if (base < 2 || base > 36)
       goto fail;
 
-    c = readChar();
+    c = char(readChar());
 
     if (! isBaseDigit(base))
       goto fail;
@@ -185,21 +185,21 @@ readNumber()
     str = "";
 
     while (isBaseDigit(base))
-      str += readChar();
+      str += char(readChar());
 
     if (! isSeparator())
       goto fail;
 
-    if (! CStrUtil::isBaseInteger(str, base))
+    if (! CStrUtil::isBaseInteger(str, uint(base)))
       goto fail;
 
-    integer = CStrUtil::toBaseInteger(str, base);
+    integer = int(CStrUtil::toBaseInteger(str, uint(base)));
 
     token = new PSViewIntegerToken(getPSView(), integer);
   }
   else if (digits1 && isSeparator()) {
     if (CStrUtil::isInteger(str)) {
-      long integer = CStrUtil::toInteger(str);
+      auto integer = CStrUtil::toInteger(str);
 
       token = new PSViewIntegerToken(getPSView(), integer);
     }
@@ -217,7 +217,7 @@ readNumber()
  fail:
   setPosition(save_buffer_pos);
 
-  return NULL;
+  return nullptr;
 }
 
 PSViewToken *
@@ -237,7 +237,7 @@ readString()
 
     c = lookChar();
 
-    string str;
+    std::string str;
 
     while (c != EOF && (c != ')' || num_brackets > 1)) {
       if      (c == '\\') {
@@ -299,17 +299,17 @@ readString()
           int   octal_value;
           char  octal_string[4];
 
-          octal_string[0] = readChar();
+          octal_string[0] = char(readChar());
 
           c = lookChar();
 
           if (CStrUtil::isBaseChar(c, 8)) {
-            octal_string[1] = readChar();
+            octal_string[1] = char(readChar());
 
             c = lookChar();
 
             if (CStrUtil::isBaseChar(c, 8)) {
-              octal_string[2] = readChar();
+              octal_string[2] = char(readChar());
 
               octal_string[3] = '\0';
             }
@@ -319,25 +319,25 @@ readString()
           else
             octal_string[1] = '\0';
 
-          octal_value = CStrUtil::toBaseInteger(octal_string, 8);
+          octal_value = int(CStrUtil::toBaseInteger(octal_string, 8));
 
-          str += (char) octal_value;
+          str += char(octal_value);
         }
         else
-          str += readChar();
+          str += char(readChar());
       }
       else if (c == '(') {
         num_brackets++;
 
-        str += readChar();
+        str += char(readChar());
       }
       else if (c == ')') {
         num_brackets--;
 
-        str += readChar();
+        str += char(readChar());
       }
       else
-        str += readChar();
+        str += char(readChar());
 
       c = lookChar();
     }
@@ -347,7 +347,7 @@ readString()
 
     readChar();
 
-    PSViewStringToken *token = new PSViewStringToken(getPSView(), str);
+    auto *token = new PSViewStringToken(getPSView(), str);
 
     return token;
   }
@@ -372,7 +372,7 @@ readString()
       if (c != '~') {
         getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_SYNTAX_ERROR);
 
-        return NULL;
+        return nullptr;
       }
 
       readChar();
@@ -382,12 +382,12 @@ readString()
       if (c != '>') {
         getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_SYNTAX_ERROR);
 
-        return NULL;
+        return nullptr;
       }
 
       readChar();
 
-      PSViewStringToken *token = new PSViewStringToken(getPSView(), 0L);
+      auto *token = new PSViewStringToken(getPSView(), 0L);
 
       return token;
     }
@@ -401,7 +401,7 @@ readString()
 
       int count = 0;
 
-      string str;
+      std::string str;
 
       while (c != EOF && c != '>') {
         if (isspace(c)) {
@@ -418,14 +418,14 @@ readString()
           goto fail;
         }
 
-        hex_string[count++] = readChar();
+        hex_string[count++] = char(readChar());
 
         if (count == 2) {
           hex_string[count] = '\0';
 
-          int hex_value = CStrUtil::toBaseInteger(hex_string, 16);
+          int hex_value = int(CStrUtil::toBaseInteger(hex_string, 16));
 
-          str += (char) hex_value;
+          str += char(hex_value);
 
           count = 0;
         }
@@ -438,9 +438,9 @@ readString()
 
         hex_string[count] = '\0';
 
-        int hex_value = CStrUtil::toBaseInteger(hex_string, 16);
+        int hex_value = int(CStrUtil::toBaseInteger(hex_string, 16));
 
-        str += (char) hex_value;
+        str += char(hex_value);
       }
 
       if (c == EOF)
@@ -448,7 +448,7 @@ readString()
 
       readChar();
 
-      PSViewStringToken *token = new PSViewStringToken(getPSView(), str);
+      auto *token = new PSViewStringToken(getPSView(), str);
 
       return token;
     }
@@ -457,7 +457,7 @@ readString()
  fail:
   setPosition(save_buffer_pos);
 
-  return NULL;
+  return nullptr;
 }
 
 PSViewToken *
@@ -476,16 +476,16 @@ readName()
     if ((c1 == '<' && c2 == '<') || (c1 == '>' && c2 == '>')) {
       readChar();
 
-      name_string[0] = c1;
-      name_string[1] = c2;
+      name_string[0] = char(c1);
+      name_string[1] = char(c2);
       name_string[2] = '\0';
     }
     else {
-      name_string[0] = c1;
+      name_string[0] = char(c1);
       name_string[2] = '\0';
     }
 
-    PSViewToken *token = new PSViewNameToken(getPSView(), name_string);
+    auto *token = new PSViewNameToken(getPSView(), name_string);
 
     return token;
   }
@@ -507,23 +507,23 @@ readName()
       literal = true;
   }
 
-  string str;
+  std::string str;
 
   while (lookChar() != EOF && ! isSeparator())
-    str += readChar();
+    str += char(readChar());
 
   if (str.size() == 0)
-    return NULL;
+    return nullptr;
 
-  PSViewToken *token = new PSViewNameToken(getPSView(), str);
+  auto *token = new PSViewNameToken(getPSView(), str);
 
   if (evaluate) {
     PSViewToken *value = getPSView()->getDictionaryMgr()->lookup(token);
 
-    if (value == NULL) {
+    if (value == nullptr) {
       getPSView()->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED);
 
-      return NULL;
+      return nullptr;
     }
 
     return value;
@@ -540,7 +540,7 @@ PSViewToken *
 PSViewFile::
 readProcedure()
 {
-  PSViewArrayToken *procedure_token = NULL;
+  PSViewArrayToken *procedure_token = nullptr;
 
   uint save_buffer_pos;
 
@@ -551,7 +551,7 @@ readProcedure()
   if (c != '{') {
     setPosition(save_buffer_pos);
 
-    return NULL;
+    return nullptr;
   }
 
   readChar();
@@ -560,21 +560,21 @@ readProcedure()
 
   PSViewToken *token = readToken();
 
-  while (token != NULL) {
+  while (token != nullptr) {
     if (token->isName()) {
-      PSViewNameToken *name_token = (PSViewNameToken *) token;
+      auto *name_token = static_cast<PSViewNameToken *>(token);
 
       const PSViewName &name = name_token->getValue();
 
       if (name.compare(getPSView()->getTokenMgr()->getRBraceName()) == 0) {
         int num_tokens = getPSView()->getExecutionStack()->countToMark();
 
-        procedure_token = new PSViewArrayToken(getPSView(), num_tokens);
+        procedure_token = new PSViewArrayToken(getPSView(), uint(num_tokens));
 
         for (int i = num_tokens; i >= 1; i--) {
           PSViewToken *sub_token = getPSView()->getExecutionStack()->pop();
 
-          procedure_token->setValue(i, sub_token);
+          procedure_token->setValue(uint(i), sub_token);
         }
 
         procedure_token->setExecutable();
@@ -630,7 +630,7 @@ isBaseDigit(PSVinteger base)
 {
   int c = lookChar();
 
-  return CStrUtil::isBaseChar(c, base);
+  return CStrUtil::isBaseChar(char(c), uint(base));
 }
 
 PSVboolean
@@ -660,11 +660,11 @@ isDelimiter()
 {
   int c = lookChar();
 
-  return (delim_chars_.find(c) != string::npos);
+  return (delim_chars_.find(char(c)) != std::string::npos);
 }
 
 // TODO: Move to CStrUtil
-string
+std::string
 PSViewFile::
 charsToASCII85(uint chars)
 {
@@ -673,18 +673,18 @@ charsToASCII85(uint chars)
 
   int c[5];
 
-  for (int i = 0; i < 5; i++) {
+  for (uint i = 0; i < 5; i++) {
     int temp = chars/85;
 
-    c[i] = chars - temp*85;
+    c[i] = int(chars) - temp*85;
 
-    chars = temp;
+    chars = uint(temp);
   }
 
-  string str;
+  std::string str;
 
-  for (int i = 0; i < 5; i++)
-    str += ascii85_chars_[c[4 - i]];
+  for (uint i = 0; i < 5; i++)
+    str += char(ascii85_chars_[uint(c[4 - i])]);
 
   return str;
 }
@@ -693,5 +693,5 @@ PSVboolean
 PSViewFile::
 isASCII85Char(int c)
 {
-  return (ascii85_chars_.find(c) != string::npos);
+  return (ascii85_chars_.find(char(c)) != std::string::npos);
 }

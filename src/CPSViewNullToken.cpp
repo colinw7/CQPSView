@@ -57,7 +57,7 @@ print()
   CStrUtil::printf("null");
 }
 
-string
+std::string
 PSViewNullToken::
 toString()
 {

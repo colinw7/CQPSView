@@ -14,7 +14,7 @@ class PSViewNameMgr {
   PSViewNameMgr &operator=(const PSViewNameMgr &rhs);
 
  private:
-  typedef std::map<std::string,PSViewName *> NameMap;
+  using NameMap = std::map<std::string, PSViewName *>;
 
   CPSView *psview_;
   NameMap  names_;
@@ -30,7 +30,7 @@ class PSViewName {
   int compare(const PSViewName &name) const;
 
   const std::string &getString() const { return str_; }
-  int                getLength() const { return str_.size(); }
+  uint               getLength() const { return uint(str_.size()); }
 
  private:
   std::string str_;

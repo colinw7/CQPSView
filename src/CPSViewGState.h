@@ -244,7 +244,7 @@ class PSViewGState {
 
   void defaultCharPath(int, double *, double *);
 
-  int getType0Char(const std::string &str, int *pos, PSViewDictionaryToken **font);
+  int getType0Char(const std::string &str, uint *pos, PSViewDictionaryToken **font);
 
   void showType3Char(int, double *, double *);
 

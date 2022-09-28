@@ -4,7 +4,7 @@ PSViewArray::
 PSViewArray(PSVinteger max_length) :
  tokens_()
 {
-  tokens_ = new PSViewSharedToken(max_length);
+  tokens_ = new PSViewSharedToken(int(max_length));
 }
 
 PSViewArray::
@@ -18,14 +18,14 @@ PSViewArray::
 PSViewArray(const PSViewArray &array, PSVinteger n) :
  tokens_()
 {
-  tokens_ = new PSViewSharedToken(array.tokens_, n - 1);
+  tokens_ = new PSViewSharedToken(array.tokens_, int(n - 1));
 }
 
 PSViewArray::
 PSViewArray(const PSViewArray &array, PSVinteger pos, PSVinteger len) :
  tokens_()
 {
-  tokens_ = new PSViewSharedToken(array.tokens_, pos - 1, len);
+  tokens_ = new PSViewSharedToken(array.tokens_, int(pos - 1), int(len));
 }
 
 PSViewArray::
@@ -53,8 +53,8 @@ compare(PSViewArray *array)
     return -1;
 
   for (PSVinteger i = 1; i <= num_values1; ++i) {
-    PSViewToken *token1 = getValue(i);
-    PSViewToken *token2 = array->getValue(i);
+    PSViewToken *token1 =        getValue(uint(i));
+    PSViewToken *token2 = array->getValue(uint(i));
 
     int cmp = token1->compare(token2);
 
@@ -76,14 +76,14 @@ PSViewToken *
 PSViewArray::
 getValue(uint i)
 {
-  return tokens_->getValue(i - 1);
+  return tokens_->getValue(int(i - 1));
 }
 
 void
 PSViewArray::
 setValue(uint i, PSViewToken *value)
 {
-  tokens_->setValue(i - 1, value);
+  tokens_->setValue(int(i - 1), value);
 }
 
 void
@@ -100,7 +100,7 @@ PSViewArray *
 PSViewArray::
 split(uint n)
 {
-  PSViewArray *array = new PSViewArray(*this, n + 1);
+  auto *array = new PSViewArray(*this, n + 1);
 
   setBounds(1, n);
 
@@ -114,5 +114,5 @@ setBounds(int pos, uint len)
   if (pos == -1)
     tokens_->setBounds(0, 0);
   else
-    tokens_->setBounds(pos - 1, len);
+    tokens_->setBounds(pos - 1, int(len));
 }

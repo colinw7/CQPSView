@@ -1,6 +1,6 @@
 #include <CPSViewI.h>
 
-string
+std::string
 PSViewErrorMgr::
 error_names_[] = {
   "configurationerror",
@@ -51,12 +51,12 @@ PSViewErrorMgr::
 raise(PSViewErrorType type)
 {
   if (CEnvInst.exists("PSVIEW_ERROR_EXIT")) {
-    cerr << error_names_[type] << endl;
+    std::cerr << error_names_[type] << "\n";
     exit(1);
   }
 
   if (CEnvInst.exists("PSVIEW_ERROR_SEGV")) {
-    cerr << error_names_[type] << endl;
+    std::cerr << error_names_[type] << "\n";
     ::raise(SIGSEGV);
   }
 
@@ -70,7 +70,7 @@ raise(PSViewErrorType type)
   if (! value->isDictionary())
     CTHROW("Bad errordict");
 
-  PSViewDictionaryToken *error_dict = (PSViewDictionaryToken *) value;
+  auto *error_dict = static_cast<PSViewDictionaryToken *>(value);
 
   error_name_ = new PSViewNameToken(getPSView(), error_names_[type]);
 
@@ -100,7 +100,7 @@ defaultErrorHandler()
   if (! value->isDictionary())
     CTHROW("Bad $error");
 
-  PSViewDictionaryToken *error_dict = (PSViewDictionaryToken *) value;
+  auto *error_dict = static_cast<PSViewDictionaryToken *>(value);
 
   /*--------------*/
 
@@ -126,10 +126,10 @@ defaultErrorHandler()
 
   int num = getPSView()->getOperandStack()->size();
 
-  PSViewArrayToken *array_token = new PSViewArrayToken(getPSView(), num);
+  auto *array_token = new PSViewArrayToken(getPSView(), uint(num));
 
   for (int i = 1; i <= num; i++)
-    array_token->setValue(i, getPSView()->getOperandStack()->peek(i));
+    array_token->setValue(uint(i), getPSView()->getOperandStack()->peek(i));
 
   error_dict->addValue("ostack", array_token);
 
@@ -137,10 +137,10 @@ defaultErrorHandler()
 
   num = getPSView()->getExecutionStack()->size();
 
-  array_token = new PSViewArrayToken(getPSView(), num);
+  array_token = new PSViewArrayToken(getPSView(), uint(num));
 
   for (int i = 1; i <= num; i++)
-    array_token->setValue(i, getPSView()->getExecutionStack()->peek(i));
+    array_token->setValue(uint(i), getPSView()->getExecutionStack()->peek(i));
 
   error_dict->addValue("estack", array_token);
 
@@ -148,10 +148,10 @@ defaultErrorHandler()
 
   num = getPSView()->getDictionaryMgr()->getNumDictionaries();
 
-  array_token = new PSViewArrayToken(getPSView(), num);
+  array_token = new PSViewArrayToken(getPSView(), uint(num));
 
   for (int i = 1; i <= num; i++)
-    array_token->setValue(i, getPSView()->getDictionaryMgr()->getDictionary(i));
+    array_token->setValue(uint(i), getPSView()->getDictionaryMgr()->getDictionary(i));
 
   error_dict->addValue("dstack", array_token);
 
@@ -191,7 +191,7 @@ defaultHandleError()
   if (! value->isDictionary())
     CTHROW("Bad $error");
 
-  PSViewDictionaryToken *error_dict = (PSViewDictionaryToken *) value;
+  auto *error_dict = static_cast<PSViewDictionaryToken *>(value);
 
   /*--------------*/
 

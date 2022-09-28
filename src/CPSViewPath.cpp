@@ -99,11 +99,11 @@ class PSViewPathBBoxVisitor : public PSViewPathVisitor {
   }
 
   void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) {
-    vector<C3Bezier2D> beziers;
+    std::vector<C3Bezier2D> beziers;
 
     CMathGeom2D::ArcToBeziers(c.x, c.y, xr, yr, theta, theta + delta, beziers);
 
-    uint num_beziers = beziers.size();
+    auto num_beziers = beziers.size();
 
     for (uint i = 0; i < num_beziers; ++i) {
       const C3Bezier2D &bezier = beziers[i];
@@ -173,11 +173,11 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
 
     C2Bezier2D bezier(p, p1, p2);
 
-    vector<CPoint2D> points;
+    std::vector<CPoint2D> points;
 
     CMathGeom2D::BezierToLines(bezier, points);
 
-    uint num_points = points.size();
+    auto num_points = points.size();
 
     for (uint i = 1; i < num_points; ++i)
       flatPath_.lineTo(points[i]);
@@ -190,22 +190,22 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
 
     C3Bezier2D bezier(p, p1, p2, p3);
 
-    vector<CPoint2D> points;
+    std::vector<CPoint2D> points;
 
     CMathGeom2D::BezierToLines(bezier, points);
 
-    uint num_points = points.size();
+    auto num_points = points.size();
 
     for (uint i = 1; i < num_points; ++i)
       flatPath_.lineTo(points[i]);
   }
 
   void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) {
-    vector<C3Bezier2D> beziers;
+    std::vector<C3Bezier2D> beziers;
 
     CMathGeom2D::ArcToBeziers(c.x, c.y, xr, yr, theta, theta + delta, beziers);
 
-    uint num_beziers = beziers.size();
+    auto num_beziers = beziers.size();
 
     for (uint i = 0; i < num_beziers; ++i) {
       const C3Bezier2D &bezier = beziers[i];
@@ -230,8 +230,8 @@ PSViewPath::
 PSViewPath() :
  parts_      (),
  closed_     (false),
- start_      (0,0),
- current_    (0,0),
+ start_      (0, 0),
+ current_    (0, 0),
  current_set_(false)
 {
 }
@@ -305,7 +305,7 @@ bool
 PSViewPath::
 moveTo(const CPoint2D &p)
 {
-  uint numParts = parts_.size();
+  auto numParts = parts_.size();
 
   if (numParts > 0 && parts_[numParts - 1]->getId() == PSVIEW_PATH_MOVE_TO) {
     delete parts_[numParts - 1];

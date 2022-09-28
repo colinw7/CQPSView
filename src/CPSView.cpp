@@ -101,9 +101,9 @@ setRenderer(CPSViewRenderer *renderer)
 
 void
 CPSView::
-openCurrentFile(const string &filename)
+openCurrentFile(const std::string &filename)
 {
-  PSViewTextFileToken *token = new PSViewTextFileToken(this, filename, "r");
+  auto *token = new PSViewTextFileToken(this, filename, "r");
 
   if (token == NULL) {
     getErrorMgr()->raise(PSVIEW_ERROR_TYPE_UNDEFINED_FILENAME);
@@ -194,7 +194,7 @@ executive()
 
 bool
 CPSView::
-getLine(string &line)
+getLine(std::string &line)
 {
   CReadLine readline;
 

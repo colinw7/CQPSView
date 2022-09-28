@@ -4,14 +4,14 @@ PSViewString::
 PSViewString(PSVinteger max_length) :
  mem_()
 {
-  mem_ = new PSViewSharedChar(max_length);
+  mem_ = new PSViewSharedChar(int(max_length));
 }
 
 PSViewString::
-PSViewString(const string &str) :
+PSViewString(const std::string &str) :
  mem_()
 {
-  mem_ = new PSViewSharedChar(str.size());
+  mem_ = new PSViewSharedChar(int(str.size()));
 
   setString(str);
 }
@@ -20,14 +20,14 @@ PSViewString::
 PSViewString(const PSViewString &str, PSVinteger pos) :
  mem_()
 {
-  mem_ = new PSViewSharedChar(str.mem_, pos - 1);
+  mem_ = new PSViewSharedChar(str.mem_, int(pos - 1));
 }
 
 PSViewString::
 PSViewString(const PSViewString &str, PSVinteger pos, PSVinteger len) :
  mem_()
 {
-  mem_ = new PSViewSharedChar(str.mem_, pos - 1, len);
+  mem_ = new PSViewSharedChar(str.mem_, int(pos - 1), int(len));
 }
 
 PSViewString::
@@ -35,13 +35,13 @@ PSViewString::
 {
 }
 
-string
+std::string
 PSViewString::
 getString() const
 {
   const char *data = mem_->getData();
 
-  return string(data, mem_->getLen());
+  return std::string(data, uint(mem_->getLen()));
 }
 
 int
@@ -60,13 +60,13 @@ getChar(int pos) const
 
 void
 PSViewString::
-setString(const string &str)
+setString(const std::string &str)
 {
-  int len = str.size();
+  auto len = str.size();
 
-  mem_->setData((char *) str.c_str(), len);
+  mem_->setData(const_cast<char *>(str.c_str()), int(len));
 
-  mem_->setBounds(0, len);
+  mem_->setBounds(0, int(len));
 }
 
 void
@@ -78,9 +78,9 @@ setChar(int pos, char c)
 
 void
 PSViewString::
-setChars(const string &str, int pos)
+setChars(const std::string &str, int pos)
 {
-  mem_->setData(pos - 1, (char *) str.c_str(), str.size());
+  mem_->setData(pos - 1, const_cast<char *>(str.c_str()), int(str.size()));
 }
 
 void
@@ -125,7 +125,7 @@ PSViewString *
 PSViewString::
 split(int n)
 {
-  PSViewString *str = new PSViewString(*this, n + 1);
+  auto *str = new PSViewString(*this, n + 1);
 
   setBounds(1, n);
 
@@ -147,7 +147,7 @@ compare(const PSViewString &str) const
   PSVinteger k = 0;
 
   for ( ; k < mem_->getLen() && k < str.mem_->getLen(); i++, j++, k++) {
-    if (getChar(i + 1) != str.getChar(j + 1))
+    if (getChar(int(i + 1)) != str.getChar(int(j + 1)))
       break;
   }
 
@@ -155,12 +155,12 @@ compare(const PSViewString &str) const
   char c2 = '\0';
 
   if (k < mem_->getLen())
-    c1 = getChar(i + 1);
+    c1 = char(getChar(int(i + 1)));
 
   if (k < str.mem_->getLen())
-    c2 = str.getChar(j + 1);
+    c2 = char(str.getChar(int(j + 1)));
 
-  return (int) (c1 - c2);
+  return int(c1 - c2);
 }
 
 int
@@ -171,9 +171,8 @@ compareN(const PSViewString &str, PSVinteger n) const
   PSVinteger j = str.mem_->getStart();
   PSVinteger k = 0;
 
-  for ( ; k < mem_->getLen() && k < str.mem_->getLen() && k < n;
-          i++, j++, k++) {
-    if (getChar(i + 1) != str.getChar(j + 1))
+  for ( ; k < mem_->getLen() && k < str.mem_->getLen() && k < n; i++, j++, k++) {
+    if (getChar(int(i + 1)) != str.getChar(int(j + 1)))
       break;
   }
 
@@ -181,10 +180,10 @@ compareN(const PSViewString &str, PSVinteger n) const
   char c2 = '\0';
 
   if (k < n && k < mem_->getLen())
-    c1 = getChar(i + 1);
+    c1 = char(getChar(int(i + 1)));
 
   if (k < n && k < str.mem_->getLen())
-    c2 = str.getChar(j + 1);
+    c2 = char(str.getChar(int(j + 1)));
 
-  return (int) (c1 - c2);
+  return int(c1 - c2);
 }

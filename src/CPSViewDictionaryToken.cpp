@@ -38,7 +38,7 @@ PSViewDictionaryToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewDictionaryToken *dictionary_token = dynamic_cast<PSViewDictionaryToken *>(token);
+    auto *dictionary_token = dynamic_cast<PSViewDictionaryToken *>(token);
 
     return dictionary_->compare(dictionary_token->dictionary_);
   }
@@ -87,7 +87,7 @@ print()
   }
 }
 
-string
+std::string
 PSViewDictionaryToken::
 toString()
 {
@@ -118,7 +118,7 @@ setValue(PSVinteger pos, PSViewToken *key, PSViewToken *value)
   }
 
   if (key->isString()) {
-    PSViewStringToken *string_token = (PSViewStringToken *) key;
+    auto *string_token = static_cast<PSViewStringToken *>(key);
 
     key = new PSViewNameToken(string_token);
   }
@@ -135,21 +135,21 @@ setValue(PSVinteger pos, const PSViewName &key, PSViewToken *value)
     return;
   }
 
-  PSViewToken *key1 = new PSViewNameToken(psview_, key);
+  auto *key1 = new PSViewNameToken(psview_, key);
 
   dictionary_->setValue(pos, key1, value);
 }
 
 void
 PSViewDictionaryToken::
-setValue(PSVinteger pos, const string &key, PSViewToken *value)
+setValue(PSVinteger pos, const std::string &key, PSViewToken *value)
 {
   if (getGlobal() && value->getLocal()) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_ACCESS);
     return;
   }
 
-  PSViewToken *key1 = new PSViewNameToken(psview_, key);
+  auto *key1 = new PSViewNameToken(psview_, key);
 
   dictionary_->setValue(pos, key1, value);
 }
@@ -162,7 +162,7 @@ addValue(PSViewToken *key, PSViewToken *value)
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_INVALID_ACCESS);
 
   if (key->isString()) {
-    PSViewStringToken *string_token = (PSViewStringToken *) key;
+    auto *string_token = static_cast<PSViewStringToken *>(key);
 
     key = new PSViewNameToken(string_token);
   }
@@ -179,7 +179,7 @@ addValue(const PSViewName &key, PSViewToken *value)
 
 void
 PSViewDictionaryToken::
-addValue(const string &key, PSViewToken *value)
+addValue(const std::string &key, PSViewToken *value)
 {
   dictionary_->addValue(key, value);
 }
@@ -221,7 +221,7 @@ getValue(const PSViewName &key)
 
 PSViewToken *
 PSViewDictionaryToken::
-getValue(const string &key)
+getValue(const std::string &key)
 {
   return dictionary_->getValue(key);
 }

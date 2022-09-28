@@ -35,7 +35,7 @@ pop()
   if (psview_->getErrorMgr()->getError())
     return NULL;
 
-  int num_stack = operand_stack_.size();
+  auto num_stack = operand_stack_.size();
 
   if (num_stack == 0) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_STACK_UNDERFLOW);
@@ -53,7 +53,7 @@ void
 PSViewOperandStack::
 exch()
 {
-  int num_stack = operand_stack_.size();
+  auto num_stack = operand_stack_.size();
 
   if (num_stack < 2) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_STACK_UNDERFLOW);
@@ -64,7 +64,7 @@ exch()
   PSViewToken *token2 = operand_stack_[num_stack - 2];
 
   operand_stack_.pop_back();
-  operand_stack_.pop_back();
+  operand_stack_.pop_back(); // dup
 
   operand_stack_.push_back(token1);
   operand_stack_.push_back(token2);
@@ -74,9 +74,9 @@ void
 PSViewOperandStack::
 roll(int n, int m)
 {
-  int num_stack = operand_stack_.size();
+  auto num_stack = operand_stack_.size();
 
-  if (num_stack < n) {
+  if (int(num_stack) < n) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_STACK_UNDERFLOW);
     return;
   }
@@ -85,22 +85,22 @@ roll(int n, int m)
 
   if (m > 0) {
     for (int i = 0; i < m; i++) {
-      PSViewToken *token = operand_stack_[num_stack - 1];
+      auto *token = operand_stack_[num_stack - 1];
 
       for (int j = 0; j < n - 1; j++)
-        operand_stack_[num_stack - j - 1] = operand_stack_[num_stack - j - 2];
+        operand_stack_[uint(int(num_stack) - j - 1)] = operand_stack_[uint(int(num_stack) - j - 2)];
 
-      operand_stack_[num_stack - n] = token;
+      operand_stack_[uint(int(num_stack) - n)] = token;
     }
   }
   else {
     for (int i = 0; i < -m; i++) {
-      PSViewToken *token = operand_stack_[num_stack - n];
+      auto *token = operand_stack_[uint(int(num_stack) - n)];
 
       for (int j = n - 2; j >= 0; j--)
-        operand_stack_[num_stack - j - 2] = operand_stack_[num_stack - j - 1];
+        operand_stack_[uint(int(num_stack) - j - 2)] = operand_stack_[uint(int(num_stack) - j - 1)];
 
-      operand_stack_[num_stack - 1] = token;
+      operand_stack_[uint(int(num_stack) - 1)] = token;
     }
   }
 }
@@ -109,22 +109,22 @@ int
 PSViewOperandStack::
 size()
 {
-  int num_stack = operand_stack_.size();
+  auto num_stack = operand_stack_.size();
 
-  return num_stack;
+  return int(num_stack);
 }
 
 int
 PSViewOperandStack::
 countToMark()
 {
-  int num_stack = operand_stack_.size();
+  auto num_stack = operand_stack_.size();
 
-  for (int i = num_stack - 1; i >= 0; i--) {
-    PSViewToken *token = operand_stack_[i];
+  for (int i = int(num_stack - 1); i >= 0; i--) {
+    auto *token = operand_stack_[uint(i)];
 
     if (token->isMark())
-      return num_stack - i - 1;
+      return int(num_stack) - i - 1;
   }
 
   return -1;
@@ -139,14 +139,14 @@ peek(int n)
     return NULL;
   }
 
-  int num_stack = operand_stack_.size();
+  auto num_stack = operand_stack_.size();
 
-  if (n > num_stack) {
+  if (n > int(num_stack)) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_STACK_UNDERFLOW);
     return NULL;
   }
 
-  PSViewToken *token = operand_stack_[n - 1];
+  auto *token = operand_stack_[uint(n - 1)];
 
   return token;
 }
@@ -162,9 +162,9 @@ void
 PSViewOperandStack::
 print()
 {
-  int num_stack = operand_stack_.size();
+  auto num_stack = operand_stack_.size();
 
-  for (int i = 0; i < num_stack; i++) {
+  for (uint i = 0; i < num_stack; i++) {
     if (i > 0)
       CStrUtil::printf(" ");
 
@@ -197,7 +197,7 @@ PSViewToken *
 PSViewExecutionStack::
 pop()
 {
-  int num_stack = execution_stack_.size();
+  auto num_stack = execution_stack_.size();
 
   if (num_stack == 0) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_STACK_UNDERFLOW);
@@ -215,7 +215,7 @@ void
 PSViewExecutionStack::
 popToExit()
 {
-  int num_stack = execution_stack_.size();
+  auto num_stack = execution_stack_.size();
 
   while (num_stack > 0) {
     PSViewToken *token = execution_stack_[num_stack - 1];
@@ -223,7 +223,7 @@ popToExit()
     execution_stack_.pop_back();
 
     if (token->isOperator()) {
-      PSViewOperatorToken *operator_token = (PSViewOperatorToken *) token;
+      auto *operator_token = static_cast<PSViewOperatorToken *>(token);
 
       PSViewOperator *opr = operator_token->getValue();
 
@@ -239,22 +239,22 @@ int
 PSViewExecutionStack::
 size()
 {
-  int num_stack = execution_stack_.size();
+  auto num_stack = execution_stack_.size();
 
-  return num_stack;
+  return int(num_stack);
 }
 
 int
 PSViewExecutionStack::
 countToMark()
 {
-  int num_stack = execution_stack_.size();
+  auto num_stack = execution_stack_.size();
 
-  for (int i = num_stack - 1; i >= 0; i--) {
-    PSViewToken *token = execution_stack_[i];
+  for (int i = int(num_stack - 1); i >= 0; i--) {
+    auto *token = execution_stack_[uint(i)];
 
     if (token->isMark())
-      return num_stack - i - 1;
+      return int(num_stack) - i - 1;
   }
 
   return -1;
@@ -269,14 +269,14 @@ peek(int n)
     return NULL;
   }
 
-  int num_stack = execution_stack_.size();
+  auto num_stack = execution_stack_.size();
 
-  if (n > num_stack) {
+  if (n > int(num_stack)) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_STACK_UNDERFLOW);
     return NULL;
   }
 
-  PSViewToken *token = execution_stack_[n - 1];
+  auto *token = execution_stack_[uint(n - 1)];
 
   return token;
 }
@@ -292,10 +292,10 @@ void
 PSViewExecutionStack::
 print()
 {
-  int num_stack = execution_stack_.size();
+  auto num_stack = execution_stack_.size();
 
-  for (int i = 0; i < num_stack; i++) {
-    PSViewToken *token = execution_stack_[i];
+  for (uint i = 0; i < num_stack; i++) {
+    auto *token = execution_stack_[i];
 
     token->print();
   }
@@ -324,7 +324,7 @@ PSViewGStateToken *
 PSViewGraphicsStack::
 pop()
 {
-  int num_stack = graphics_stack_.size();
+  auto num_stack = graphics_stack_.size();
 
   if (num_stack == 0) {
     psview_->getErrorMgr()->raise(PSVIEW_ERROR_TYPE_STACK_UNDERFLOW);
@@ -342,7 +342,7 @@ int
 PSViewGraphicsStack::
 size()
 {
-  int num_stack = graphics_stack_.size();
+  auto num_stack = graphics_stack_.size();
 
-  return num_stack;
+  return int(num_stack);
 }

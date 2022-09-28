@@ -33,7 +33,7 @@ PSViewRealToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewRealToken *real_token = dynamic_cast<PSViewRealToken *>(token);
+    auto *real_token = dynamic_cast<PSViewRealToken *>(token);
 
     if      (value_ == real_token->value_)
       return 0;
@@ -43,9 +43,9 @@ compare(PSViewToken *token)
       return -1;
   }
   else if (token->isType(PSVIEW_TOKEN_TYPE_INTEGER)) {
-    PSViewIntegerToken *integer_token = dynamic_cast<PSViewIntegerToken *>(token);
+    auto *integer_token = dynamic_cast<PSViewIntegerToken *>(token);
 
-    PSViewRealToken real_token1(psview_, integer_token->getValue());
+    PSViewRealToken real_token1(psview_, double(integer_token->getValue()));
 
     return compare(&real_token1);
   }
@@ -85,7 +85,7 @@ print()
     CStrUtil::printf("%s.0", buffer);
 }
 
-string
+std::string
 PSViewRealToken::
 toString()
 {

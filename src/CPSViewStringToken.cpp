@@ -11,7 +11,7 @@ PSViewStringToken(CPSView *psview, PSVinteger max_length) :
 }
 
 PSViewStringToken::
-PSViewStringToken(CPSView *psview, const string &str) :
+PSViewStringToken(CPSView *psview, const std::string &str) :
  PSViewToken(psview, PSVIEW_TOKEN_TYPE_STRING,
              PSVIEW_TOKEN_COMPOSITE, PSVIEW_TOKEN_LITERAL,
              PSVIEW_TOKEN_ACCESS_TYPE_READ_WRITE),
@@ -70,12 +70,12 @@ PSViewStringToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewStringToken *string_token = dynamic_cast<PSViewStringToken *>(token);
+    auto *string_token = dynamic_cast<PSViewStringToken *>(token);
 
     return string_->compare(*string_token->string_);
   }
   else if (token->isType(PSVIEW_TOKEN_TYPE_NAME)) {
-    PSViewNameToken name_token1 = PSViewNameToken(psview_, string_->getString());
+    auto name_token1 = PSViewNameToken(psview_, string_->getString());
 
     return name_token1.compare(token);
   }
@@ -87,11 +87,11 @@ void
 PSViewStringToken::
 executeToken()
 {
-  string str = string_->getString();
+  std::string str = string_->getString();
 
-  PSViewStringFileToken *token1 = new PSViewStringFileToken(psview_, str);
+  auto *token1 = new PSViewStringFileToken(psview_, str);
 
-  PSViewToken *token2 = token1->readToken();
+  auto *token2 = token1->readToken();
 
   while (token2) {
     if (token2->isProcedure())
@@ -139,7 +139,7 @@ print()
   CStrUtil::printf(")");
 }
 
-string
+std::string
 PSViewStringToken::
 toString()
 {
@@ -150,9 +150,9 @@ PSViewStringToken *
 PSViewStringToken::
 split(PSVinteger n)
 {
-  PSViewString *str = string_->split(n);
+  auto *str = string_->split(int(n));
 
-  PSViewStringToken *token = new PSViewStringToken(psview_, str);
+  auto *token = new PSViewStringToken(psview_, str);
 
   return token;
 }
@@ -162,7 +162,7 @@ PSViewStringToken::
 compare(PSViewToken *token) const
 {
   if (token->isType(type_)) {
-    PSViewStringToken *string_token = dynamic_cast<PSViewStringToken *>(token);
+    auto *string_token = dynamic_cast<PSViewStringToken *>(token);
 
     return string_->compare(*string_token->string_);
   }
@@ -188,14 +188,14 @@ PSViewStringToken *
 PSViewStringToken::
 subString(PSVinteger start, PSVinteger num_chars)
 {
-  PSViewStringToken *token = new PSViewStringToken(psview_, string_->subString(start, num_chars));
+  auto *token = new PSViewStringToken(psview_, string_->subString(start, num_chars));
 
   return token;
 }
 
 void
 PSViewStringToken::
-setString(const string &str)
+setString(const std::string &str)
 {
   string_->setString(str);
 }
@@ -209,7 +209,7 @@ setChar(int pos, char c)
 
 void
 PSViewStringToken::
-setChars(const string &str, int pos)
+setChars(const std::string &str, int pos)
 {
   string_->setChars(str, pos);
 }
@@ -218,7 +218,7 @@ void
 PSViewStringToken::
 setBounds(PSVinteger pos, PSVinteger len)
 {
-  string_->setBounds(pos, len);
+  string_->setBounds(int(pos), int(len));
 }
 
 int

@@ -4,7 +4,7 @@ PSViewPackedArray::
 PSViewPackedArray(PSVinteger max_length) :
  tokens_()
 {
-  tokens_ = new PSViewSharedToken(max_length);
+  tokens_ = new PSViewSharedToken(int(max_length));
 }
 
 PSViewPackedArray::
@@ -18,7 +18,7 @@ PSViewPackedArray::
 PSViewPackedArray(const PSViewPackedArray &array, PSVinteger n) :
  tokens_()
 {
-  tokens_ = new PSViewSharedToken(array.tokens_, n);
+  tokens_ = new PSViewSharedToken(array.tokens_, int(n));
 }
 
 PSViewPackedArray::
@@ -30,8 +30,8 @@ int
 PSViewPackedArray::
 compare(PSViewPackedArray *array)
 {
-  int num_values1 = getNumValues();
-  int num_values2 = array->getNumValues();
+  int num_values1 = int(       getNumValues());
+  int num_values2 = int(array->getNumValues());
 
   if      (num_values1 > num_values2)
     return  1;

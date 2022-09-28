@@ -1,7 +1,7 @@
 #include <CPSViewI.h>
 
 PSViewStringFileToken::
-PSViewStringFileToken(CPSView *psview, const string &str) :
+PSViewStringFileToken(CPSView *psview, const std::string &str) :
  PSViewFileToken(psview),
  string_file_   ()
 {
@@ -37,7 +37,7 @@ PSViewStringFileToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewStringFileToken *string_file_token = dynamic_cast<PSViewStringFileToken *>(token);
+    auto *string_file_token = dynamic_cast<PSViewStringFileToken *>(token);
 
     return string_file_->compare(string_file_token->string_file_);
   }
@@ -66,7 +66,7 @@ print()
   CStrUtil::printf("-file-");
 }
 
-string
+std::string
 PSViewStringFileToken::
 toString()
 {
@@ -126,7 +126,7 @@ uint
 PSViewStringFileToken::
 bytesAvailable()
 {
-  return string_file_->bytesAvailable();
+  return uint(string_file_->bytesAvailable());
 }
 
 PSVboolean
@@ -143,7 +143,7 @@ getPosition(uint *pos)
   return string_file_->getPosition(pos);
 }
 
-string
+std::string
 PSViewStringFileToken::
 getFileName()
 {
@@ -175,7 +175,7 @@ PSVboolean
 PSViewStringFileToken::
 writeChar(PSVchar c)
 {
-  return string_file_->writeChar(c);
+  return string_file_->writeChar(int(c));
 }
 
 void

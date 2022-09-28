@@ -35,7 +35,7 @@ PSViewPackedArrayToken::
 compare(PSViewToken *token)
 {
   if (token->isType(type_)) {
-    PSViewPackedArrayToken *packed_array_token = dynamic_cast<PSViewPackedArrayToken *>(token);
+    auto *packed_array_token = dynamic_cast<PSViewPackedArrayToken *>(token);
 
     return packed_array_->compare(packed_array_token->packed_array_);
   }
@@ -98,7 +98,7 @@ print()
   CStrUtil::printf("]");
 }
 
-string
+std::string
 PSViewPackedArrayToken::
 toString()
 {

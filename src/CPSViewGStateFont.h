@@ -19,17 +19,17 @@ class PSViewGStateFont0Data {
    num_fonts    (font_data.num_fonts),
    font_array   (),
    current_font (font_data.current_font) {
-    font_array.resize(num_fonts);
+    font_array.resize(uint(num_fonts));
 
     for (int i = 0; i < num_fonts; ++i)
-      font_array[i] = font_data.font_array[i]->dup();
+      font_array[uint(i)] = font_data.font_array[uint(i)]->dup();
   }
 
  private:
   PSViewGStateFont0Data &operator=(const PSViewGStateFont0Data &font_data);
 
  public:
-  using Encoding  = vector<int>;
+  using Encoding  = std::vector<int>;
   using FontArray = std::vector<PSViewDictionaryToken *>;
 
   int       encoding_size { 0 };
@@ -179,9 +179,9 @@ class PSViewGStateFont {
     font_data->matrix     = *matrix;
   }
 
-  void setType1Font(PSViewDictionaryToken *dictionary, int encoding_size, vector<int> &encoding,
-                    int map_type, char escape_char, int num_fonts,
-                    vector<PSViewDictionaryToken *> &font_array) {
+  void setType1Font(PSViewDictionaryToken *dictionary, int encoding_size,
+                    std::vector<int> &encoding, int map_type, char escape_char, int num_fonts,
+                    std::vector<PSViewDictionaryToken *> &font_array) {
     dictionary_ = dictionary;
     type_       = PSVIEW_FONT_TYPE_0;
 

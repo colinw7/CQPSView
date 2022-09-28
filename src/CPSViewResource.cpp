@@ -45,15 +45,15 @@ findInstance(PSViewToken *key, const PSViewName &category)
   }
 }
 
-vector<PSViewResource *>
+std::vector<PSViewResource *>
 PSViewResourceMgr::
 getResources(const PSViewName &category)
 {
-  vector<PSViewResource *> resources;
+  std::vector<PSViewResource *> resources;
 
-  int num = resources_.size();
+  auto num = resources_.size();
 
-  for (int i = 1; i <= num; i++)
+  for (uint i = 1; i <= num; i++)
     if (resources_[i]->getCategory().compare(category) == 0)
       resources.push_back(resources_[i]);
 
@@ -79,9 +79,9 @@ PSViewToken *
 PSViewResourceMgr::
 lookupInstance(PSViewToken *key, const PSViewName &category)
 {
-  int num = resources_.size();
+  auto num = resources_.size();
 
-  for (int i = 0; i < num; i++) {
+  for (uint i = 0; i < num; i++) {
     if (resources_[i]->getCategory(). compare(category) == 0 &&
         resources_[i]->getKey     ()->compare(key     ) == 0)
       return resources_[i]->getInstance();
@@ -94,8 +94,7 @@ void
 PSViewResourceMgr::
 define(PSViewToken *key, PSViewToken *instance, const PSViewName &category)
 {
-  PSViewResource *resource =
-    new PSViewResource(this, key, instance, category);
+  auto *resource = new PSViewResource(this, key, instance, category);
 
   resources_.push_back(resource);
 }
