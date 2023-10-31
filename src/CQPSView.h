@@ -11,7 +11,7 @@ class CQPSView : public QWidget {
   Q_OBJECT
 
  public:
-  CQPSView(QWidget *parent=0);
+  CQPSView(QWidget *parent=nullptr);
  ~CQPSView();
 
   void loadFile(const QString &fileName);

@@ -12,31 +12,31 @@ class PSViewTextFileToken : public PSViewFileToken {
 
   ~PSViewTextFileToken();
 
-  PSViewTextFileToken *dup() const;
+  PSViewTextFileToken *dup() const override;
 
-  const PSViewName &getName();
+  const PSViewName &getName() override;
 
-  void print();
+  void print() override;
 
-  std::string toString();
+  std::string toString() override;
 
-  void executeToken();
+  void executeToken() override;
 
-  int compare(PSViewToken *token);
+  int compare(PSViewToken *token) override;
 
   //----
 
-  void         flush();
-  PSViewToken *readToken();
-  bool         isValid() const;
-  uint         bytesAvailable();
-  PSVboolean   getPosition(uint *pos);
-  PSVboolean   setPosition(uint pos);
-  std::string  getFileName();
-  int          readChar();
-  PSVboolean   writeChar(PSVchar c);
-  void         reset();
-  void         close();
+  void         flush() override;
+  PSViewToken *readToken() override;
+  bool         isValid() const override;
+  uint         bytesAvailable() override;
+  PSVboolean   getPosition(uint *pos) override;
+  PSVboolean   setPosition(uint pos) override;
+  std::string  getFileName() override;
+  int          readChar() override;
+  PSVboolean   writeChar(PSVchar c) override;
+  void         reset() override;
+  void         close() override;
 
   PSViewTextFile *getTextFile() { return text_file_; }
 

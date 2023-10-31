@@ -74,15 +74,15 @@ class PSViewPathMoveTo : public PSViewPathPart {
    PSViewPathPart(PSVIEW_PATH_MOVE_TO), p_(p) {
   }
 
-  PSViewPathMoveTo *dup() const {
+  PSViewPathMoveTo *dup() const override {
     return new PSViewPathMoveTo(*this);
   }
 
-  void print(std::ostream &os) const {
+  void print(std::ostream &os) const override {
     os << "MoveTo: " << p_ << "\n";
   }
 
-  void visit(PSViewPathVisitor &visitor) {
+  void visit(PSViewPathVisitor &visitor) override {
     visitor.moveTo(p_);
   }
 
@@ -98,15 +98,15 @@ class PSViewPathLineTo : public PSViewPathPart {
    PSViewPathPart(PSVIEW_PATH_LINE_TO), p_(p) {
   }
 
-  PSViewPathLineTo *dup() const {
+  PSViewPathLineTo *dup() const override {
     return new PSViewPathLineTo(*this);
   }
 
-  void print(std::ostream &os) const {
+  void print(std::ostream &os) const override {
     os << "LineTo: " << p_ << "\n";
   }
 
-  void visit(PSViewPathVisitor &visitor) {
+  void visit(PSViewPathVisitor &visitor) override {
     visitor.lineTo(p_);
   }
 
@@ -122,15 +122,15 @@ class PSViewPathBezier2To : public PSViewPathPart {
    PSViewPathPart(PSVIEW_PATH_BEZIER2_TO), p1_(p1), p2_(p2) {
   }
 
-  PSViewPathBezier2To *dup() const {
+  PSViewPathBezier2To *dup() const override {
     return new PSViewPathBezier2To(*this);
   }
 
-  void print(std::ostream &os) const {
+  void print(std::ostream &os) const override {
     os << "Bezier2To: " << p1_ << ", " << p2_ << "\n";
   }
 
-  void visit(PSViewPathVisitor &visitor) {
+  void visit(PSViewPathVisitor &visitor) override {
     visitor.bezier2To(p1_, p2_);
   }
 
@@ -147,15 +147,15 @@ class PSViewPathBezier3To : public PSViewPathPart {
    PSViewPathPart(PSVIEW_PATH_BEZIER3_TO), p1_(p1), p2_(p2), p3_(p3) {
   }
 
-  PSViewPathBezier3To *dup() const {
+  PSViewPathBezier3To *dup() const override {
     return new PSViewPathBezier3To(*this);
   }
 
-  void print(std::ostream &os) const {
+  void print(std::ostream &os) const override {
     os << "Bezier3To: " << p1_ << ", " << p2_ << ", " << p3_ << "\n";
   }
 
-  void visit(PSViewPathVisitor &visitor) {
+  void visit(PSViewPathVisitor &visitor) override {
     visitor.bezier3To(p1_, p2_, p3_);
   }
 
@@ -173,16 +173,16 @@ class PSViewPathArcTo : public PSViewPathPart {
    PSViewPathPart(PSVIEW_PATH_ARC_TO), c_(c), xr_(xr), yr_(yr), theta_(theta), delta_(delta) {
   }
 
-  PSViewPathArcTo *dup() const {
+  PSViewPathArcTo *dup() const override {
     return new PSViewPathArcTo(*this);
   }
 
-  void print(std::ostream &os) const {
+  void print(std::ostream &os) const override {
     os << "ArcTo: " << c_ << ", " << xr_ << ", " << yr_ << ", " <<
           theta_ << ", " << delta_ << "\n";
   }
 
-  void visit(PSViewPathVisitor &visitor) {
+  void visit(PSViewPathVisitor &visitor) override {
     visitor.arcTo(c_, xr_, yr_, theta_, delta_);
   }
 
@@ -200,15 +200,15 @@ class PSViewPathClose : public PSViewPathPart {
    PSViewPathPart(PSVIEW_PATH_CLOSE) {
   }
 
-  PSViewPathClose *dup() const {
+  PSViewPathClose *dup() const override {
     return new PSViewPathClose(*this);
   }
 
-  void print(std::ostream &os) const {
+  void print(std::ostream &os) const override {
     os << "Close: \n";
   }
 
-  void visit(PSViewPathVisitor &visitor) {
+  void visit(PSViewPathVisitor &visitor) override {
     visitor.close();
   }
 };

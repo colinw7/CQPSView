@@ -85,7 +85,7 @@ PSViewTextFileToken::
 readToken()
 {
   if (! text_file_->isReadable())
-    return 0;
+    return nullptr;
 
   return text_file_->readToken();
 }

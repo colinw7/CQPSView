@@ -12,37 +12,37 @@ class PSViewFilterFile : public PSViewFile {
 
   int compare(PSViewFilterFile *filter_file);
 
-  void flush();
+  void flush() override;
 
-  bool isReadable() const;
-  bool isWritable() const;
+  bool isReadable() const override;
+  bool isWritable() const override;
 
-  bool isValid() const;
+  bool isValid() const override;
 
-  int size();
+  int size() override;
 
-  int bytesUsed();
+  int bytesUsed() override;
 
-  int bytesAvailable();
+  int bytesAvailable() override;
 
-  bool setPosition(uint pos);
+  bool setPosition(uint pos) override;
 
-  bool getPosition(uint *pos);
+  bool getPosition(uint *pos) override;
 
-  std::string getFileName();
+  std::string getFileName() override;
 
-  int lookChar();
-  int readChar();
+  int lookChar() override;
+  int readChar() override;
 
-  void unreadChars(const std::vector<int> &chars);
+  void unreadChars(const std::vector<int> &chars) override;
 
-  bool loadBuffer();
+  bool loadBuffer() override;
 
-  bool writeChar(int c);
+  bool writeChar(int c) override;
 
-  void reset();
+  void reset() override;
 
-  void close();
+  void close() override;
 
  private:
   void init();

@@ -15,17 +15,17 @@ class PSViewArrayToken : public PSViewToken {
 
  ~PSViewArrayToken();
 
-  PSViewArrayToken *dup() const;
+  PSViewArrayToken *dup() const override;
 
-  const PSViewName &getName();
+  const PSViewName &getName() override;
 
-  void print();
+  void print() override;
 
-  std::string toString();
+  std::string toString() override;
 
-  void executeToken();
+  void executeToken() override;
 
-  int compare(PSViewToken *token);
+  int compare(PSViewToken *token) override;
 
   //----
 

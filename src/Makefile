@@ -16,7 +16,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -std=c++14 -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -std=c++17 -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I. -I../include -I. -I../../CQUtil/include -I../../CImageLib/include -I../../CConfig/include -I../../CArgs/include -I../../CFile/include -I../../CFont/include -I../../CRegExp/include -I../../CGlob/include -I../../CStrUtil/include -I../../CReadLine/include -I../../COS/include -I../../CMath/include -I../../CUtil/include -I/usr/include/freetype2 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
@@ -144,6 +144,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/qconfig.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_accessibility_support_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_charts.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_concurrent.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_concurrent_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_core.pri \
@@ -328,6 +329,7 @@ Makefile: CQPSView.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.con
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/qconfig.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_accessibility_support_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_charts.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_concurrent.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_concurrent_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_core.pri \
@@ -419,6 +421,7 @@ Makefile: CQPSView.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.con
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/qconfig.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_accessibility_support_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_charts.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_concurrent.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_concurrent_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_core.pri:
@@ -544,7 +547,7 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
-	g++ -pipe -std=c++14 -g -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
+	g++ -pipe -std=c++17 -g -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all: moc_CQPSView.cpp
 compiler_moc_header_clean:
@@ -584,7 +587,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CBrush.h \
 		../../CUtil/include/CBrushStyle.h \
 		../../CUtil/include/CFillType.h \
-		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageLib.h \
 		../../CUtil/include/CAlignType.h \
 		../../CImageLib/include/CImageState.h \
@@ -598,13 +600,13 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
 		../../CImageLib/include/CImageMgr.h \
 		../../CFile/include/CFile.h \
 		../../CFile/include/CFileBase.h \
-		../../CStrUtil/include/CStrUtil.h \
 		../../CImageLib/include/CImageAnim.h \
 		../../CImageLib/include/CImageFile.h \
 		../../CMath/include/CGenGradient.h \
@@ -630,7 +632,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CBrush.h \
 		../../CUtil/include/CBrushStyle.h \
 		../../CUtil/include/CFillType.h \
-		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageLib.h \
 		../../CUtil/include/CAlignType.h \
 		../../CImageLib/include/CImageState.h \
@@ -644,13 +645,13 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
 		../../CImageLib/include/CImageMgr.h \
 		../../CFile/include/CFile.h \
 		../../CFile/include/CFileBase.h \
-		../../CStrUtil/include/CStrUtil.h \
 		../../CImageLib/include/CImageAnim.h \
 		../../CImageLib/include/CImageFile.h \
 		../../CMath/include/CGenGradient.h \
@@ -681,7 +682,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CBrush.h \
 		../../CUtil/include/CBrushStyle.h \
 		../../CUtil/include/CFillType.h \
-		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageLib.h \
 		../../CUtil/include/CAlignType.h \
 		../../CImageLib/include/CImageState.h \
@@ -695,13 +695,13 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
 		../../CImageLib/include/CImageMgr.h \
 		../../CFile/include/CFile.h \
 		../../CFile/include/CFileBase.h \
-		../../CStrUtil/include/CStrUtil.h \
 		../../CImageLib/include/CImageAnim.h \
 		../../CImageLib/include/CImageFile.h \
 		../../CMath/include/CGenGradient.h \
@@ -716,12 +716,9 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CMath/include/CBBox2D.h \
 		../../CMath/include/CSize2D.h \
 		../../CQUtil/include/CQUtil.h \
-		../../CUtil/include/CEvent.h \
-		../../CUtil/include/CKeyType.h \
-		../../CMath/include/CAngle.h \
-		../../CFont/include/CFontStyle.h \
-		../../CUtil/include/CFlags.h \
-		../../CQUtil/include/CQUtilMeta.h
+		../../CQUtil/include/CQUtilMeta.h \
+		../../CQUtil/include/CQUtilGeom.h \
+		../../CQUtil/include/CQUtilRGBA.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../obj/CQPSViewRenderer.o CQPSViewRenderer.cpp
 
 ../obj/CPSViewArray.o: CPSViewArray.cpp CPSViewI.h \
@@ -760,7 +757,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -779,6 +775,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -862,7 +859,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -881,6 +877,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -964,7 +961,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -983,6 +979,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1066,7 +1063,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1085,6 +1081,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1170,7 +1167,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1189,6 +1185,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1272,7 +1269,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1291,6 +1287,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1374,7 +1371,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1393,6 +1389,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1476,7 +1473,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1495,6 +1491,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1578,7 +1575,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1597,6 +1593,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1680,7 +1677,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1699,6 +1695,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1782,7 +1779,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1801,6 +1797,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1884,7 +1881,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -1903,6 +1899,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -1986,7 +1983,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2005,6 +2001,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2098,7 +2095,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2117,6 +2113,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2200,7 +2197,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2219,6 +2215,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2302,7 +2299,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2321,6 +2317,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2404,7 +2401,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2423,6 +2419,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2506,7 +2503,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2525,6 +2521,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2608,7 +2605,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2627,6 +2623,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2710,7 +2707,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2729,6 +2725,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2812,7 +2809,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2831,6 +2827,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -2915,7 +2912,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -2934,6 +2930,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3017,7 +3014,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3036,6 +3032,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3119,7 +3116,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3138,6 +3134,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3221,7 +3218,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3240,6 +3236,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3332,7 +3329,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3351,6 +3347,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3434,7 +3431,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3453,6 +3449,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3536,7 +3533,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3555,6 +3551,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3638,7 +3635,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3657,6 +3653,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3740,7 +3737,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3759,6 +3755,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3842,7 +3839,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3861,6 +3857,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -3944,7 +3941,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -3963,6 +3959,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -4046,7 +4043,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -4065,6 +4061,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -4148,7 +4145,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -4167,6 +4163,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -4250,7 +4247,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -4269,6 +4265,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -4352,7 +4349,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -4371,6 +4367,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \
@@ -4454,7 +4451,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/CLineCapType.h \
 		../../CUtil/include/CFillType.h \
 		../../CUtil/include/CEnv.h \
-		../../CUtil/include/CRefPtr.h \
 		../../COS/include/COSFile.h \
 		CSharedMem.h \
 		../../COS/include/COSUser.h \
@@ -4473,6 +4469,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CFile/include/CFileType.h \
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
+		../../CUtil/include/CRefPtr.h \
 		../../CImageLib/include/CImageResizeType.h \
 		../../CImageLib/include/CImageConvolveData.h \
 		../../CImageLib/include/CImageTileData.h \

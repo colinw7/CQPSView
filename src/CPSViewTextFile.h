@@ -9,33 +9,33 @@ class PSViewTextFile : public PSViewFile {
 
   int compare(PSViewTextFile *text_file);
 
-  void flush();
+  void flush() override;
 
-  bool isReadable() const;
-  bool isWritable() const;
-  bool isValid() const;
+  bool isReadable() const override;
+  bool isWritable() const override;
+  bool isValid() const override;
 
-  int size();
-  int bytesUsed();
-  int bytesAvailable();
+  int size() override;
+  int bytesUsed() override;
+  int bytesAvailable() override;
 
-  bool setPosition(uint pos);
-  bool getPosition(uint *pos);
+  bool setPosition(uint pos) override;
+  bool getPosition(uint *pos) override;
 
-  std::string getFileName();
+  std::string getFileName() override;
 
-  int readChar();
-  int lookChar();
+  int readChar() override;
+  int lookChar() override;
 
-  void unreadChars(const std::vector<int> &chars);
+  void unreadChars(const std::vector<int> &chars) override;
 
-  bool loadBuffer();
+  bool loadBuffer() override;
 
-  bool writeChar(int c);
+  bool writeChar(int c) override;
 
-  void reset();
+  void reset() override;
 
-  void close();
+  void close() override;
 
  private:
   void init();

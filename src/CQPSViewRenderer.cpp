@@ -1,5 +1,7 @@
 #include <CQPSViewRenderer.h>
 #include <CQUtil.h>
+#include <CQUtilGeom.h>
+#include <CQUtilRGBA.h>
 
 #include <QPainterPath>
 

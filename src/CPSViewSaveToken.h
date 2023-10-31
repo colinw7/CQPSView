@@ -12,17 +12,17 @@ class PSViewSaveToken : public PSViewToken {
 
   ~PSViewSaveToken();
 
-  PSViewSaveToken *dup() const;
+  PSViewSaveToken *dup() const override;
 
-  const PSViewName &getName();
+  const PSViewName &getName() override;
 
-  void print();
+  void print() override;
 
-  std::string toString();
+  std::string toString() override;
 
-  void executeToken();
+  void executeToken() override;
 
-  int compare(PSViewToken *token);
+  int compare(PSViewToken *token) override;
 
   //----
 

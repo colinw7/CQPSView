@@ -49,17 +49,17 @@ class PSViewGStateToken : public PSViewToken {
 
   ~PSViewGStateToken();
 
-  PSViewGStateToken *dup() const;
+  PSViewGStateToken *dup() const override;
 
-  int compare(PSViewToken *token);
+  int compare(PSViewToken *token) override;
 
-  void executeToken();
+  void executeToken() override;
 
-  const PSViewName &getName();
+  const PSViewName &getName() override;
 
-  void print();
+  void print() override;
 
-  std::string toString();
+  std::string toString() override;
 
   //----
 

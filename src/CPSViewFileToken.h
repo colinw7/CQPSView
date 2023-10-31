@@ -16,17 +16,17 @@ class PSViewFileToken : public PSViewToken {
 
   virtual ~PSViewFileToken();
 
-  virtual PSViewFileToken *dup() const = 0;
+  virtual PSViewFileToken *dup() const override = 0;
 
-  virtual int compare(PSViewToken *token);
+  int compare(PSViewToken *token) override;
 
-  virtual void executeToken() = 0;
+  virtual void executeToken() override = 0;
 
-  virtual const PSViewName &getName() = 0;
+  virtual const PSViewName &getName() override = 0;
 
-  virtual void print() = 0;
+  virtual void print() override = 0;
 
-  virtual std::string toString() = 0;
+  virtual std::string toString() override = 0;
 
   //----
 

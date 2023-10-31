@@ -25,7 +25,7 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
    curve_to_token_(curve_to_token), close_path_token_(close_path_token) {
   }
 
-  void moveTo(const CPoint2D &point) {
+  void moveTo(const CPoint2D &point) override {
     auto *token1 = new PSViewRealToken(psview_, point.x);
     auto *token2 = new PSViewRealToken(psview_, point.y);
 
@@ -35,7 +35,7 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
     move_to_token_->execute();
   }
 
-  void lineTo(const CPoint2D &point) {
+  void lineTo(const CPoint2D &point) override {
     auto *token1 = new PSViewRealToken(psview_, point.x);
     auto *token2 = new PSViewRealToken(psview_, point.y);
 
@@ -45,7 +45,7 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
     line_to_token_->execute();
   }
 
-  void bezier2To(const CPoint2D &point1, const CPoint2D &point2) {
+  void bezier2To(const CPoint2D &point1, const CPoint2D &point2) override {
     auto *token1 = new PSViewRealToken(psview_, point1.x);
     auto *token2 = new PSViewRealToken(psview_, point1.y);
     auto *token3 = new PSViewRealToken(psview_, point2.x);
@@ -59,7 +59,7 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
     curve_to_token_->execute();
   }
 
-  void bezier3To(const CPoint2D &point1, const CPoint2D &point2, const CPoint2D &point3) {
+  void bezier3To(const CPoint2D &point1, const CPoint2D &point2, const CPoint2D &point3) override {
     auto *token1 = new PSViewRealToken(psview_, point1.x);
     auto *token2 = new PSViewRealToken(psview_, point1.y);
     auto *token3 = new PSViewRealToken(psview_, point2.x);
@@ -77,11 +77,11 @@ class PSViewTokenPathVisitor : public PSViewPathVisitor {
     curve_to_token_->execute();
   }
 
-  void arcTo(const CPoint2D &, double, double, double, double) {
+  void arcTo(const CPoint2D &, double, double, double, double) override {
     // TODO
   }
 
-  void close() {
+  void close() override {
     close_path_token_->execute();
   }
 
@@ -100,27 +100,27 @@ class PSViewPathRenderer : public PSViewPathVisitor {
     renderer->pathInit();
   }
 
-  void moveTo(const CPoint2D &p) {
+  void moveTo(const CPoint2D &p) override {
     renderer_->pathMoveTo(p);
   }
 
-  void lineTo(const CPoint2D &p) {
+  void lineTo(const CPoint2D &p) override {
     renderer_->pathLineTo(p);
   }
 
-  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) {
+  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) override {
     renderer_->pathBezier2To(p1, p2);
   }
 
-  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) {
+  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) override {
     renderer_->pathBezier3To(p1, p2, p3);
   }
 
-  void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) {
+  void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) override {
     renderer_->pathArc(c, xr, yr, theta, theta + delta);
   }
 
-  void close() {
+  void close() override {
     renderer_->pathClose();
   }
 
@@ -142,41 +142,41 @@ class PSViewPathStroker : public PSViewPathVisitor {
     path_ = new PSViewPath;
   }
 
-  void init() {
+  void init() override {
   }
 
-  void term() {
+  void term() override {
     buildPath();
   }
 
-  void moveTo(const CPoint2D &p) {
+  void moveTo(const CPoint2D &p) override {
     start_   = p;
     current_ = p;
     closed_  = false;
   }
 
-  void lineTo(const CPoint2D &p) {
+  void lineTo(const CPoint2D &p) override {
     strokeLine(current_, p);
 
     current_ = p;
     closed_  = false;
   }
 
-  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) {
+  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) override {
     strokeBezier2(current_, p1, p2);
 
     current_ = p2;
     closed_  = false;
   }
 
-  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) {
+  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) override {
     strokeBezier3(current_, p1, p2, p3);
 
     current_ = p3;
     closed_  = false;
   }
 
-  void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) {
+  void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) override {
     strokeArc(c, xr, yr, theta, delta);
 
     int    fa, fs;
@@ -189,7 +189,7 @@ class PSViewPathStroker : public PSViewPathVisitor {
     closed_  = false;
   }
 
-  void close() {
+  void close() override {
     if (! closed_) {
       strokeLine(current_, start_);
 

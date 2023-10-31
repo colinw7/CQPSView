@@ -13,30 +13,30 @@ class PSViewPathCharRenderer : public CFreeTypePathRenderer {
     scale_ = 1.0/font->getSize();
   }
 
-  void init() {
+  void init() override {
     path_->init();
   }
 
-  void moveTo(const CPoint2D &p) {
+  void moveTo(const CPoint2D &p) override {
     CPoint2D tp = adjustPoint(p);
 
     path_->moveTo(tp);
   }
 
-  void lineTo(const CPoint2D &p) {
+  void lineTo(const CPoint2D &p) override {
     CPoint2D tp = adjustPoint(p);
 
     path_->lineTo(tp);
   }
 
-  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) {
+  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) override {
     CPoint2D tp1 = adjustPoint(p1);
     CPoint2D tp2 = adjustPoint(p2);
 
     path_->bezier2To(tp1, tp2);
   }
 
-  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) {
+  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) override {
     CPoint2D tp1 = adjustPoint(p1);
     CPoint2D tp2 = adjustPoint(p2);
     CPoint2D tp3 = adjustPoint(p3);
@@ -44,13 +44,13 @@ class PSViewPathCharRenderer : public CFreeTypePathRenderer {
     path_->bezier3To(tp1, tp2, tp3);
   }
 
-  void close() {
+  void close() override {
     path_->close();
   }
 
-  void stroke() { }
+  void stroke() override { }
 
-  void fill() { }
+  void fill() override { }
 
   CPoint2D adjustPoint(const CPoint2D &p) {
     CPoint2D tp;
@@ -79,26 +79,26 @@ class PSViewPathBBoxVisitor : public PSViewPathVisitor {
 
  ~PSViewPathBBoxVisitor() { }
 
-  void moveTo(const CPoint2D &p) {
+  void moveTo(const CPoint2D &p) override {
     bbox_ += p;
   }
 
-  void lineTo(const CPoint2D &p) {
+  void lineTo(const CPoint2D &p) override {
     bbox_ += p;
   }
 
-  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) {
+  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) override {
     bbox_ += p1;
     bbox_ += p2;
   }
 
-  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) {
+  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) override {
     bbox_ += p1;
     bbox_ += p2;
     bbox_ += p3;
   }
 
-  void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) {
+  void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) override {
     std::vector<C3Bezier2D> beziers;
 
     CMathGeom2D::ArcToBeziers(c.x, c.y, xr, yr, theta, theta + delta, beziers);
@@ -141,7 +141,7 @@ class PSViewPathBBoxVisitor : public PSViewPathVisitor {
 #endif
   }
 
-  void close() {
+  void close() override {
   }
 
   const CBBox2D &getBBox() const { return bbox_; }
@@ -158,15 +158,15 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
 
  ~PSViewPathFlattenVisitor() { }
 
-  void moveTo(const CPoint2D &p) {
+  void moveTo(const CPoint2D &p) override {
     flatPath_.moveTo(p);
   }
 
-  void lineTo(const CPoint2D &p) {
+  void lineTo(const CPoint2D &p) override {
     flatPath_.lineTo(p);
   }
 
-  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) {
+  void bezier2To(const CPoint2D &p1, const CPoint2D &p2) override {
     CPoint2D p;
 
     flatPath_.getCurrentPoint(p);
@@ -183,7 +183,7 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
       flatPath_.lineTo(points[i]);
   }
 
-  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) {
+  void bezier3To(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) override {
     CPoint2D p;
 
     flatPath_.getCurrentPoint(p);
@@ -200,7 +200,7 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
       flatPath_.lineTo(points[i]);
   }
 
-  void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) {
+  void arcTo(const CPoint2D &c, double xr, double yr, double theta, double delta) override {
     std::vector<C3Bezier2D> beziers;
 
     CMathGeom2D::ArcToBeziers(c.x, c.y, xr, yr, theta, theta + delta, beziers);
@@ -214,7 +214,7 @@ class PSViewPathFlattenVisitor : public PSViewPathVisitor {
     }
   }
 
-  void close() {
+  void close() override {
     flatPath_.close();
   }
 

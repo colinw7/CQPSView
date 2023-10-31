@@ -12,37 +12,37 @@ class PSViewStringFileToken : public PSViewFileToken {
 
   ~PSViewStringFileToken();
 
-  PSViewStringFileToken *dup() const;
+  PSViewStringFileToken *dup() const override;
 
-  const PSViewName &getName();
+  const PSViewName &getName() override;
 
-  void print();
+  void print() override;
 
-  std::string toString();
+  std::string toString() override;
 
-  void executeToken();
+  void executeToken() override;
 
-  int compare(PSViewToken *token);
+  int compare(PSViewToken *token) override;
 
   //----
 
-  void         flush();
-  PSViewToken *readToken();
+  void         flush() override;
+  PSViewToken *readToken() override;
   bool         isReadable() const;
   bool         isWritable() const;
-  bool         isValid() const;
+  bool         isValid() const override;
   int          size();
   int          bytesUsed();
-  uint         bytesAvailable();
-  PSVboolean   setPosition(uint pos);
-  PSVboolean   getPosition(uint *pos);
-  std::string  getFileName();
-  int          readChar();
+  uint         bytesAvailable() override;
+  PSVboolean   setPosition(uint pos) override;
+  PSVboolean   getPosition(uint *pos) override;
+  std::string  getFileName() override;
+  int          readChar() override;
   int          lookChar();
   bool         loadBuffer();
-  PSVboolean   writeChar(PSVchar c);
-  void         reset();
-  void         close();
+  PSVboolean   writeChar(PSVchar c) override;
+  void         reset() override;
+  void         close() override;
 
   PSViewStringFile *getStringFile() { return string_file_; }
 
